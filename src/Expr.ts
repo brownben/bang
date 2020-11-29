@@ -75,6 +75,6 @@ export class ExprLiteral extends Expr {
 
   getNumberValue() {
     if (this.type === 'number') return Number(this.value)
-    throw new BangError(`Invalid Operation - Not a Number`, '', 0)
+    throw new BangError(`Invalid Operation - Not a Number`)
   }
 }

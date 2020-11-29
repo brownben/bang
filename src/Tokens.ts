@@ -43,6 +43,7 @@ export enum TokenType {
   CLASS,
   SUPER,
   THIS,
+  PRINT,
 
   NEW_LINE,
   EOF
@@ -78,5 +79,6 @@ export const Keywords = {
   return: TokenType.RETURN,
   class: TokenType.CLASS,
   super: TokenType.SUPER,
-  this: TokenType.THIS
+  this: TokenType.THIS,
+  print: TokenType.PRINT
 } as { [key: string]: TokenType }

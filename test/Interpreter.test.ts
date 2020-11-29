@@ -4,13 +4,16 @@ import { interpret } from '../src/Interpreter'
 
 const expectOutput = (code: string) =>
   expect(
-    interpret(getAbstractSyntaxTree(getTokens(code), code), code).getRawValue()
+    interpret(getAbstractSyntaxTree(getTokens(code), code))?.[0]?.getRawValue()
   )
 
 const expectError = (code: string) =>
   expect(() =>
-    interpret(getAbstractSyntaxTree(getTokens(code), code), code).getRawValue()
+    interpret(getAbstractSyntaxTree(getTokens(code), code))?.[0]?.getRawValue()
   ).toThrow()
+
+const execute = (code: string) =>
+  interpret(getAbstractSyntaxTree(getTokens(code), code))
 
 describe('calculates mathematical operations', () => {
   it('should add numbers', () => {
@@ -165,5 +168,40 @@ describe('calulates inequalities ', () => {
   it('should not compare  any other type', () => {
     expectError(`false > true`)
     expectError(`false < null`)
+  })
+})
+
+describe('display contents of print statement', () => {
+  const originalConsoleLog = console.log
+
+  beforeAll(() => {
+    console.log = jest.fn()
+  })
+  afterAll(() => {
+    console.log = originalConsoleLog
+  })
+
+  it('should display literal values', () => {
+    execute('print 5')
+    expect(console.log).toHaveBeenLastCalledWith(5)
+    execute('print "hello world"')
+    expect(console.log).toHaveBeenLastCalledWith('hello world')
+    execute('print false')
+    expect(console.log).toHaveBeenLastCalledWith(false)
+    execute('print null')
+    expect(console.log).toHaveBeenLastCalledWith(null)
+  })
+
+  it('should display value of expressions', () => {
+    execute('print 5 + 5')
+    expect(console.log).toHaveBeenLastCalledWith(10)
+    execute('print 22 / 2')
+    expect(console.log).toHaveBeenLastCalledWith(11)
+    execute('print "hello " + "world"')
+    expect(console.log).toHaveBeenLastCalledWith('hello world')
+    execute('print false == 5 > 9')
+    expect(console.log).toHaveBeenLastCalledWith(true)
+    execute('print 5 * 5 - 9 == 8 * 2')
+    expect(console.log).toHaveBeenLastCalledWith(true)
   })
 })

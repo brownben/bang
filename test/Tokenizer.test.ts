@@ -4,13 +4,15 @@ import BangError from '../src/BangError'
 
 const expectTokens = (code: string, tokens: Partial<Token>[]) =>
   expect(getTokens(code)).toEqual(
-    [...tokens, { type: TokenType.EOF, line: code.split('\n').length }].map(
-      token => ({
-        ...token,
-        value: token?.value?.toString(),
-        line: token?.line ?? 1
-      })
-    )
+    [
+      ...tokens,
+      { type: TokenType.NEW_LINE, line: code.split('\n').length },
+      { type: TokenType.EOF, line: code.split('\n').length }
+    ].map(token => ({
+      ...token,
+      value: token?.value?.toString(),
+      line: token?.line ?? 1
+    }))
   )
 const tokeniserResultError = (code: string, message: string) => {
   try {
@@ -26,13 +28,6 @@ describe('identifies tokens', () => {
   it('should just have end of line in a blank code', () => {
     expectTokens('', [])
     expectTokens('   ', [])
-  })
-
-  it('should identify new line', () => {
-    expectTokens(' \n \n', [
-      { type: TokenType.NEW_LINE, line: 1 },
-      { type: TokenType.NEW_LINE, line: 2 }
-    ])
   })
 
   it('should identify brackets', () => {

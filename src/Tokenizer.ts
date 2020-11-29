@@ -130,6 +130,10 @@ class Tokenizer {
   constructor(source: string) {
     this.source = source
     while (!this.isEnd()) this.scanSource()
+
+    if (this.tokens[this.tokens.length - 1]?.type !== TokenType.NEW_LINE)
+      this.addToken(TokenType.NEW_LINE)
+
     this.addToken(TokenType.EOF)
   }
 

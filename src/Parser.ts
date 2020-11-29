@@ -1,5 +1,6 @@
 import { Token, TokenType } from './Tokens'
 import { Expr, ExprBinary, ExprGrouping, ExprLiteral, ExprUnary } from './Expr'
+import { Stmt, StmtPrint, StmtExpression } from './statements'
 import BangError from './BangError'
 
 class Parser {
@@ -13,7 +14,9 @@ class Parser {
   }
 
   parse() {
-    return this.expression()
+    const statements: Stmt[] = []
+    while (!this.isAtEnd()) statements.push(this.statement())
+    return statements
   }
 
   match(...types: TokenType[]): boolean {
@@ -78,6 +81,24 @@ class Parser {
 
       this.advance()
     }
+  }
+
+  statement(): Stmt {
+    if (this.match(TokenType.PRINT)) return this.printStatement()
+
+    return this.expressionStatement()
+  }
+
+  printStatement() {
+    const value = this.expression()
+    this.consume(TokenType.NEW_LINE, 'Expect new line after value.')
+    return new StmtPrint(value)
+  }
+
+  expressionStatement() {
+    const expr = this.expression()
+    this.consume(TokenType.NEW_LINE, 'Expect new line after expression.')
+    return new StmtExpression(expr)
   }
 
   expression(): Expr {
