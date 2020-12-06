@@ -4,7 +4,7 @@ import { interpret, interpretFinalEnviroment } from '../src/Interpreter'
 
 const expectOutput = (code: string) => {
   const output = interpret(getAbstractSyntaxTree(getTokens(code), code))
-  return expect(output?.[output.length - 1]?.getValue())
+  return expect(output?.[output.length - 1]?.getValue() ?? null)
 }
 
 const expectEnviroment = (code: string) => {
@@ -352,5 +352,17 @@ describe('variable can be declared, assigned and read', () => {
       a = a + 'world'
       a
     `).toBe('helloworld')
+  })
+
+  it('should have assigment expression value as assignment value', () => {
+    expectOutput(`
+      let a = 'hello'
+      a = 5
+    `).toBe(5)
+  })
+
+  it('should have declaration expression value as null', () => {
+    expectOutput(`let a = 5`).toBeNull()
+    expectOutput(`const a = 5`).toBeNull()
   })
 })
