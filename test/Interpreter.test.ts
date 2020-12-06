@@ -1,15 +1,26 @@
 import { getTokens } from '../src/Tokenizer'
 import { getAbstractSyntaxTree } from '../src/Parser'
-import { interpret } from '../src/Interpreter'
+import { interpret, interpretFinalEnviroment } from '../src/Interpreter'
 
-const expectOutput = (code: string) =>
-  expect(
-    interpret(getAbstractSyntaxTree(getTokens(code), code))?.[0]?.getValue()
+const expectOutput = (code: string) => {
+  const output = interpret(getAbstractSyntaxTree(getTokens(code), code))
+  return expect(output?.[output.length - 1]?.getValue())
+}
+
+const expectEnviroment = (code: string) => {
+  const enviroment = interpretFinalEnviroment(
+    getAbstractSyntaxTree(getTokens(code), code)
   )
+
+  return {
+    toHaveValue: (name: string, value: any) =>
+      expect(enviroment[name]?.value?.getValue()).toBe(value)
+  }
+}
 
 const expectError = (code: string) =>
   expect(() =>
-    interpret(getAbstractSyntaxTree(getTokens(code), code))?.[0]?.getValue()
+    interpret(getAbstractSyntaxTree(getTokens(code), code))
   ).toThrow()
 
 const execute = (code: string) =>
@@ -203,5 +214,143 @@ describe('display contents of print statement', () => {
     expect(console.log).toHaveBeenLastCalledWith(true)
     execute('print 5 * 5 - 9 == 8 * 2')
     expect(console.log).toHaveBeenLastCalledWith(true)
+  })
+})
+
+describe('variable can be declared, assigned and read', () => {
+  it('should declare values as null', () => {
+    expectEnviroment('const a').toHaveValue('a', null)
+    expectEnviroment('const b').toHaveValue('b', null)
+    expectEnviroment('const c').toHaveValue('c', null)
+    expectEnviroment('let a').toHaveValue('a', null)
+    expectEnviroment('let b').toHaveValue('b', null)
+    expectEnviroment('let c').toHaveValue('c', null)
+    expectEnviroment('let _a').toHaveValue('_a', null)
+    expectEnviroment('let abc123').toHaveValue('abc123', null)
+  })
+
+  it('should set value to declared literal', () => {
+    expectEnviroment('const a = 1').toHaveValue('a', 1)
+    expectEnviroment('const b = "Hello"').toHaveValue('b', 'Hello')
+    expectEnviroment('const c = 5').toHaveValue('c', 5)
+    expectEnviroment('const c = true').toHaveValue('c', true)
+    expectEnviroment('let a = 1').toHaveValue('a', 1)
+    expectEnviroment('let b = "World"').toHaveValue('b', 'World')
+    expectEnviroment('let c = 5').toHaveValue('c', 5)
+    expectEnviroment('let c = false').toHaveValue('c', false)
+  })
+
+  it('should set value to declared calculation result', () => {
+    expectEnviroment('const a = 5+5').toHaveValue('a', 10)
+    expectEnviroment('const b = "Hello" + "World"').toHaveValue(
+      'b',
+      'HelloWorld'
+    )
+    expectEnviroment('const c = 21 / 7 + 2').toHaveValue('c', 5)
+    expectEnviroment('let a = 5+5').toHaveValue('a', 10)
+    expectEnviroment('let b = "Hello" + "World"').toHaveValue('b', 'HelloWorld')
+    expectEnviroment('let c = 21 / 7 + 2').toHaveValue('c', 5)
+  })
+
+  it('should read variable values', () => {
+    expectOutput(`
+      const a = 5
+      a
+    `).toBe(5)
+    expectOutput(`
+      const a = 5
+      a * 5 + 2
+    `).toBe(27)
+    expectOutput(`
+      let a = 5
+      a
+    `).toBe(5)
+    expectOutput(`
+      let a = 5
+      a * 5 + 2
+    `).toBe(27)
+  })
+
+  it('should throw error on redefine of variable', () => {
+    expectError(`
+      const a = 5
+      const a = 10
+    `)
+    expectError(`
+      const a = 5
+      let a = 10
+    `)
+    expectError(`
+      let a = 5
+      const a = 5
+    `)
+    expectError(`
+      let a = 5
+      let a = 10
+    `)
+  })
+
+  it('should throw error on assignment of constant variable', () => {
+    expectError(`
+      const a = 5
+      a = 10
+    `)
+    expectError(`
+      const a = 'hello'
+      a = 'world'
+    `)
+    expectError(`
+      const a = 'hello'
+      a = false
+    `)
+  })
+
+  it('should throw error on assignment of variable without declaration', () => {
+    expectError(`a = 10`)
+    expectError(`a = 'world'`)
+    expectError(`a = false`)
+    expectError(`
+    a = true`)
+  })
+
+  it('should reassign value on assignment of variable', () => {
+    expectEnviroment(`
+      let c = true
+      c = false
+    `).toHaveValue('c', false)
+    expectEnviroment(`
+      let a = 5
+      a = 10
+      a
+    `).toHaveValue('a', 10)
+    expectEnviroment(`
+      let d = 'hello'
+      d = 'world'
+    `).toHaveValue('d', 'world')
+    expectEnviroment(`
+      let b = 787 + 2
+      b = false
+    `).toHaveValue('b', false)
+    expectEnviroment(`
+      let c = false
+      c = 'world'
+    `).toHaveValue('c', 'world')
+    expectEnviroment(`
+      let c = true
+      c = 'world'
+    `).toHaveValue('c', 'world')
+  })
+
+  it('should be able to reassign variable based on current value', () => {
+    expectOutput(`
+      let a = 5
+      a = a + 10
+      a
+    `).toBe(15)
+    expectOutput(`
+      let a = 'hello'
+      a = a + 'world'
+      a
+    `).toBe('helloworld')
   })
 })

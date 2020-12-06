@@ -1,6 +1,14 @@
 import { Token, TokenType } from './Tokens'
-import { Expr, ExprBinary, ExprGrouping, ExprLiteral, ExprUnary } from './Expr'
-import { Stmt, StmtPrint, StmtExpression } from './statements'
+import {
+  Expr,
+  ExprAssign,
+  ExprBinary,
+  ExprGrouping,
+  ExprLiteral,
+  ExprUnary,
+  ExprVariable
+} from './Expr'
+import { Stmt, StmtPrint, StmtExpression, StmtVariable } from './statements'
 import BangError from './BangError'
 
 class Parser {
@@ -13,10 +21,10 @@ class Parser {
     this.source = source
   }
 
-  parse() {
-    const statements: Stmt[] = []
-    while (!this.isAtEnd()) statements.push(this.statement())
-    return statements
+  parse(): Stmt[] {
+    const statements: (Stmt | null)[] = []
+    while (!this.isAtEnd()) statements.push(this.declaration())
+    return statements.filter(stmt => !!stmt) as Stmt[]
   }
 
   match(...types: TokenType[]): boolean {
@@ -89,6 +97,36 @@ class Parser {
     return this.expressionStatement()
   }
 
+  declaration(): Stmt | null {
+    try {
+      if (this.match(TokenType.CONST, TokenType.LET))
+        return this.varDeclaration(this.previous())
+      else return this.statement()
+    } catch {
+      this.synchronize()
+      return null
+    }
+  }
+
+  varDeclaration(initializerType: Token) {
+    const constant = initializerType.type === TokenType.CONST
+    const name: Token = this.consume(
+      TokenType.IDENTIFIER,
+      'Expect variable name.'
+    )
+
+    let initializer: Expr | undefined = undefined
+    if (this.match(TokenType.EQUAL)) {
+      initializer = this.expression()
+    }
+
+    this.consume(
+      TokenType.NEW_LINE,
+      'Expect a new line after variable declaration.'
+    )
+    return new StmtVariable(name, constant, initializer)
+  }
+
   printStatement() {
     const value = this.expression()
     this.consume(TokenType.NEW_LINE, 'Expect new line after value.')
@@ -102,7 +140,7 @@ class Parser {
   }
 
   expression(): Expr {
-    return this.equality()
+    return this.assignment()
   }
 
   equality(): Expr {
@@ -180,6 +218,8 @@ class Parser {
       return new ExprLiteral('number', this.previous())
     else if (this.match(TokenType.STRING))
       return new ExprLiteral('string', this.previous())
+    else if (this.match(TokenType.IDENTIFIER))
+      return new ExprVariable(this.previous())
     else if (this.match(TokenType.LEFT_PAREN)) {
       const expr = this.expression()
       this.consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.")
@@ -188,6 +228,24 @@ class Parser {
 
     const expr = this.expression()
     return new ExprGrouping(expr)
+  }
+
+  assignment(): Expr {
+    const expr: Expr = this.equality()
+
+    if (this.match(TokenType.EQUAL)) {
+      const equals: Token = this.previous()
+      const value: Expr = this.expression()
+
+      if (expr instanceof ExprVariable) {
+        const name = expr.name
+        return new ExprAssign(name, value)
+      }
+
+      this.error(equals, 'Invalid Assignment Target')
+    }
+
+    return expr
   }
 }
 

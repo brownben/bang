@@ -1,5 +1,6 @@
 # Changelog
 
+- **feat: variable declaration, assignment and reading** (6/12/2020)
 - **fix: tokeniser consuming extra tokens on identifiers** (6/12/2020)
 - **refactor: literals to separate classes** (6/12/2020)
 - **feat: print statement** (29/11/2020)

@@ -1,5 +1,13 @@
 import { Token, TokenType } from '../Tokens'
-import { Expr, ExprBinary, ExprLiteral, ExprGrouping, ExprUnary } from '../Expr'
+import {
+  Expr,
+  ExprBinary,
+  ExprLiteral,
+  ExprGrouping,
+  ExprUnary,
+  ExprVariable,
+  ExprAssign
+} from '../Expr'
 import {
   Literal,
   LiteralString,
@@ -8,13 +16,23 @@ import {
   LiteralNull
 } from '../Literal'
 import BangError from '../BangError'
+import { Enviroment } from '../Enviroment'
 
-export const evaluateExpression = (expression: Expr): Literal => {
+export const evaluateExpression = (
+  expression: Expr,
+  enviroment: Enviroment
+): Literal => {
   if (expression instanceof ExprLiteral) return evaluateLiteral(expression)
-  else if (expression instanceof ExprBinary) return evaluateBinary(expression)
+  else if (expression instanceof ExprBinary)
+    return evaluateBinary(expression, enviroment)
   else if (expression instanceof ExprGrouping)
-    return evaluateGrouping(expression)
-  else if (expression instanceof ExprUnary) return evaluateUnary(expression)
+    return evaluateGrouping(expression, enviroment)
+  else if (expression instanceof ExprUnary)
+    return evaluateUnary(expression, enviroment)
+  else if (expression instanceof ExprVariable)
+    return evaluateVariable(expression, enviroment)
+  else if (expression instanceof ExprAssign)
+    return evaluateAssignment(expression, enviroment)
   else throw new BangError('Unexpected Structure')
 }
 
@@ -30,9 +48,12 @@ const evaluateLiteral = (literal: ExprLiteral): Literal => {
   throw new BangError(`Unknown Literal Type "${literal.type}"`)
 }
 
-const evaluateBinary = ({ left, operator, right }: ExprBinary): Literal => {
-  const leftEvaluated = evaluateExpression(left)
-  const rightEvaluated = evaluateExpression(right)
+const evaluateBinary = (
+  { left, operator, right }: ExprBinary,
+  enviroment: Enviroment
+): Literal => {
+  const leftEvaluated = evaluateExpression(left, enviroment)
+  const rightEvaluated = evaluateExpression(right, enviroment)
 
   if ([TokenType.EQUAL_EQUAL, TokenType.BANG_EQUAL].includes(operator.type))
     return evaluateEquality(operator.type, leftEvaluated, rightEvaluated)
@@ -91,7 +112,6 @@ const evaluateNumber = (
       value = left.getValue() >= right.getValue()
       break
     default:
-      console.log(operator)
       throw new BangError(`Unknown Operator ${operator.value}`)
   }
 
@@ -135,18 +155,24 @@ const evaluateEquality = (
   let value
 
   if (operator === TokenType.EQUAL_EQUAL)
-    value = left.value == right.value && typeof left === typeof right
-  else value = left.value != right.value || typeof left !== typeof right
+    value = left.value == right.value && left.type === right.type
+  else value = left.value != right.value || left.type !== right.type
 
   return new LiteralBoolean(undefined, value)
 }
 
-const evaluateGrouping = ({ expression }: ExprGrouping) => {
-  return evaluateExpression(expression)
+const evaluateGrouping = (
+  { expression }: ExprGrouping,
+  enviroment: Enviroment
+) => {
+  return evaluateExpression(expression, enviroment)
 }
 
-const evaluateUnary = ({ operator, right }: ExprUnary) => {
-  const rightEvaluated = evaluateExpression(right)
+const evaluateUnary = (
+  { operator, right }: ExprUnary,
+  enviroment: Enviroment
+) => {
+  const rightEvaluated = evaluateExpression(right, enviroment)
 
   if (
     operator.type === TokenType.MINUS &&
@@ -159,4 +185,18 @@ const evaluateUnary = ({ operator, right }: ExprUnary) => {
   )
     return new LiteralBoolean(undefined, !rightEvaluated.getValue())
   else throw new BangError(`Unknown Operator ${operator.value}`)
+}
+
+const evaluateVariable = ({ name }: ExprVariable, enviroment: Enviroment) => {
+  if (enviroment) return enviroment.get(name)
+  else throw new BangError('No Enviroment Defined')
+}
+
+const evaluateAssignment = (
+  { name, value }: ExprAssign,
+  enviroment: Enviroment
+): Literal => {
+  const evaluatedValue: Literal = evaluateExpression(value, enviroment)
+  enviroment.assign(name, evaluatedValue)
+  return evaluatedValue
 }

@@ -78,3 +78,31 @@ export class ExprLiteral extends Expr {
     throw new BangError(`Invalid Operation - Not a Number`)
   }
 }
+
+export class ExprVariable extends Expr {
+  name: string
+
+  constructor(name: Token) {
+    super()
+    this.name = name.value ?? ''
+  }
+
+  toString() {
+    return `(${this.name} - variable)`
+  }
+}
+
+export class ExprAssign extends Expr {
+  name: string
+  value: Expr
+
+  constructor(name: string, value: Expr) {
+    super()
+    this.name = name
+    this.value = value
+  }
+
+  toString() {
+    return `(${this.name} - ${this.value.toString()})`
+  }
+}

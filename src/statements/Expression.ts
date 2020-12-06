@@ -1,5 +1,6 @@
 import { Expr } from '../Expr'
 import { Stmt } from './Stmt'
+import { Enviroment } from '../Enviroment'
 import { evaluateExpression } from './evaluateExpression'
 
 export class StmtExpression extends Stmt {
@@ -10,7 +11,7 @@ export class StmtExpression extends Stmt {
     this.expression = expression
   }
 
-  execute() {
-    return evaluateExpression(this.expression)
+  execute(enviroment: Enviroment) {
+    return evaluateExpression(this.expression, enviroment)
   }
 }
