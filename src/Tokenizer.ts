@@ -82,6 +82,7 @@ class Tokenizer {
     while (isAlphaNumeric(this.getCurrentCharacter()))
       identifierString += this.moveToNextCharacter()
 
+    this.currentPosition -= 1
     if (Keywords[identifierString]) this.addToken(Keywords[identifierString])
     else this.addToken(TokenType.IDENTIFIER, identifierString)
   }
@@ -97,7 +98,6 @@ class Tokenizer {
   scanSource() {
     const char = this.getCurrentCharacter()
     const twoChar = char + this.getNextCharacter()
-
     if (twoChar === '!=') this.addToken(TokenType.BANG_EQUAL)
     else if (twoChar === '==') this.addToken(TokenType.EQUAL_EQUAL)
     else if (twoChar === '<=') this.addToken(TokenType.LESS_EQUAL)
