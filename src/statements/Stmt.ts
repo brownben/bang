@@ -1,7 +1,5 @@
-import { ExprLiteral } from '../Expr'
+import { Literal } from '../Literal'
 
-export class Stmt {
-  execute(): ExprLiteral | null {
-    return null
-  }
+export abstract class Stmt {
+  abstract execute(): Literal | null
 }

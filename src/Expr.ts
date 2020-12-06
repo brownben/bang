@@ -1,7 +1,7 @@
 import { Token } from './Tokens'
 import BangError from './BangError'
 
-export class Expr {}
+export abstract class Expr {}
 
 export class ExprBinary extends Expr {
   left: Expr

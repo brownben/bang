@@ -4,12 +4,12 @@ import { interpret } from '../src/Interpreter'
 
 const expectOutput = (code: string) =>
   expect(
-    interpret(getAbstractSyntaxTree(getTokens(code), code))?.[0]?.getRawValue()
+    interpret(getAbstractSyntaxTree(getTokens(code), code))?.[0]?.getValue()
   )
 
 const expectError = (code: string) =>
   expect(() =>
-    interpret(getAbstractSyntaxTree(getTokens(code), code))?.[0]?.getRawValue()
+    interpret(getAbstractSyntaxTree(getTokens(code), code))?.[0]?.getValue()
   ).toThrow()
 
 const execute = (code: string) =>
