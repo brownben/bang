@@ -1,9 +1,8 @@
-import { Expr } from '../Expr'
+import { Token } from '../Tokens'
+import { Expr } from '../expressions'
 import { Stmt } from './Stmt'
 import { Literal, LiteralNull } from '../Literal'
 import { Enviroment } from '../Enviroment'
-import { evaluateExpression } from './evaluateExpression'
-import { Token } from '../Tokens'
 
 export class StmtVariable extends Stmt {
   name: string
@@ -19,7 +18,7 @@ export class StmtVariable extends Stmt {
 
   execute(enviroment: Enviroment) {
     let value: Literal = new LiteralNull()
-    if (this.expression) value = evaluateExpression(this.expression, enviroment)
+    if (this.expression) value = this.expression.evaluate(enviroment)
     enviroment.define(this.name, this.constant, value)
     return null
   }

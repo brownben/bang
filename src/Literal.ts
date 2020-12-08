@@ -5,7 +5,6 @@ export abstract class Literal {
   abstract value: string
   abstract type: string
 
-  abstract toString(): string
   abstract getValue(): string | number | boolean | null
 }
 
@@ -18,10 +17,6 @@ export class LiteralString extends Literal {
     super()
     this.value = token?.value ?? value?.toString() ?? ''
     this.token = token
-  }
-
-  toString() {
-    return `["${this.value}" - string]`
   }
 
   getValue() {
@@ -40,10 +35,6 @@ export class LiteralNumber extends Literal {
     this.token = token
   }
 
-  toString() {
-    return `[${this.value} - number]`
-  }
-
   getValue() {
     return Number(this.value)
   }
@@ -60,10 +51,6 @@ export class LiteralBoolean extends Literal {
     this.token = token
   }
 
-  toString() {
-    return `[${this.value} - boolean]`
-  }
-
   getValue() {
     return this.value === 'true'
   }
@@ -78,10 +65,6 @@ export class LiteralNull extends Literal {
     super()
     this.value = token?.value ?? value?.toString() ?? ''
     this.token = token
-  }
-
-  toString() {
-    return '[null]'
   }
 
   getValue() {

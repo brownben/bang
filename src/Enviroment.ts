@@ -1,5 +1,5 @@
-import BangError from './BangError'
 import { Literal, LiteralNull } from './Literal'
+import BangError from './BangError'
 
 export type EnviromentVariables = {
   [key: string]: { value: Literal; constant: boolean }

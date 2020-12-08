@@ -1,8 +1,7 @@
-import { Expr } from '../expressions'
-import { Stmt } from './Stmt'
+import { Expr } from './Expr'
 import { Enviroment } from '../Enviroment'
 
-export class StmtExpression extends Stmt {
+export class ExprGrouping extends Expr {
   expression: Expr
 
   constructor(expression: Expr) {
@@ -10,7 +9,7 @@ export class StmtExpression extends Stmt {
     this.expression = expression
   }
 
-  execute(enviroment: Enviroment) {
+  evaluate(enviroment: Enviroment) {
     return this.expression.evaluate(enviroment)
   }
 }

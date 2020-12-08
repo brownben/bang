@@ -7,7 +7,7 @@ import {
   ExprLiteral,
   ExprUnary,
   ExprVariable
-} from './Expr'
+} from './expressions'
 import { Stmt, StmtPrint, StmtExpression, StmtVariable } from './statements'
 import BangError from './BangError'
 
@@ -40,7 +40,7 @@ class Parser {
 
   check(type: TokenType) {
     if (this.isAtEnd()) return false
-    return this.peek().type == type
+    return this.peek().type === type
   }
 
   advance(): Token {
@@ -49,7 +49,7 @@ class Parser {
   }
 
   isAtEnd(): boolean {
-    return this.peek().type == TokenType.EOF
+    return this.peek().type === TokenType.EOF
   }
 
   peek(): Token {
@@ -74,7 +74,7 @@ class Parser {
     this.advance()
 
     while (!this.isAtEnd()) {
-      if (this.previous().type == TokenType.NEW_LINE) return
+      if (this.previous().type === TokenType.NEW_LINE) return
 
       switch (this.peek().type) {
         case TokenType.CLASS:

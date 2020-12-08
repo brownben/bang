@@ -1,6 +1,5 @@
-import { Expr } from '../Expr'
+import { Expr } from '../expressions'
 import { Stmt } from './Stmt'
-import { evaluateExpression } from './evaluateExpression'
 import { Enviroment } from '../Enviroment'
 
 export class StmtPrint extends Stmt {
@@ -12,7 +11,7 @@ export class StmtPrint extends Stmt {
   }
 
   execute(enviroment: Enviroment) {
-    const value = evaluateExpression(this.expression, enviroment)
+    const value = this.expression.evaluate(enviroment)
     console.log(value.getValue())
     return null
   }
