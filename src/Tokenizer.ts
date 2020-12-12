@@ -1,19 +1,43 @@
 import { Token, TokenType, Keywords } from './Tokens'
 import BangError from './BangError'
 
+const oneCharacterTokens: { [key: string]: TokenType } = {
+  '!': TokenType.BANG,
+  '=': TokenType.EQUAL,
+  '<': TokenType.LESS,
+  '>': TokenType.GREATER,
+  '(': TokenType.LEFT_PAREN,
+  ')': TokenType.RIGHT_PAREN,
+  '{': TokenType.LEFT_BRACE,
+  '}': TokenType.RIGHT_BRACE,
+  '+': TokenType.PLUS,
+  '-': TokenType.MINUS,
+  '/': TokenType.SLASH,
+  '*': TokenType.STAR,
+  ',': TokenType.COMMA
+}
+
+const twoCharacterTokens: { [key: string]: TokenType } = {
+  '!=': TokenType.BANG_EQUAL,
+  '==': TokenType.EQUAL_EQUAL,
+  '<=': TokenType.LESS_EQUAL,
+  '>=': TokenType.GREATER_EQUAL
+}
+
 const isDigit = (char: string): boolean => char >= '0' && char <= '9'
 const isAlpha = (char: string): boolean =>
   (char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z') || char === '_'
 const isAlphaNumeric = (char: string): boolean => isAlpha(char) || isDigit(char)
-const isBlank = (char: string): boolean =>
-  char === '\r' || char === '\t' || char === ' '
+const isBlank = (char: string): boolean => [' ', '\t', '\r'].includes(char)
 
 class Tokenizer {
   source: string = ''
   tokens: Token[] = []
 
+  blockLevel: number = 0
   currentPosition: number = 0
   currentLine: number = 1
+  currentPositionInLine: number = 0
 
   addToken = (type: TokenType, value?: string) =>
     this.tokens.push({ type, value, line: this.currentLine })
@@ -25,7 +49,7 @@ class Tokenizer {
     this.currentPosition += 1
     return current
   }
-  goToNextLine = () => {
+  goToNextLine() {
     while (this.getNextCharacter() !== '\n') this.currentPosition += 1
   }
 
@@ -90,47 +114,73 @@ class Tokenizer {
   addNewLine() {
     this.addToken(TokenType.NEW_LINE)
     this.currentLine += 1
+    this.currentPositionInLine = 0
   }
 
   constructError = (message: string) =>
     new BangError(message, this.source, this.currentLine)
 
+  getIndentationLevel() {
+    let spaces = 0
+    while (this.getCurrentCharacter() == ' ') {
+      spaces += 1
+      this.currentPosition += 1
+      this.currentPositionInLine += 1
+    }
+    return Math.floor(spaces / 2)
+  }
+
+  changeBlockLevel() {
+    let indentationLevel = this.getIndentationLevel()
+    while (this.blockLevel > indentationLevel) {
+      this.blockLevel -= 1
+      this.addToken(TokenType.BLOCK_END)
+    }
+    while (this.blockLevel < indentationLevel) {
+      this.blockLevel += 1
+      this.addToken(TokenType.BLOCK_START)
+    }
+  }
+
+  closeAllBlocks() {
+    while (this.blockLevel > 0) {
+      this.blockLevel -= 1
+      this.addToken(TokenType.BLOCK_END)
+    }
+  }
+
   scanSource() {
+    if (this.currentPositionInLine == 0) this.changeBlockLevel()
+
     const char = this.getCurrentCharacter()
     const twoChar = char + this.getNextCharacter()
-    if (twoChar === '!=') this.addToken(TokenType.BANG_EQUAL)
-    else if (twoChar === '==') this.addToken(TokenType.EQUAL_EQUAL)
-    else if (twoChar === '<=') this.addToken(TokenType.LESS_EQUAL)
-    else if (twoChar === '>=') this.addToken(TokenType.GREATER_EQUAL)
+
+    if (twoCharacterTokens?.[twoChar])
+      this.addToken(twoCharacterTokens?.[twoChar])
     else if (twoChar === '//') this.goToNextLine()
-    else if (char === '!') this.addToken(TokenType.BANG)
-    else if (char === '=') this.addToken(TokenType.EQUAL)
-    else if (char === '<') this.addToken(TokenType.LESS)
-    else if (char === '>') this.addToken(TokenType.GREATER)
-    else if (char === '(') this.addToken(TokenType.LEFT_PAREN)
-    else if (char === ')') this.addToken(TokenType.RIGHT_PAREN)
-    else if (char === '{') this.addToken(TokenType.LEFT_BRACE)
-    else if (char === '}') this.addToken(TokenType.RIGHT_BRACE)
-    else if (char === '+') this.addToken(TokenType.PLUS)
-    else if (char === '-') this.addToken(TokenType.MINUS)
-    else if (char === '/') this.addToken(TokenType.SLASH)
-    else if (char === '*') this.addToken(TokenType.STAR)
-    else if (char === ',') this.addToken(TokenType.COMMA)
+    else if (oneCharacterTokens?.[char])
+      this.addToken(oneCharacterTokens?.[char])
     else if (char === `'` || char === '"' || char === '`') this.getString()
     else if (isDigit(char) || char === '.') this.getNumber()
     else if (isAlpha(char)) this.getIdentifier()
     else if (char === '\n') this.addNewLine()
-    else if (!isBlank(char)) throw this.constructError('Unidentified Character')
+    else if (!isBlank(char) && !this.isEnd())
+      throw this.constructError(`Unidentified Character`)
 
-    if (['==', '!=', '<=', '>=', '//'].includes(twoChar))
+    if (['==', '!=', '<=', '>='].includes(twoChar)) {
+      this.currentPositionInLine += 2
       this.currentPosition += 2
-    else this.currentPosition += 1
+    } else {
+      this.currentPositionInLine += 1
+      this.currentPosition += 1
+    }
   }
 
   constructor(source: string) {
     this.source = source
     while (!this.isEnd()) this.scanSource()
 
+    this.closeAllBlocks()
     if (this.tokens[this.tokens.length - 1]?.type !== TokenType.NEW_LINE)
       this.addToken(TokenType.NEW_LINE)
 

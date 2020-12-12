@@ -1,6 +1,6 @@
 export enum TokenType {
   // Single-character tokens.
-  LEFT_PAREN,
+  LEFT_PAREN = 1,
   RIGHT_PAREN,
   LEFT_BRACE,
   RIGHT_BRACE,
@@ -44,6 +44,10 @@ export enum TokenType {
   SUPER,
   THIS,
   PRINT,
+
+  // Blocks
+  BLOCK_START,
+  BLOCK_END,
 
   NEW_LINE,
   EOF

@@ -27,7 +27,13 @@ const tokeniserResultError = (code: string, message: string) => {
 describe('identifies tokens', () => {
   it('should just have end of line in a blank code', () => {
     expectTokens('', [])
-    expectTokens('   ', [])
+  })
+
+  it('should add block on just indentation', () => {
+    expectTokens('   ', [
+      { type: TokenType.BLOCK_START },
+      { type: TokenType.BLOCK_END }
+    ])
   })
 
   it('should identify brackets', () => {
@@ -41,7 +47,13 @@ describe('identifies tokens', () => {
     expectTokens(`'this is a string'`, [
       { type: TokenType.STRING, value: 'this is a string' }
     ])
-    expectTokens(` 'this is a string'   `, [
+    expectTokens(` 'this is a string'`, [
+      { type: TokenType.STRING, value: 'this is a string' }
+    ])
+    expectTokens(`'this is a string'  `, [
+      { type: TokenType.STRING, value: 'this is a string' }
+    ])
+    expectTokens(` 'this is a string'  `, [
       { type: TokenType.STRING, value: 'this is a string' }
     ])
     expectTokens(`"this is a string"`, [
