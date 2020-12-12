@@ -26,4 +26,8 @@ export class LiteralBoolean extends Literal {
       this.value !== value.value || this.type !== value.type
     )
   }
+
+  not(): LiteralBoolean {
+    return new LiteralBoolean(!this.getValue())
+  }
 }

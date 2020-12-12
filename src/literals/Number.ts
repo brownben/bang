@@ -96,4 +96,8 @@ export class LiteralNumber extends Literal {
         `No Operation "+" on type "${this.type}" and type "${value.type}`
       )
   }
+
+  unaryMinus(): LiteralNumber {
+    return new LiteralNumber(-this.getValue())
+  }
 }
