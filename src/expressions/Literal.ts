@@ -5,7 +5,7 @@ import {
   LiteralNumber,
   LiteralBoolean,
   LiteralNull
-} from '../Literal'
+} from '../literals'
 import BangError from '../BangError'
 
 export class ExprLiteral extends Expr {
@@ -21,11 +21,11 @@ export class ExprLiteral extends Expr {
   }
 
   evaluate() {
-    if (this.type === 'string') return new LiteralString(this.token, this.value)
-    if (this.type === 'number') return new LiteralNumber(this.token, this.value)
+    if (this.type === 'string') return new LiteralString(this.value, this.token)
+    if (this.type === 'number') return new LiteralNumber(this.value, this.token)
     if (this.type === 'boolean')
-      return new LiteralBoolean(this.token, this.value)
-    if (this.type === 'null') return new LiteralNull(this.token, this.value)
+      return new LiteralBoolean(this.value, this.token)
+    if (this.type === 'null') return new LiteralNull(this.value, this.token)
     throw new BangError(`Unknown Literal Type "${this.type}"`)
   }
 }

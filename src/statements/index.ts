@@ -1,4 +1,4 @@
 export { Stmt } from './Stmt'
-export { StmtPrint } from './Print'
 export { StmtExpression } from './Expression'
+export { StmtPrint } from './Print'
 export { StmtVariable } from './Variable'

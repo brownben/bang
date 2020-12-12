@@ -1,4 +1,4 @@
-import { Literal, LiteralNull } from './Literal'
+import { Literal, LiteralNull } from './literals'
 import BangError from './BangError'
 
 export type EnviromentVariables = {

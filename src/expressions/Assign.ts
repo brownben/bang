@@ -1,5 +1,5 @@
 import { Expr } from './Expr'
-import { Literal } from '../Literal'
+import { Literal } from '../literals'
 import { Enviroment } from '../Enviroment'
 
 export class ExprAssign extends Expr {

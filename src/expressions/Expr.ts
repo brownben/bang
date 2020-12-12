@@ -1,4 +1,4 @@
-import { Literal } from '../Literal'
+import { Literal } from '../literals'
 import { Enviroment } from '../Enviroment'
 
 export abstract class Expr {

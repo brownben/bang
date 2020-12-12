@@ -1,7 +1,7 @@
 import { Token } from '../Tokens'
 import { Expr } from '../expressions'
 import { Stmt } from './Stmt'
-import { Literal, LiteralNull } from '../Literal'
+import { Literal, LiteralNull } from '../literals'
 import { Enviroment } from '../Enviroment'
 
 export class StmtVariable extends Stmt {

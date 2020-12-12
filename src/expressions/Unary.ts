@@ -1,6 +1,6 @@
 import { Token, TokenType } from '../Tokens'
 import { Expr } from './Expr'
-import { LiteralBoolean, LiteralNumber } from '../Literal'
+import { LiteralBoolean, LiteralNumber } from '../literals'
 import { Enviroment } from '../Enviroment'
 import BangError from '../BangError'
 
@@ -21,12 +21,12 @@ export class ExprUnary extends Expr {
       this.operator.type === TokenType.MINUS &&
       rightEvaluated instanceof LiteralNumber
     )
-      return new LiteralNumber(undefined, -rightEvaluated.getValue())
+      return new LiteralNumber(-rightEvaluated.getValue())
     else if (
       this.operator.type === TokenType.BANG &&
       rightEvaluated instanceof LiteralBoolean
     )
-      return new LiteralBoolean(undefined, !rightEvaluated.getValue())
+      return new LiteralBoolean(!rightEvaluated.getValue())
     else throw new BangError(`Unknown Operator ${this.operator.value}`)
   }
 }

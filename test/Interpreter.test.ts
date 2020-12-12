@@ -26,7 +26,7 @@ const expectError = (code: string) =>
 const execute = (code: string) =>
   interpret(getAbstractSyntaxTree(getTokens(code), code))
 
-describe('calculates mathematical operations', () => {
+describe('mathematical operations can be calculated', () => {
   it('should add numbers', () => {
     expectOutput(`1 + 2`).toEqual(3)
     expectOutput('7 + 3').toEqual(10)
@@ -78,16 +78,27 @@ describe('calculates mathematical operations', () => {
     expectError(`1 + true`)
     expectError(`false + 121`)
   })
+
+  it('should throw error on divide by 0', () => {
+    expectError('1 / 0')
+    expectError('0 / 0')
+    expectError('2.2 / 0')
+  })
+
+  it('should calculate numbers with lots of minus', () => {
+    expectOutput('4---4').toBe(0)
+    expectOutput('4--------------------------------4').toBe(8)
+  })
 })
 
-describe('calculates operations on strings', () => {
+describe('string operattions can be calculated', () => {
   it('should concatenate strings', () => {
     expectOutput(`'1' + '2'`).toEqual('12')
     expectOutput('`7` + "3"').toEqual('73')
   })
 })
 
-describe('calulates equalities', () => {
+describe('equalities can be calculated', () => {
   it('should be equal for the same literal', () => {
     expectOutput('5 == 5').toBe(true)
     expectOutput('`tree` == `tree`').toBe(true)
@@ -135,7 +146,7 @@ describe('calulates equalities', () => {
   })
 })
 
-describe('calulates inequalities ', () => {
+describe('inequalities can be calculated', () => {
   it('should compare 2 numbers correctly', () => {
     expectOutput('1 > 4').toBe(false)
     expectOutput('1 < 4').toBe(true)
@@ -182,7 +193,7 @@ describe('calulates inequalities ', () => {
   })
 })
 
-describe('display contents of print statement', () => {
+describe('print statments display result of expression', () => {
   const originalConsoleLog = console.log
 
   beforeAll(() => {
@@ -217,7 +228,7 @@ describe('display contents of print statement', () => {
   })
 })
 
-describe('variable can be declared, assigned and read', () => {
+describe('variables can be declared, assigned and read', () => {
   it('should declare values as null', () => {
     expectEnviroment('const a').toHaveValue('a', null)
     expectEnviroment('const b').toHaveValue('b', null)
