@@ -13,7 +13,7 @@ export class LiteralNull extends Literal {
     this.token = token
   }
 
-  getValue() {
+  getValue(): null {
     return null
   }
 

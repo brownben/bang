@@ -12,7 +12,7 @@ export class ExprAssign extends Expr {
     this.value = value
   }
 
-  evaluate(enviroment: Enviroment) {
+  evaluate(enviroment: Enviroment): Literal {
     const evaluatedValue: Literal = this.value.evaluate(enviroment)
     enviroment.assign(this.name, evaluatedValue)
     return evaluatedValue

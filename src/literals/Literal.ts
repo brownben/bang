@@ -36,7 +36,7 @@ export abstract class Literal {
   not(): Literal {
     throw new BangError(`No Operation "!" on type "${this.type}"`)
   }
-  unaryMinus(): Literal {
+  negative(): Literal {
     throw new BangError(`No Operation "-" on type "${this.type}"`)
   }
 

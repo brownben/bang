@@ -59,9 +59,7 @@ export interface Token {
   value?: string
 }
 
-export const comparitorTokens = [
-  TokenType.EQUAL,
-  TokenType.BANG_EQUAL,
+export const comparisonTokens = [
   TokenType.LESS,
   TokenType.LESS_EQUAL,
   TokenType.GREATER,
@@ -86,3 +84,23 @@ export const Keywords = {
   this: TokenType.THIS,
   print: TokenType.PRINT
 } as { [key: string]: TokenType }
+
+export const synchronizeTokens = [
+  TokenType.CLASS,
+  TokenType.LET,
+  TokenType.CONST,
+  TokenType.FOR,
+  TokenType.IF,
+  TokenType.WHILE,
+  TokenType.RETURN
+]
+
+export const variableDeclarationTokens = [TokenType.CONST, TokenType.LET]
+
+export const equalityTokens = [TokenType.BANG_EQUAL, TokenType.EQUAL_EQUAL]
+
+export const unaryTokens = [TokenType.BANG, TokenType.MINUS]
+
+export const additionTokens = [TokenType.MINUS, TokenType.PLUS]
+
+export const multiplicationTokens = [TokenType.SLASH, TokenType.STAR]

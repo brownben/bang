@@ -1,4 +1,14 @@
-import { Token, TokenType } from './Tokens'
+import {
+  Token,
+  TokenType,
+  additionTokens,
+  comparisonTokens,
+  equalityTokens,
+  synchronizeTokens,
+  multiplicationTokens,
+  unaryTokens,
+  variableDeclarationTokens
+} from './Tokens'
 import {
   Expr,
   ExprAssign,
@@ -8,23 +18,46 @@ import {
   ExprUnary,
   ExprVariable
 } from './expressions'
-import { Stmt, StmtPrint, StmtExpression, StmtVariable } from './statements'
+import {
+  Stmt,
+  StmtBlock,
+  StmtPrint,
+  StmtExpression,
+  StmtVariable
+} from './statements'
 import BangError from './BangError'
 
-class Parser {
+class BaseParser {
   current: number = 0
   tokens: Token[] = []
   source: string = ''
 
-  constructor(tokens: Token[], source: string) {
-    this.tokens = tokens
-    this.source = source
+  peek(): Token {
+    return this.tokens[this.current]
   }
 
-  parse(): Stmt[] {
-    const statements: (Stmt | null)[] = []
-    while (!this.isAtEnd()) statements.push(this.declaration())
-    return statements.filter(stmt => !!stmt) as Stmt[]
+  previous(): Token {
+    return this.tokens[this.current - 1]
+  }
+
+  isAtEnd(): boolean {
+    return this.peek().type === TokenType.EOF
+  }
+
+  check(type: TokenType) {
+    if (this.isAtEnd()) return false
+    return this.peek().type === type
+  }
+
+  advance(): Token {
+    if (!this.isAtEnd()) this.current += 1
+    return this.previous()
+  }
+
+  assertToken(type: TokenType, message: string) {
+    if (this.check(type)) return this.advance()
+
+    throw this.error(this.peek(), message)
   }
 
   match(...types: TokenType[]): boolean {
@@ -38,57 +71,54 @@ class Parser {
     return false
   }
 
-  check(type: TokenType) {
-    if (this.isAtEnd()) return false
-    return this.peek().type === type
-  }
-
-  advance(): Token {
-    if (!this.isAtEnd()) this.current += 1
-    return this.previous()
-  }
-
-  isAtEnd(): boolean {
-    return this.peek().type === TokenType.EOF
-  }
-
-  peek(): Token {
-    return this.tokens[this.current]
-  }
-
-  previous(): Token {
-    return this.tokens[this.current - 1]
-  }
-
-  consume(type: TokenType, message: string) {
-    if (this.check(type)) return this.advance()
-
-    throw this.error(this.peek(), message)
-  }
-
   error(token: Token, message: string) {
     throw new BangError(message, this.source, token.line)
+  }
+}
+
+class Parser extends BaseParser {
+  constructor(tokens: Token[], source: string) {
+    super()
+    this.tokens = tokens
+    this.source = source
+  }
+
+  parse(): Stmt[] {
+    const statements: (Stmt | null)[] = []
+    while (!this.isAtEnd()) statements.push(this.declaration())
+    return statements.filter(stmt => !!stmt) as Stmt[]
   }
 
   synchronize() {
     this.advance()
 
     while (!this.isAtEnd()) {
-      if (this.previous().type === TokenType.NEW_LINE) return
-
-      switch (this.peek().type) {
-        case TokenType.CLASS:
-        case TokenType.LET:
-        case TokenType.CONST:
-        case TokenType.FOR:
-        case TokenType.IF:
-        case TokenType.WHILE:
-        case TokenType.RETURN:
-          return
-      }
+      if (
+        this.previous().type === TokenType.NEW_LINE ||
+        synchronizeTokens.includes(this.peek().type)
+      )
+        return
 
       this.advance()
     }
+  }
+
+  assignment(): Expr {
+    const expr: Expr = this.equality()
+
+    if (this.match(TokenType.EQUAL)) {
+      const equals: Token = this.previous()
+      const value: Expr = this.expression()
+
+      if (expr instanceof ExprVariable) {
+        const name = expr.name
+        return new ExprAssign(name, value)
+      }
+
+      this.error(equals, 'Invalid Assignment Target')
+    }
+
+    return expr
   }
 
   statement(): Stmt {
@@ -110,8 +140,8 @@ class Parser {
 
   declaration(): Stmt | null {
     try {
-      if (this.match(TokenType.CONST, TokenType.LET))
-        return this.varDeclaration(this.previous())
+      if (this.match(...variableDeclarationTokens))
+        return this.variableDeclaration(this.previous())
       else return this.statement()
     } catch {
       this.synchronize()
@@ -119,9 +149,9 @@ class Parser {
     }
   }
 
-  varDeclaration(initializerType: Token) {
+  variableDeclaration(initializerType: Token) {
     const constant = initializerType.type === TokenType.CONST
-    const name: Token = this.consume(
+    const name: Token = this.assertToken(
       TokenType.IDENTIFIER,
       'Expect variable name.'
     )
@@ -131,7 +161,7 @@ class Parser {
       initializer = this.expression()
     }
 
-    this.consume(
+    this.assertToken(
       TokenType.NEW_LINE,
       'Expect a new line after variable declaration.'
     )
@@ -140,13 +170,13 @@ class Parser {
 
   printStatement() {
     const value = this.expression()
-    this.consume(TokenType.NEW_LINE, 'Expect new line after value.')
+    this.assertToken(TokenType.NEW_LINE, 'Expect new line after value.')
     return new StmtPrint(value)
   }
 
   expressionStatement() {
     const expr = this.expression()
-    this.consume(TokenType.NEW_LINE, 'Expect new line after expression.')
+    this.assertToken(TokenType.NEW_LINE, 'Expect new line after expression.')
     return new StmtExpression(expr)
   }
 
@@ -157,7 +187,7 @@ class Parser {
   equality(): Expr {
     let expr: Expr = this.comparison()
 
-    while (this.match(TokenType.BANG_EQUAL, TokenType.EQUAL_EQUAL)) {
+    while (this.match(...equalityTokens)) {
       const operator: Token = this.previous()
       const right: Expr = this.comparison()
       expr = new ExprBinary(expr, operator, right)
@@ -167,40 +197,33 @@ class Parser {
   }
 
   comparison(): Expr {
-    let expr: Expr = this.term()
+    let expr: Expr = this.addition()
 
-    while (
-      this.match(
-        TokenType.GREATER,
-        TokenType.GREATER_EQUAL,
-        TokenType.LESS,
-        TokenType.LESS_EQUAL
-      )
-    ) {
+    while (this.match(...comparisonTokens)) {
       const operator: Token = this.previous()
-      const right: Expr = this.term()
+      const right: Expr = this.addition()
       expr = new ExprBinary(expr, operator, right)
     }
 
     return expr
   }
 
-  term(): Expr {
-    let expr: Expr = this.factor()
+  addition(): Expr {
+    let expr: Expr = this.multiplication()
 
-    while (this.match(TokenType.MINUS, TokenType.PLUS)) {
+    while (this.match(...additionTokens)) {
       const operator: Token = this.previous()
-      const right: Expr = this.factor()
+      const right: Expr = this.multiplication()
       expr = new ExprBinary(expr, operator, right)
     }
 
     return expr
   }
 
-  factor(): Expr {
+  multiplication(): Expr {
     let expr: Expr = this.unary()
 
-    while (this.match(TokenType.SLASH, TokenType.STAR)) {
+    while (this.match(...multiplicationTokens)) {
       const operator: Token = this.previous()
       const right: Expr = this.unary()
       expr = new ExprBinary(expr, operator, right)
@@ -210,7 +233,7 @@ class Parser {
   }
 
   unary(): Expr {
-    if (this.match(TokenType.BANG, TokenType.MINUS)) {
+    if (this.match(...unaryTokens)) {
       const operator: Token = this.previous()
       const right: Expr = this.unary()
       return new ExprUnary(operator, right)
@@ -233,30 +256,12 @@ class Parser {
       return new ExprVariable(this.previous())
     else if (this.match(TokenType.LEFT_PAREN)) {
       const expr = this.expression()
-      this.consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.")
+      this.assertToken(TokenType.RIGHT_PAREN, "Expect ')' after expression.")
       return new ExprGrouping(expr)
     }
 
     const expr = this.expression()
     return new ExprGrouping(expr)
-  }
-
-  assignment(): Expr {
-    const expr: Expr = this.equality()
-
-    if (this.match(TokenType.EQUAL)) {
-      const equals: Token = this.previous()
-      const value: Expr = this.expression()
-
-      if (expr instanceof ExprVariable) {
-        const name = expr.name
-        return new ExprAssign(name, value)
-      }
-
-      this.error(equals, 'Invalid Assignment Target')
-    }
-
-    return expr
   }
 }
 

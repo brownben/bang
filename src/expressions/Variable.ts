@@ -1,5 +1,6 @@
 import { Token } from '../Tokens'
 import { Expr } from './Expr'
+import { Literal } from '../literals'
 import { Enviroment } from '../Enviroment'
 import BangError from '../BangError'
 
@@ -11,7 +12,7 @@ export class ExprVariable extends Expr {
     this.name = name.value ?? ''
   }
 
-  evaluate(enviroment: Enviroment) {
+  evaluate(enviroment: Enviroment): Literal {
     if (enviroment) return enviroment.get(this.name)
     else throw new BangError('No Enviroment Defined')
   }

@@ -1,4 +1,4 @@
-import { Stmt } from './statements'
+import { Stmt, StmtResult } from './statements'
 import { Enviroment, EnviromentVariables } from './Enviroment'
 
 export class Interpreter {
@@ -10,13 +10,13 @@ export class Interpreter {
     this.statements = statements
   }
 
-  run() {
+  run(): StmtResult[] {
     return this.statements.flatMap(statement =>
       statement.execute(this.enviroment)
     )
   }
 
-  getEnviroment() {
+  getEnviroment(): EnviromentVariables {
     return this.enviroment.getValues()
   }
 }

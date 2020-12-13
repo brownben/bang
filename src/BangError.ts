@@ -9,7 +9,7 @@ export default class BangError {
     this.line = line ?? 0
   }
 
-  output() {
+  output(): void {
     console.log(`Error: ${this.message}`)
     if (this.source && this.line !== 0) {
       console.log(`   ${this.line - 1} | ${this.source[this.line - 2]}`)

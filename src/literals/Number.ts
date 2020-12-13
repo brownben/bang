@@ -14,7 +14,7 @@ export class LiteralNumber extends Literal {
     this.token = token
   }
 
-  getValue() {
+  getValue(): number {
     return Number(this.value)
   }
 
@@ -97,7 +97,7 @@ export class LiteralNumber extends Literal {
       )
   }
 
-  unaryMinus(): LiteralNumber {
+  negative(): LiteralNumber {
     return new LiteralNumber(-this.getValue())
   }
 }

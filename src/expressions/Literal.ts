@@ -1,6 +1,7 @@
 import { Token } from '../Tokens'
 import { Expr } from './Expr'
 import {
+  Literal,
   LiteralString,
   LiteralNumber,
   LiteralBoolean,
@@ -20,7 +21,7 @@ export class ExprLiteral extends Expr {
     this.token = token
   }
 
-  evaluate() {
+  evaluate(): Literal {
     if (this.type === 'string') return new LiteralString(this.value, this.token)
     if (this.type === 'number') return new LiteralNumber(this.value, this.token)
     if (this.type === 'boolean')

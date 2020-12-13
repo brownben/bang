@@ -14,7 +14,7 @@ export class LiteralString extends Literal {
     this.token = token
   }
 
-  getValue() {
+  getValue(): string {
     return this.value
   }
 

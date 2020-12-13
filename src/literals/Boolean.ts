@@ -12,7 +12,7 @@ export class LiteralBoolean extends Literal {
     this.token = token
   }
 
-  getValue() {
+  getValue(): boolean {
     return this.value === 'true'
   }
 
