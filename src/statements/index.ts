@@ -1,4 +1,5 @@
-export { Stmt } from './Stmt'
+export { Stmt, StmtResult } from './Stmt'
+export { StmtBlock } from './Block'
 export { StmtExpression } from './Expression'
 export { StmtPrint } from './Print'
 export { StmtVariable } from './Variable'

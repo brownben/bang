@@ -93,8 +93,19 @@ class Parser {
 
   statement(): Stmt {
     if (this.match(TokenType.PRINT)) return this.printStatement()
+    if (this.match(TokenType.BLOCK_START)) return new StmtBlock(this.block())
 
     return this.expressionStatement()
+  }
+
+  block(): Stmt[] {
+    const statements: (Stmt | null)[] = []
+
+    while (!this.check(TokenType.BLOCK_END) && !this.isAtEnd()) {
+      statements.push(this.declaration())
+    }
+
+    return statements.filter(Boolean) as Stmt[]
   }
 
   declaration(): Stmt | null {

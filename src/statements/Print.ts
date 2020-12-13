@@ -10,7 +10,7 @@ export class StmtPrint extends Stmt {
     this.expression = expression
   }
 
-  execute(enviroment: Enviroment) {
+  execute(enviroment: Enviroment): null {
     const value = this.expression.evaluate(enviroment)
     console.log(value.getValue())
     return null

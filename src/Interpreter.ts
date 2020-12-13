@@ -11,7 +11,9 @@ export class Interpreter {
   }
 
   run() {
-    return this.statements.map(statement => statement.execute(this.enviroment))
+    return this.statements.flatMap(statement =>
+      statement.execute(this.enviroment)
+    )
   }
 
   getEnviroment() {

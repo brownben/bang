@@ -16,7 +16,7 @@ export class StmtVariable extends Stmt {
     this.constant = constant
   }
 
-  execute(enviroment: Enviroment) {
+  execute(enviroment: Enviroment): null {
     let value: Literal = new LiteralNull()
     if (this.expression) value = this.expression.evaluate(enviroment)
     enviroment.define(this.name, this.constant, value)
