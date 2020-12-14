@@ -14,7 +14,11 @@ const expectEnviroment = (code: string) => {
 
   return {
     toHaveValue: (name: string, value: any) =>
-      expect(enviroment[name]?.value?.getValue()).toBe(value)
+      expect(enviroment[name]?.value?.getValue()).toBe(value),
+    not: {
+      toHaveValue: (name: string) =>
+        expect(enviroment[name]?.value?.getValue()).toBe(undefined)
+    }
   }
 }
 
@@ -375,5 +379,39 @@ describe('variables can be declared, assigned and read', () => {
   it('should have declaration expression value as null', () => {
     expectOutput(`let a = 5`).toBeNull()
     expectOutput(`const a = 5`).toBeNull()
+  })
+})
+
+describe('variables are block scoped', () => {
+  it('should access variable in higher scope', () => {
+    expectOutput(`
+    let a  = 5
+      a`).toBe(5)
+  })
+
+  it('should be able to reassign variables in higher scope', () => {
+    expectEnviroment(`
+    let a  = 5
+      a = 6
+    `).toHaveValue('a', 6)
+    expectEnviroment(`
+    let a  = 5
+      a = 6
+    a`).toHaveValue('a', 6)
+  })
+
+  it.only('should throw error when accessing variable in defined in a lower scope', () => {
+    expectEnviroment(`
+    let a = 5
+      let b = 4
+    a = 6
+    `).not.toHaveValue('b')
+  })
+
+  it('should throw an error if redefining variable in higher scope', () => {
+    expectError(
+      `let a = 5
+        let a = 6`
+    )
   })
 })
