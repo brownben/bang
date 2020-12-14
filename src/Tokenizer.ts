@@ -150,7 +150,7 @@ class Tokenizer {
   }
 
   scanSource() {
-    if (this.currentPositionInLine == 0) this.changeBlockLevel()
+    if (this.currentPositionInLine === 0) this.changeBlockLevel()
 
     const char = this.getCurrentCharacter()
     const twoChar = char + this.getNextCharacter()
@@ -170,8 +170,10 @@ class Tokenizer {
     if (['==', '!=', '<=', '>='].includes(twoChar)) {
       this.currentPositionInLine += 2
       this.currentPosition += 2
-    } else {
+    } else if (char !== '\n') {
       this.currentPositionInLine += 1
+      this.currentPosition += 1
+    } else {
       this.currentPosition += 1
     }
   }
