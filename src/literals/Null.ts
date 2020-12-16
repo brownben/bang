@@ -17,6 +17,10 @@ export class LiteralNull extends Literal {
     return null
   }
 
+  isTruthy(): boolean {
+    return false
+  }
+
   equals(value: Literal): LiteralBoolean {
     return new LiteralBoolean(
       this.value === value.value && this.type === value.type

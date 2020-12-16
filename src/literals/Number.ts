@@ -18,6 +18,10 @@ export class LiteralNumber extends Literal {
     return Number(this.value)
   }
 
+  isTruthy(): boolean {
+    return true
+  }
+
   equals(value: Literal): LiteralBoolean {
     return new LiteralBoolean(
       this.value === value.value && this.type === value.type

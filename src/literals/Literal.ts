@@ -12,6 +12,8 @@ export abstract class Literal {
   abstract equals(value: Literal): LiteralBoolean
   abstract notEquals(value: Literal): LiteralBoolean
 
+  abstract isTruthy(): boolean
+
   greaterThan(value: Literal): Literal {
     throw new BangError(
       `No Operation ">" on type "${this.type}" and type "${value.type}"`

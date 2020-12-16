@@ -16,6 +16,10 @@ export class LiteralBoolean extends Literal {
     return this.value === 'true'
   }
 
+  isTruthy(): boolean {
+    return this.getValue()
+  }
+
   equals(value: Literal): LiteralBoolean {
     return new LiteralBoolean(
       this.value === value.value && this.type === value.type

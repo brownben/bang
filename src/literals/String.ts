@@ -18,6 +18,10 @@ export class LiteralString extends Literal {
     return this.value
   }
 
+  isTruthy(): boolean {
+    return true
+  }
+
   plus(value: Literal): LiteralString {
     if (value instanceof LiteralString)
       return new LiteralString(this.getValue() + value.getValue())
