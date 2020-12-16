@@ -15,7 +15,7 @@ export class Enviroment {
   }
 
   define(name: string, constant: boolean, value?: Literal): void {
-    if (this.exists(name))
+    if (this.existsInCurrentScope(name))
       throw new BangError(`Variable Already "${name}" Exists `)
 
     if (value) this.values[name] = { value, constant }

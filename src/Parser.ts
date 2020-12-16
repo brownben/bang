@@ -126,7 +126,6 @@ class Parser extends BaseParser {
       statements.push(this.declaration())
     }
     this.advance()
-
     return statements.filter(Boolean) as Stmt[]
   }
 
@@ -183,7 +182,10 @@ class Parser extends BaseParser {
 
   printStatement(): Stmt {
     const value = this.expression()
-    this.assertToken(TokenType.NEW_LINE, 'Expect new line after value.')
+
+    if (this.peek()?.type !== TokenType.BLOCK_END)
+      this.assertToken(TokenType.NEW_LINE, 'Expect new line after value.')
+
     return new StmtPrint(value)
   }
 

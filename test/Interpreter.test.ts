@@ -393,6 +393,15 @@ a = 5`).toBe(5)
 })
 
 describe('variables are block scoped', () => {
+  const originalConsoleLog = console.log
+
+  beforeEach(() => {
+    console.log = jest.fn()
+  })
+  afterEach(() => {
+    console.log = originalConsoleLog
+  })
+
   it('should access variable in higher scope', () => {
     expectOutput(`let a  = 5
 a`).toBe(5)
@@ -412,11 +421,22 @@ a = 6
 b`)
   })
 
-  it('should throw an error if redefining variable in higher scope', () => {
-    expectError(`let a = 5
-let b = 10
+  it('should shadow variable if redefining variable in higher scope', () => {
+    expectOutput(`let b = 10
       let b = 6
-a = 7`)
+b`).toBe(10)
+    execute(`let b = 10
+      let b = 6
+      print b
+b`)
+    expect(console.log).toHaveBeenLastCalledWith(6)
+  })
+
+  it('should cope with setting a variable to a value in higher scope with the same name', () => {
+    execute(`let a = 1
+  let a = a + 2
+  print a`)
+    expect(console.log).toHaveBeenLastCalledWith(3)
   })
 })
 
