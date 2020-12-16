@@ -51,6 +51,12 @@ class BaseParser {
     return this.peek().type === type
   }
 
+  checkMultiple(...tokens: TokenType[]): boolean {
+    return tokens
+      .map((token, index) => this.tokens[this.current + index]?.type === token)
+      .every(Boolean)
+  }
+
   advance(): Token {
     if (!this.isAtEnd()) this.current += 1
     return this.previous()
@@ -159,20 +165,14 @@ class Parser extends BaseParser {
     const condition: Expr = this.expression()
     this.assertToken(TokenType.RIGHT_PAREN, "Expect ')' after if condition.")
 
-    if (
-      this.peek()?.type === TokenType.NEW_LINE &&
-      this.tokens[this.current + 1].type === TokenType.BLOCK_START
-    )
+    if (this.checkMultiple(TokenType.NEW_LINE, TokenType.BLOCK_START))
       this.advance()
 
     const thenBranch = this.statement()
 
     let elseBranch = null
     if (this.match(TokenType.ELSE)) {
-      if (
-        this.peek()?.type === TokenType.NEW_LINE &&
-        this.tokens[this.current + 1].type === TokenType.BLOCK_START
-      )
+      if (this.checkMultiple(TokenType.NEW_LINE, TokenType.BLOCK_START))
         this.advance()
 
       elseBranch = this.statement()
