@@ -51,8 +51,4 @@ export class Enviroment {
     else if (valueExists && this.enclosing) this.enclosing?.assign(name, value)
     else throw new BangError(`Variable "${name}" is not defined`)
   }
-
-  getValues() {
-    return this.values
-  }
 }

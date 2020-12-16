@@ -15,6 +15,7 @@ import {
   ExprBinary,
   ExprGrouping,
   ExprLiteral,
+  ExprLogical,
   ExprUnary,
   ExprVariable
 } from './expressions'
@@ -23,7 +24,8 @@ import {
   StmtBlock,
   StmtPrint,
   StmtExpression,
-  StmtVariable
+  StmtVariable,
+  StmtIf
 } from './statements'
 import BangError from './BangError'
 
@@ -103,25 +105,8 @@ class Parser extends BaseParser {
     }
   }
 
-  assignment(): Expr {
-    const expr: Expr = this.equality()
-
-    if (this.match(TokenType.EQUAL)) {
-      const equals: Token = this.previous()
-      const value: Expr = this.expression()
-
-      if (expr instanceof ExprVariable) {
-        const name = expr.name
-        return new ExprAssign(name, value)
-      }
-
-      this.error(equals, 'Invalid Assignment Target')
-    }
-
-    return expr
-  }
-
   statement(): Stmt {
+    if (this.match(TokenType.IF)) return this.ifStatement()
     if (this.match(TokenType.PRINT)) return this.printStatement()
     if (this.match(TokenType.BLOCK_START)) return new StmtBlock(this.block())
 
@@ -134,6 +119,7 @@ class Parser extends BaseParser {
     while (!this.check(TokenType.BLOCK_END) && !this.isAtEnd()) {
       statements.push(this.declaration())
     }
+    this.advance()
 
     return statements.filter(Boolean) as Stmt[]
   }
@@ -149,7 +135,7 @@ class Parser extends BaseParser {
     }
   }
 
-  variableDeclaration(initializerType: Token) {
+  variableDeclaration(initializerType: Token): Stmt {
     const constant = initializerType.type === TokenType.CONST
     const name: Token = this.assertToken(
       TokenType.IDENTIFIER,
@@ -168,13 +154,40 @@ class Parser extends BaseParser {
     return new StmtVariable(name, constant, initializer)
   }
 
-  printStatement() {
+  ifStatement(): Stmt {
+    this.assertToken(TokenType.LEFT_PAREN, "Expect '(' after 'if'.")
+    const condition: Expr = this.expression()
+    this.assertToken(TokenType.RIGHT_PAREN, "Expect ')' after if condition.")
+
+    if (
+      this.peek()?.type === TokenType.NEW_LINE &&
+      this.tokens[this.current + 1].type === TokenType.BLOCK_START
+    )
+      this.advance()
+
+    const thenBranch = this.statement()
+
+    let elseBranch = null
+    if (this.match(TokenType.ELSE)) {
+      if (
+        this.peek()?.type === TokenType.NEW_LINE &&
+        this.tokens[this.current + 1].type === TokenType.BLOCK_START
+      )
+        this.advance()
+
+      elseBranch = this.statement()
+    }
+
+    return new StmtIf(condition, thenBranch, elseBranch)
+  }
+
+  printStatement(): Stmt {
     const value = this.expression()
     this.assertToken(TokenType.NEW_LINE, 'Expect new line after value.')
     return new StmtPrint(value)
   }
 
-  expressionStatement() {
+  expressionStatement(): Stmt {
     const expr = this.expression()
     this.assertToken(TokenType.NEW_LINE, 'Expect new line after expression.')
     return new StmtExpression(expr)
@@ -182,6 +195,48 @@ class Parser extends BaseParser {
 
   expression(): Expr {
     return this.assignment()
+  }
+
+  assignment(): Expr {
+    const expr: Expr = this.or()
+
+    if (this.match(TokenType.EQUAL)) {
+      const equals: Token = this.previous()
+      const value: Expr = this.expression()
+
+      if (expr instanceof ExprVariable) {
+        const name = expr.name
+        return new ExprAssign(name, value)
+      }
+
+      this.error(equals, 'Invalid Assignment Target')
+    }
+
+    return expr
+  }
+
+  or(): Expr {
+    let expr = this.and()
+
+    while (this.match(TokenType.OR)) {
+      const operator = this.previous()
+      const right = this.and()
+      expr = new ExprLogical(expr, operator, right)
+    }
+
+    return expr
+  }
+
+  and(): Expr {
+    let expr = this.equality()
+
+    while (this.match(TokenType.AND)) {
+      const operator = this.previous()
+      const right = this.and()
+      expr = new ExprLogical(expr, operator, right)
+    }
+
+    return expr
   }
 
   equality(): Expr {

@@ -1,5 +1,5 @@
 import { Stmt, StmtResult } from './statements'
-import { Enviroment, EnviromentVariables } from './Enviroment'
+import { Enviroment } from './Enviroment'
 
 export class Interpreter {
   private enviroment: Enviroment
@@ -16,17 +16,15 @@ export class Interpreter {
     )
   }
 
-  getEnviroment(): EnviromentVariables {
-    return this.enviroment.getValues()
+  getEnviroment(): Enviroment {
+    return this.enviroment
   }
 }
 
 export const interpret = (statements: Stmt[]) =>
   new Interpreter(statements).run()
 
-export const interpretFinalEnviroment = (
-  statements: Stmt[]
-): EnviromentVariables => {
+export const interpretFinalEnviroment = (statements: Stmt[]): Enviroment => {
   const interpreter = new Interpreter(statements)
   interpreter.run()
   return interpreter.getEnviroment()

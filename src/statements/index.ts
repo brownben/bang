@@ -1,5 +1,6 @@
 export { Stmt, StmtResult } from './Stmt'
 export { StmtBlock } from './Block'
 export { StmtExpression } from './Expression'
+export { StmtIf } from './If'
 export { StmtPrint } from './Print'
 export { StmtVariable } from './Variable'

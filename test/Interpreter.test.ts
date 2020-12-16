@@ -2,33 +2,59 @@ import { getTokens } from '../src/Tokenizer'
 import { getAbstractSyntaxTree } from '../src/Parser'
 import { interpret, interpretFinalEnviroment } from '../src/Interpreter'
 
-const expectOutput = (code: string) => {
+const expectOutput = (source: string) => {
+  const code = source
   const output = interpret(getAbstractSyntaxTree(getTokens(code), code))
   return expect(output?.[output.length - 1]?.getValue() ?? null)
 }
 
-const expectEnviroment = (code: string) => {
+const expectEnviroment = (source: string) => {
+  const code = source
   const enviroment = interpretFinalEnviroment(
     getAbstractSyntaxTree(getTokens(code), code)
   )
 
   return {
     toHaveValue: (name: string, value: any) =>
-      expect(enviroment[name]?.value?.getValue()).toBe(value),
+      expect(enviroment.get(name)?.getValue()).toBe(value),
     not: {
       toHaveValue: (name: string) =>
-        expect(enviroment[name]?.value?.getValue()).toBe(undefined)
+        expect(enviroment.get(name)?.getValue()).toBe(undefined)
     }
   }
 }
 
-const expectError = (code: string) =>
+const expectError = (source: string) => {
+  const code = source
   expect(() =>
     interpret(getAbstractSyntaxTree(getTokens(code), code))
   ).toThrow()
+}
 
 const execute = (code: string) =>
   interpret(getAbstractSyntaxTree(getTokens(code), code))
+
+describe('literals should return values', () => {
+  it('should handle numbers', () => {
+    expectOutput('.1').toBe(0.1)
+    expectOutput('1').toBe(1)
+    expectOutput('758.23').toBe(758.23)
+  })
+
+  it('should handle booleans', () => {
+    expectOutput('false').toBe(false)
+    expectOutput('true').toBe(true)
+  })
+
+  it('should handle strings', () => {
+    expectOutput('"false"').toBe('false')
+    expectOutput('`true`').toBe('true')
+  })
+
+  it('should handle null', () => {
+    expectOutput('null').toBe(null)
+  })
+})
 
 describe('mathematical operations can be calculated', () => {
   it('should add numbers', () => {
@@ -95,7 +121,7 @@ describe('mathematical operations can be calculated', () => {
   })
 })
 
-describe('string operattions can be calculated', () => {
+describe('string operations can be calculated', () => {
   it('should concatenate strings', () => {
     expectOutput(`'1' + '2'`).toEqual('12')
     expectOutput('`7` + "3"').toEqual('73')
@@ -324,36 +350,22 @@ describe('variables can be declared, assigned and read', () => {
     expectError(`a = 10`)
     expectError(`a = 'world'`)
     expectError(`a = false`)
-    expectError(`
-    a = true`)
+    expectError(`a = true`)
   })
 
   it('should reassign value on assignment of variable', () => {
-    expectEnviroment(`
-      let c = true
-      c = false
-    `).toHaveValue('c', false)
-    expectEnviroment(`
-      let a = 5
-      a = 10
-      a
-    `).toHaveValue('a', 10)
-    expectEnviroment(`
-      let d = 'hello'
-      d = 'world'
-    `).toHaveValue('d', 'world')
-    expectEnviroment(`
-      let b = 787 + 2
-      b = false
-    `).toHaveValue('b', false)
-    expectEnviroment(`
-      let c = false
-      c = 'world'
-    `).toHaveValue('c', 'world')
-    expectEnviroment(`
-      let c = true
-      c = 'world'
-    `).toHaveValue('c', 'world')
+    expectEnviroment(`let a = 5
+a = 10`).toHaveValue('a', 10)
+    expectEnviroment(`let b = 787 + 2
+b = false`).toHaveValue('b', false)
+    expectEnviroment(`let c = true
+c = false`).toHaveValue('c', false)
+    expectEnviroment(`let d = 'hello'
+d = 'world'`).toHaveValue('d', 'world')
+    expectEnviroment(`let e = false
+e = 'world'`).toHaveValue('e', 'world')
+    expectEnviroment(`let f = true
+f = 'world'`).toHaveValue('f', 'world')
   })
 
   it('should be able to reassign variable based on current value', () => {
@@ -370,10 +382,8 @@ describe('variables can be declared, assigned and read', () => {
   })
 
   it('should have assigment expression value as assignment value', () => {
-    expectOutput(`
-      let a = 'hello'
-      a = 5
-    `).toBe(5)
+    expectOutput(`let a = 'hello'
+a = 5`).toBe(5)
   })
 
   it('should have declaration expression value as null', () => {
@@ -384,34 +394,126 @@ describe('variables can be declared, assigned and read', () => {
 
 describe('variables are block scoped', () => {
   it('should access variable in higher scope', () => {
-    expectOutput(`
-    let a  = 5
-      a`).toBe(5)
+    expectOutput(`let a  = 5
+a`).toBe(5)
   })
 
   it('should be able to reassign variables in higher scope', () => {
-    expectEnviroment(`
-    let a  = 5
-      a = 6
-    `).toHaveValue('a', 6)
-    expectEnviroment(`
-    let a  = 5
-      a = 6
-    a`).toHaveValue('a', 6)
+    expectEnviroment(`let a  = 5
+a = 6`).toHaveValue('a', 6)
+    expectEnviroment(`let a  = 5
+a = 6`).toHaveValue('a', 6)
   })
 
-  it.only('should throw error when accessing variable in defined in a lower scope', () => {
-    expectEnviroment(`
-    let a = 5
-      let b = 4
-    a = 6
-    `).not.toHaveValue('b')
+  it('should throw error when accessing variable in defined in a lower scope', () => {
+    expectError(`let a = 5
+  let b = 4
+a = 6
+b`)
   })
 
   it('should throw an error if redefining variable in higher scope', () => {
-    expectError(
-      `let a = 5
-        let a = 6`
-    )
+    expectError(`let a = 5
+let b = 10
+      let b = 6
+a = 7`)
+  })
+})
+
+describe('logical operators can be used', () => {
+  it('should return second value of an AND statement if truthy', () => {
+    expectOutput('true and 2').toBe(2)
+    expectOutput('1 and true').toBe(true)
+    expectOutput('"hello" and 77').toBe(77)
+    expectOutput('0 and 77').toBe(77)
+    expectOutput('2 and "hello"').toBe('hello')
+  })
+
+  it('should return first value of an AND statement if falsy', () => {
+    expectOutput('false and false').toBe(false)
+    expectOutput('false and true').toBe(false)
+    expectOutput('false and 77').toBe(false)
+    expectOutput('null and "hello"').toBe(null)
+  })
+
+  it('should return first value of an OR statement if truthy', () => {
+    expectOutput('true or 2').toBe(true)
+    expectOutput('1 or true').toBe(1)
+    expectOutput('"hello" or 77').toBe('hello')
+    expectOutput('0 or 77').toBe(0)
+  })
+
+  it('should return second value of an OR statement if falsy', () => {
+    expectOutput('false or false').toBe(false)
+    expectOutput('false or true').toBe(true)
+    expectOutput('false or 77').toBe(77)
+    expectOutput('null or "hello"').toBe('hello')
+  })
+})
+
+describe('if statements execute properly', () => {
+  it('should execute expression when condition is truthy', () => {
+    expectEnviroment(`let a = 0
+if (true) a = 1`).toHaveValue('a', 1)
+    expectEnviroment(`let a = 0
+if ("hello") a = 1`).toHaveValue('a', 1)
+  })
+
+  it('should not execute expression when condition is falsy', () => {
+    expectEnviroment(`let a = 0
+if (false) let a = 1`).toHaveValue('a', 0)
+    expectEnviroment(`let a = 0
+if (null) let a = 1`).toHaveValue('a', 0)
+  })
+
+  it('should match block to if statement', () => {
+    expectEnviroment(`let a = 5
+if (true)
+  a = 4
+else
+  a = 5
+a
+`).toHaveValue('a', 4)
+    expectEnviroment(`let a = 5
+if (false)
+  a = 4
+else
+  a = 6
+a
+`).toHaveValue('a', 6)
+  })
+
+  it('should execute else statement if condition is falsy', () => {
+    expectEnviroment(`let a = 0
+if (false) a = 1
+else a = 2`).toHaveValue('a', 2)
+  })
+
+  it('should not execute else statement if condition is truthy', () => {
+    expectEnviroment(`let a = 0
+if (true) a = 1
+else a = 2`).toHaveValue('a', 1)
+  })
+
+  it('should associate else stament to nearest if statement', () => {
+    expectEnviroment(`let a = 0
+if (true) a = 1
+if (false) a = 2
+else a = 3`).toHaveValue('a', 3)
+    expectEnviroment(`let a = 0
+if (false) a = 1
+if (true) a = 2
+else a = 3`).toHaveValue('a', 2)
+    expectEnviroment(`let a = 0
+if (true) a = 1
+  if (false) a = 4
+else a = 3`).toHaveValue('a', 1)
+  })
+
+  it('should handle else if', () => {
+    expectEnviroment(`let a = 0
+if (a > 1) a = 1
+else if (a == 0) a = 2
+else a = 3`).toHaveValue('a', 2)
   })
 })
