@@ -22,10 +22,11 @@ import {
 import {
   Stmt,
   StmtBlock,
-  StmtPrint,
   StmtExpression,
+  StmtIf,
+  StmtPrint,
   StmtVariable,
-  StmtIf
+  StmtWhile
 } from './statements'
 import BangError from './BangError'
 
@@ -113,6 +114,7 @@ class Parser extends BaseParser {
 
   statement(): Stmt {
     if (this.match(TokenType.IF)) return this.ifStatement()
+    if (this.match(TokenType.WHILE)) return this.whileStatement()
     if (this.match(TokenType.PRINT)) return this.printStatement()
     if (this.match(TokenType.BLOCK_START)) return new StmtBlock(this.block())
 
@@ -178,6 +180,18 @@ class Parser extends BaseParser {
     }
 
     return new StmtIf(condition, thenBranch, elseBranch)
+  }
+
+  whileStatement() {
+    this.assertToken(TokenType.LEFT_PAREN, "Expect '(' after 'while'.")
+    const condition = this.expression()
+    this.assertToken(TokenType.RIGHT_PAREN, "Expect ')' after condition.")
+
+    if (this.checkMultiple(TokenType.NEW_LINE, TokenType.BLOCK_START))
+      this.advance()
+    const body = this.statement()
+
+    return new StmtWhile(condition, body)
   }
 
   printStatement(): Stmt {

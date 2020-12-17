@@ -537,3 +537,39 @@ else if (a == 0) a = 2
 else a = 3`).toHaveValue('a', 2)
   })
 })
+
+describe('while statements execute correctly', () => {
+  const originalConsoleLog = console.log
+
+  beforeEach(() => {
+    console.log = jest.fn()
+  })
+  afterEach(() => {
+    console.log = originalConsoleLog
+  })
+
+  it('should loop 5 times', () => {
+    execute(`
+let a = 5
+while (a > 0)
+  print a
+  a = a - 1
+`)
+    expect(console.log).toHaveBeenCalledTimes(5)
+    expect(console.log).toHaveBeenLastCalledWith(1)
+    expect(console.log).toHaveBeenCalledWith(5)
+    expect(console.log).toHaveBeenCalledWith(4)
+    expect(console.log).toHaveBeenCalledWith(3)
+    expect(console.log).toHaveBeenCalledWith(2)
+  })
+
+  it('should not run if condition false', () => {
+    execute(`
+let a = 5
+while (false)
+  print a
+  a = a - 1
+`)
+    expect(console.log).not.toHaveBeenCalled()
+  })
+})
