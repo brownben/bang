@@ -21,7 +21,11 @@ const twoCharacterTokens: { [key: string]: TokenType } = {
   '!=': TokenType.BANG_EQUAL,
   '==': TokenType.EQUAL_EQUAL,
   '<=': TokenType.LESS_EQUAL,
-  '>=': TokenType.GREATER_EQUAL
+  '>=': TokenType.GREATER_EQUAL,
+  '+=': TokenType.PLUS_EQUAL,
+  '-=': TokenType.MINUS_EQUAL,
+  '*=': TokenType.STAR_EQUAL,
+  '/=': TokenType.SLASH_EQUAL
 }
 
 const isDigit = (char: string): boolean => char >= '0' && char <= '9'
@@ -167,7 +171,7 @@ class Tokenizer {
     else if (!isBlank(char) && !this.isEnd())
       throw this.constructError(`Unidentified Character`)
 
-    if (['==', '!=', '<=', '>='].includes(twoChar)) {
+    if (Object.keys(twoCharacterTokens).includes(twoChar)) {
       this.currentPositionInLine += 2
       this.currentPosition += 2
     } else if (char !== '\n') {

@@ -1,21 +1,31 @@
+import BangError from './BangError'
+
 export enum TokenType {
-  // Single-character tokens.
+  // Brackets + Separators
   LEFT_PAREN = 1,
   RIGHT_PAREN,
   LEFT_BRACE,
   RIGHT_BRACE,
   COMMA,
   DOT,
-  MINUS,
-  PLUS,
   SEMICOLON,
-  SLASH,
-  STAR,
 
-  // One or two character tokens.
+  // Operators
+  PLUS,
+  MINUS,
+  STAR,
+  SLASH,
   BANG,
-  BANG_EQUAL,
   EQUAL,
+
+  // Assignment Operators
+  PLUS_EQUAL,
+  MINUS_EQUAL,
+  STAR_EQUAL,
+  SLASH_EQUAL,
+
+  // Comparison Operators
+  BANG_EQUAL,
   EQUAL_EQUAL,
   GREATER,
   GREATER_EQUAL,
@@ -104,3 +114,22 @@ export const unaryTokens = [TokenType.BANG, TokenType.MINUS]
 export const additionTokens = [TokenType.MINUS, TokenType.PLUS]
 
 export const multiplicationTokens = [TokenType.SLASH, TokenType.STAR]
+
+export const assignmentOperatorTokens = [
+  TokenType.PLUS_EQUAL,
+  TokenType.MINUS_EQUAL,
+  TokenType.STAR_EQUAL,
+  TokenType.SLASH_EQUAL
+]
+
+export const getAssignmentOperator = (operator: Token): Token => {
+  if (operator.type === TokenType.PLUS_EQUAL)
+    return { type: TokenType.PLUS, line: operator.line }
+  else if (operator.type === TokenType.MINUS_EQUAL)
+    return { type: TokenType.MINUS, line: operator.line }
+  else if (operator.type === TokenType.STAR_EQUAL)
+    return { type: TokenType.STAR, line: operator.line }
+  else if (operator.type === TokenType.SLASH_EQUAL)
+    return { type: TokenType.SLASH, line: operator.line }
+  else throw new BangError(`Unknown Token`)
+}

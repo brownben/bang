@@ -7,7 +7,9 @@ import {
   synchronizeTokens,
   multiplicationTokens,
   unaryTokens,
-  variableDeclarationTokens
+  variableDeclarationTokens,
+  assignmentOperatorTokens,
+  getAssignmentOperator
 } from './Tokens'
 import {
   Expr,
@@ -219,6 +221,19 @@ class Parser extends BaseParser {
     if (this.match(TokenType.EQUAL)) {
       const equals: Token = this.previous()
       const value: Expr = this.expression()
+
+      if (expr instanceof ExprVariable) {
+        const name = expr.name
+        return new ExprAssign(name, value)
+      }
+
+      this.error(equals, 'Invalid Assignment Target')
+    } else if (this.match(...assignmentOperatorTokens)) {
+      const equals: Token = this.previous()
+      const incrementValue: Expr = this.expression()
+
+      const operator = getAssignmentOperator(equals)
+      const value = new ExprBinary(expr, operator, incrementValue)
 
       if (expr instanceof ExprVariable) {
         const name = expr.name

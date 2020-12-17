@@ -573,3 +573,69 @@ while (false)
     expect(console.log).not.toHaveBeenCalled()
   })
 })
+
+describe('assigment operators compute correct value', () => {
+  it('should increment numbers', () => {
+    expectOutput(`
+let a = 1
+a += 2
+a`).toBe(3)
+  })
+
+  it('should subtract numbers', () => {
+    expectOutput(`
+let a = 1
+a -= 2
+a`).toBe(-1)
+  })
+
+  it('should multiply numbers', () => {
+    expectOutput(`
+let a = 3
+a *= 2
+a`).toBe(6)
+  })
+
+  it('should divide numbers', () => {
+    expectOutput(`
+let a = 3
+a /= 2
+a`).toBe(1.5)
+  })
+
+  it('should concatenate strings', () => {
+    expectOutput(`
+let a = 'hello '
+a += 'world'
+a`).toBe('hello world')
+  })
+
+  it('should error on other types', () => {
+    expectError(`
+let a = true
+a += false
+a`)
+
+    expectError(`
+let a = null
+a += 3
+a`)
+  })
+
+  it('should error on mix of types', () => {
+    expectError(`
+let a = true
+a += 'hello'
+a`)
+
+    expectError(`
+let a = 'hello'
+a /= 3
+a`)
+
+    expectError(`
+let a = null
+a *= 3
+a`)
+  })
+})
