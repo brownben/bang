@@ -27,6 +27,7 @@ export class ExprBinary extends Expr {
       else if (operator === TokenType.MINUS) return 'minus'
       else if (operator === TokenType.STAR) return 'multiply'
       else if (operator === TokenType.SLASH) return 'divide'
+      else if (operator === TokenType.STAR_STAR) return 'power'
       else if (operator === TokenType.LESS) return 'lessThan'
       else if (operator === TokenType.GREATER) return 'greaterThan'
       else if (operator === TokenType.LESS_EQUAL) return 'lessThanOrEqual'

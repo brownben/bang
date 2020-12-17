@@ -9,7 +9,8 @@ import {
   unaryTokens,
   variableDeclarationTokens,
   assignmentOperatorTokens,
-  getAssignmentOperator
+  getAssignmentOperator,
+  indiceTokens
 } from './Tokens'
 import {
   Expr,
@@ -307,9 +308,21 @@ class Parser extends BaseParser {
   }
 
   multiplication(): Expr {
-    let expr: Expr = this.unary()
+    let expr: Expr = this.indices()
 
     while (this.match(...multiplicationTokens)) {
+      const operator: Token = this.previous()
+      const right: Expr = this.unary()
+      expr = new ExprBinary(expr, operator, right)
+    }
+
+    return expr
+  }
+
+  indices(): Expr {
+    let expr: Expr = this.unary()
+
+    while (this.match(...indiceTokens)) {
       const operator: Token = this.previous()
       const right: Expr = this.unary()
       expr = new ExprBinary(expr, operator, right)

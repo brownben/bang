@@ -119,6 +119,19 @@ describe('mathematical operations can be calculated', () => {
     expectOutput('4---4').toBe(0)
     expectOutput('4--------------------------------4').toBe(8)
   })
+
+  it('should raise numbers to a power', () => {
+    expectOutput(`100 ** 0`).toEqual(1)
+    expectOutput(`1 ** 55`).toEqual(1)
+    expectOutput('2 ** 2').toEqual(4)
+    expectOutput(' 16 ** 0.5').toEqual(4)
+  })
+
+  it('should not raise other types to a power', () => {
+    expectError(`false ** 55`)
+    expectError('2 ** null')
+    expectError('"good" ** 0.5')
+  })
 })
 
 describe('string operations can be calculated', () => {

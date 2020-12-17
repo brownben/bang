@@ -100,6 +100,14 @@ export class LiteralNumber extends Literal {
         `No Operation "+" on type "${this.type}" and type "${value.type}`
       )
   }
+  power(value: Literal): LiteralNumber {
+    if (value instanceof LiteralNumber)
+      return new LiteralNumber(this.getValue() ** value.getValue())
+    else
+      throw new BangError(
+        `No Operation "**" on type "${this.type}" and type "${value.type}`
+      )
+  }
 
   negative(): LiteralNumber {
     return new LiteralNumber(-this.getValue())

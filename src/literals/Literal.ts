@@ -62,4 +62,9 @@ export abstract class Literal {
       `No Operation "/" on type "${this.type}" and type "${value.type}"`
     )
   }
+  power(value: Literal): Literal {
+    throw new BangError(
+      `No Operation "**" on type "${this.type}" and type "${value.type}"`
+    )
+  }
 }

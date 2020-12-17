@@ -17,6 +17,7 @@ export enum TokenType {
   SLASH,
   BANG,
   EQUAL,
+  STAR_STAR,
 
   // Assignment Operators
   PLUS_EQUAL,
@@ -114,6 +115,8 @@ export const unaryTokens = [TokenType.BANG, TokenType.MINUS]
 export const additionTokens = [TokenType.MINUS, TokenType.PLUS]
 
 export const multiplicationTokens = [TokenType.SLASH, TokenType.STAR]
+
+export const indiceTokens = [TokenType.STAR_STAR]
 
 export const assignmentOperatorTokens = [
   TokenType.PLUS_EQUAL,
