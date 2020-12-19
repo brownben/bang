@@ -181,8 +181,13 @@ class Parser extends BaseParser {
     if (this.checkMultiple(TokenType.NEW_LINE, TokenType.BLOCK_START))
       this.advance(2)
 
-    const body: Stmt[] = this.block()
-    const functionBody = new ExprFunction(name, parameters, body)
+    let functionBody: ExprFunction
+    if (this.previous().type === TokenType.BLOCK_START)
+      functionBody = new ExprFunction(name, parameters, this.block())
+    else
+      functionBody = new ExprFunction(name, parameters, [
+        new StmtReturn(this.peek(), this.expressionStatement().expression)
+      ])
 
     return new StmtVariable(name, true, functionBody)
   }

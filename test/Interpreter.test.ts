@@ -734,6 +734,15 @@ describe('built-in functions work', () => {
 })
 
 describe('functions work', () => {
+  const originalConsoleLog = console.log
+
+  beforeEach(() => {
+    console.log = jest.fn()
+  })
+  afterEach(() => {
+    console.log = originalConsoleLog
+  })
+
   it('should declare and run function of 2 variables', () => {
     expectOutput(
       `
@@ -781,6 +790,85 @@ fun function()
   let a = 7
 
 type(function())`).toBe('null')
+  })
+
+  it('should cope with inline functions', () => {
+    expectOutput(`
+fun add(a,b) a + b
+
+add(2,3)`).toBe(5)
+  })
+
+  it('should work with closures', () => {
+    const enviroment = expectEnviroment(`
+fun makeCounter()
+  let i = 0
+  fun count()
+    i += 1
+    return i
+
+  return count
+
+
+let counter = makeCounter()
+let a = counter()
+let b = counter()`)
+    enviroment.toHaveValue('a', 1)
+    enviroment.toHaveValue('b', 2)
+    enviroment.toHaveValue('counter', '<function count>')
+  })
+
+  it('should execute a simple recursive loop', () => {
+    execute(`
+fun count(n)
+  if (n > 1) count(n - 1)
+  print(n)
+
+
+count(3)`)
+    expect(console.log).toBeCalledTimes(3)
+    expect(console.log).toHaveBeenCalledWith(1)
+    expect(console.log).toHaveBeenCalledWith(2)
+    expect(console.log).toHaveBeenCalledWith(3)
+  })
+
+  it('should calculate recursive fibonnaci', () => {
+    expectOutput(`
+fun fib(n)
+  if (n <= 1) return 1
+  return fib(n - 2) + fib(n - 1)
+
+fib(1)`).toBe(1)
+    expectOutput(`
+fun fib(n)
+  if (n <= 1) return 1
+  return fib(n - 2) + fib(n - 1)
+
+fib(2)`).toBe(2)
+    expectOutput(`
+fun fib(n)
+  if (n <= 1) return 1
+  return fib(n - 2) + fib(n - 1)
+
+fib(3)`).toBe(3)
+    expectOutput(`
+fun fib(n)
+  if (n <= 1) return 1
+  return fib(n - 2) + fib(n - 1)
+
+fib(4)`).toBe(5)
+    expectOutput(`
+fun fib(n)
+  if (n <= 1) return 1
+  return fib(n - 2) + fib(n - 1)
+
+fib(5)`).toBe(8)
+    expectOutput(`
+fun fib(n)
+  if (n <= 1) return 1
+  return fib(n - 2) + fib(n - 1)
+
+fib(6)`).toBe(13)
   })
 })
 
