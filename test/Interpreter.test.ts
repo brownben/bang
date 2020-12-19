@@ -404,7 +404,7 @@ describe('variables are block scoped', () => {
 
   it('should access variable in higher scope', () => {
     expectOutput(`let a  = 5
-a`).toBe(5)
+  a`).toBe(5)
   })
 
   it('should be able to reassign variables in higher scope', () => {
@@ -415,7 +415,8 @@ a = 6`).toHaveValue('a', 6)
   })
 
   it('should throw error when accessing variable in defined in a lower scope', () => {
-    expectError(`let a = 5
+    expectError(`
+let a = 5
   let b = 4
 a = 6
 b`)
@@ -869,6 +870,36 @@ fun fib(n)
   return fib(n - 2) + fib(n - 1)
 
 fib(6)`).toBe(13)
+  })
+
+  it('functions close over scope', () => {
+    execute(`
+let a = "global"
+
+  fun showA()
+    print(a)
+
+  showA()
+  a = "block"
+  showA()
+`)
+    expect(console.log).toHaveBeenCalledTimes(2)
+    expect(console.log).toHaveBeenNthCalledWith(1, 'global')
+    expect(console.log).toHaveBeenLastCalledWith('global')
+  })
+
+  it('functions close over scope (with variable declaration)', () => {
+    execute(`
+let a = "global"
+
+  fun showA()
+    print(a)
+  showA()
+  let a = "block"
+  showA()`)
+    expect(console.log).toHaveBeenCalledTimes(2)
+    expect(console.log).toHaveBeenNthCalledWith(1, 'global')
+    expect(console.log).toHaveBeenLastCalledWith('global')
   })
 })
 

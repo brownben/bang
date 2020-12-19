@@ -19,7 +19,6 @@ export class ExprCall extends Expr {
 
   evaluate(enviroment: Enviroment) {
     const callee: Literal = this.callee.evaluate(enviroment)
-
     const argument: Literal[] = this.arguments.map(argument =>
       argument.evaluate(enviroment)
     )

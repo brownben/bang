@@ -19,8 +19,11 @@ export class ExprFunction extends Expr {
   }
 
   evaluate(enviroment: Enviroment) {
+    const enviromentCopy = enviroment.clone()
+
     const call = (argument: Literal[]): Literal => {
-      const functionEnviroment = new Enviroment(enviroment)
+      const functionEnviroment = new Enviroment(enviromentCopy)
+
       this.parameters.forEach((parameter, index) =>
         functionEnviroment.define(parameter, true, argument[index])
       )
@@ -28,6 +31,9 @@ export class ExprFunction extends Expr {
       block.execute(functionEnviroment)
       return new LiteralNull()
     }
-    return new LiteralFunction(this.name, this.arity, call)
+
+    const functionLiteral = new LiteralFunction(this.name, this.arity, call)
+    enviromentCopy.define(this.name, true, functionLiteral)
+    return functionLiteral
   }
 }
