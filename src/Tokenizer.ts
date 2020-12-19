@@ -27,8 +27,8 @@ const twoCharacterTokens: { [key: string]: TokenType } = {
   '*=': TokenType.STAR_EQUAL,
   '/=': TokenType.SLASH_EQUAL,
   '**': TokenType.STAR_STAR,
-  '&&':TokenType.AND,
-  '||':TokenType.OR,
+  '&&': TokenType.AND,
+  '||': TokenType.OR
 }
 
 const isDigit = (char: string): boolean => char >= '0' && char <= '9'
@@ -134,7 +134,9 @@ class Tokenizer {
       this.currentPosition += 1
       this.currentPositionInLine += 1
     }
-    return Math.floor(spaces / 2)
+
+    if (this.getCurrentCharacter() === '\n') return this.blockLevel
+    else return Math.floor(spaces / 2)
   }
 
   changeBlockLevel() {
