@@ -15,6 +15,8 @@ export class Enviroment {
   }
 
   define(name: string, constant: boolean, value?: Literal): void {
+    if (name === '_') return
+
     if (this.existsInCurrentScope(name))
       throw new BangError(`Variable Already "${name}" Exists `)
 
@@ -23,7 +25,8 @@ export class Enviroment {
   }
 
   get(name: string): Literal {
-    if (this.values[name]) return this.values[name]?.value
+    if (name === '_') return new LiteralNull()
+    else if (this.values[name]) return this.values[name]?.value
     else if (this.enclosing != null) return this.enclosing.get(name)
     else throw new BangError(`Unknown Variable "${name}"`)
   }
@@ -39,6 +42,8 @@ export class Enviroment {
   }
 
   assign(name: string, value: Literal): void {
+    if (name === '_') return
+
     const valueInCurrentScope = this.existsInCurrentScope(name)
     const valueExists = this.exists(name)
 

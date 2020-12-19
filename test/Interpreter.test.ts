@@ -704,3 +704,27 @@ describe('built-in functions work', () => {
     })
   })
 })
+
+describe('_ is empty variable', () => {
+  it('should be able to be declared multiple times in the same scope', () => {
+    expectOutput(`
+let _ = 1
+let _ = 2`).toBe(null)
+  })
+
+  it('should be always be null', () => {
+    expectOutput(`
+let _ = 1
+let _ = 2
+_`).toBe(null)
+
+    expectOutput(`
+let _ = 1
+_ = 2
+_`).toBe(null)
+  })
+
+  it('should be able to be accessed without declaration', () => {
+    expectOutput(`_`).toBe(null)
+  })
+})
