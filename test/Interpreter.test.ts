@@ -677,4 +677,30 @@ describe('built-in functions work', () => {
       expect(console.log).toHaveBeenLastCalledWith('<function print>')
     })
   })
+
+  describe('type function', () => {
+    it('should throw error if no arguments are passed', () => {
+      expectError('type(1, 2)')
+    })
+
+    it('should throw error if 2 arguments are passed', () => {
+      expectError('type()')
+    })
+
+    it('should have correct string representation value', () => {
+      expectOutput('type').toBe('<function type>')
+    })
+
+    it('should return the correct type of values', () => {
+      expectOutput('type(`a`)').toBe('string')
+      expectOutput('type("hello world")').toBe('string')
+      expectOutput('type(1)').toBe('number')
+      expectOutput('type(0.21)').toBe('number')
+      expectOutput('type(785.26)').toBe('number')
+      expectOutput('type(true)').toBe('boolean')
+      expectOutput('type(false)').toBe('boolean')
+      expectOutput('type(null)').toBe('null')
+      expectOutput('type(print)').toBe('function')
+    })
+  })
 })
