@@ -460,6 +460,11 @@ describe('logical operators can be used', () => {
     expectOutput('"hello" and 77').toBe(77)
     expectOutput('0 and 77').toBe(77)
     expectOutput('2 and "hello"').toBe('hello')
+    expectOutput('true && 2').toBe(2)
+    expectOutput('1 && true').toBe(true)
+    expectOutput('"hello" && 77').toBe(77)
+    expectOutput('0 && 77').toBe(77)
+    expectOutput('2 && "hello"').toBe('hello')
   })
 
   it('should return first value of an AND statement if falsy', () => {
@@ -467,6 +472,10 @@ describe('logical operators can be used', () => {
     expectOutput('false and true').toBe(false)
     expectOutput('false and 77').toBe(false)
     expectOutput('null and "hello"').toBe(null)
+    expectOutput('false && false').toBe(false)
+    expectOutput('false && true').toBe(false)
+    expectOutput('false && 77').toBe(false)
+    expectOutput('null && "hello"').toBe(null)
   })
 
   it('should return first value of an OR statement if truthy', () => {
@@ -474,6 +483,10 @@ describe('logical operators can be used', () => {
     expectOutput('1 or true').toBe(1)
     expectOutput('"hello" or 77').toBe('hello')
     expectOutput('0 or 77').toBe(0)
+    expectOutput('true || 2').toBe(true)
+    expectOutput('1 || true').toBe(1)
+    expectOutput('"hello" || 77').toBe('hello')
+    expectOutput('0 || 77').toBe(0)
   })
 
   it('should return second value of an OR statement if falsy', () => {
@@ -481,6 +494,10 @@ describe('logical operators can be used', () => {
     expectOutput('false or true').toBe(true)
     expectOutput('false or 77').toBe(77)
     expectOutput('null or "hello"').toBe('hello')
+    expectOutput('false || false').toBe(false)
+    expectOutput('false || true').toBe(true)
+    expectOutput('false || 77').toBe(77)
+    expectOutput('null || "hello"').toBe('hello')
   })
 })
 

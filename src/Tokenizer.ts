@@ -26,7 +26,9 @@ const twoCharacterTokens: { [key: string]: TokenType } = {
   '-=': TokenType.MINUS_EQUAL,
   '*=': TokenType.STAR_EQUAL,
   '/=': TokenType.SLASH_EQUAL,
-  '**': TokenType.STAR_STAR
+  '**': TokenType.STAR_STAR,
+  '&&':TokenType.AND,
+  '||':TokenType.OR,
 }
 
 const isDigit = (char: string): boolean => char >= '0' && char <= '9'
