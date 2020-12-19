@@ -32,6 +32,7 @@ import {
   StmtWhile
 } from './statements'
 import BangError from './BangError'
+import { getTokens } from './Tokenizer'
 
 class BaseParser {
   current: number = 0
@@ -364,5 +365,6 @@ class Parser extends BaseParser {
   }
 }
 
-export const getAbstractSyntaxTree = (tokens: Token[], source: string) =>
-  new Parser(tokens, source).parse()
+export const getAbstractSyntaxTree = (source: string) => {
+  return new Parser(getTokens(source), source).parse()
+}

@@ -1,18 +1,15 @@
-import { getTokens } from '../src/Tokenizer'
 import { getAbstractSyntaxTree } from '../src/Parser'
 import { interpret, interpretFinalEnviroment } from '../src/Interpreter'
 
 const expectOutput = (source: string) => {
   const code = source
-  const output = interpret(getAbstractSyntaxTree(getTokens(code), code))
+  const output = interpret(getAbstractSyntaxTree(code))
   return expect(output?.[output.length - 1]?.getValue() ?? null)
 }
 
 const expectEnviroment = (source: string) => {
   const code = source
-  const enviroment = interpretFinalEnviroment(
-    getAbstractSyntaxTree(getTokens(code), code)
-  )
+  const enviroment = interpretFinalEnviroment(getAbstractSyntaxTree(code))
 
   return {
     toHaveValue: (name: string, value: any) =>
@@ -26,13 +23,10 @@ const expectEnviroment = (source: string) => {
 
 const expectError = (source: string) => {
   const code = source
-  expect(() =>
-    interpret(getAbstractSyntaxTree(getTokens(code), code))
-  ).toThrow()
+  expect(() => interpret(getAbstractSyntaxTree(code))).toThrow()
 }
 
-const execute = (code: string) =>
-  interpret(getAbstractSyntaxTree(getTokens(code), code))
+const execute = (code: string) => interpret(getAbstractSyntaxTree(code))
 
 describe('literals should return values', () => {
   it('should handle numbers', () => {
