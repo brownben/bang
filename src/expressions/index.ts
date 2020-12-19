@@ -1,6 +1,7 @@
 export { Expr } from './Expr'
 export { ExprAssign } from './Assign'
 export { ExprBinary } from './Binary'
+export { ExprCall } from './Call'
 export { ExprGrouping } from './Grouping'
 export { ExprLiteral } from './Literal'
 export { ExprLogical } from './Logical'

@@ -16,6 +16,7 @@ import {
   Expr,
   ExprAssign,
   ExprBinary,
+  ExprCall,
   ExprGrouping,
   ExprLiteral,
   ExprLogical,
@@ -51,9 +52,9 @@ class BaseParser {
     return this.peek().type === TokenType.EOF
   }
 
-  check(type: TokenType) {
+  check(...type: TokenType[]) {
     if (this.isAtEnd()) return false
-    return this.peek().type === type
+    return type.includes(this.peek().type)
   }
 
   checkMultiple(...tokens: TokenType[]): boolean {
@@ -67,8 +68,10 @@ class BaseParser {
     return this.previous()
   }
 
-  assertToken(type: TokenType, message: string) {
-    if (this.check(type)) return this.advance()
+  assertToken(type: TokenType | TokenType[], message: string) {
+    if (typeof type === 'object') {
+      if (this.check(...type)) return this.advance()
+    } else if (this.check(type)) return this.advance()
 
     throw this.error(this.peek(), message)
   }
@@ -107,7 +110,11 @@ class Parser extends BaseParser {
 
     while (!this.isAtEnd()) {
       if (
-        this.previous().type === TokenType.NEW_LINE ||
+        [
+          TokenType.NEW_LINE,
+          TokenType.BLOCK_START,
+          TokenType.BLOCK_END
+        ].includes(this.previous().type) ||
         synchronizeTokens.includes(this.peek().type)
       )
         return
@@ -159,7 +166,7 @@ class Parser extends BaseParser {
     }
 
     this.assertToken(
-      TokenType.NEW_LINE,
+      [TokenType.NEW_LINE, TokenType.BLOCK_END],
       'Expect a new line after variable declaration.'
     )
     return new StmtVariable(name, constant, initializer)
@@ -209,7 +216,11 @@ class Parser extends BaseParser {
 
   expressionStatement(): Stmt {
     const expr = this.expression()
-    this.assertToken(TokenType.NEW_LINE, 'Expect new line after expression.')
+
+    this.assertToken(
+      [TokenType.NEW_LINE, TokenType.BLOCK_END],
+      'Expect a new line after expression.'
+    )
     return new StmtExpression(expr)
   }
 
@@ -339,7 +350,38 @@ class Parser extends BaseParser {
       return new ExprUnary(operator, right)
     }
 
-    return this.primary()
+    return this.call()
+  }
+
+  call(): Expr {
+    let expr: Expr = this.primary()
+
+    while (true) {
+      if (this.match(TokenType.LEFT_PAREN)) {
+        expr = this.finishCall(expr)
+      } else break
+    }
+
+    return expr
+  }
+
+  finishCall(callee: Expr) {
+    const parameters: Expr[] = []
+    if (!this.check(TokenType.RIGHT_PAREN)) {
+      do {
+        if (parameters.length >= 255)
+          this.error(this.peek(), "Can't have more than 255 arguments.")
+
+        parameters.push(this.expression())
+      } while (this.match(TokenType.COMMA))
+    }
+
+    const paren: Token = this.assertToken(
+      TokenType.RIGHT_PAREN,
+      "Expect ')' after arguments."
+    )
+
+    return new ExprCall(callee, paren, parameters)
   }
 
   primary(): Expr {
@@ -365,6 +407,5 @@ class Parser extends BaseParser {
   }
 }
 
-export const getAbstractSyntaxTree = (source: string) => {
-  return new Parser(getTokens(source), source).parse()
-}
+export const getAbstractSyntaxTree = (source: string) =>
+  new Parser(getTokens(source), source).parse()
