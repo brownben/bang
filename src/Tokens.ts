@@ -50,6 +50,7 @@ export enum TokenType {
   FALSE,
   LET,
   CONST,
+  FUNCTION,
   RETURN,
   CLASS,
   SUPER,
@@ -91,7 +92,8 @@ export const Keywords = {
   return: TokenType.RETURN,
   class: TokenType.CLASS,
   super: TokenType.SUPER,
-  this: TokenType.THIS
+  this: TokenType.THIS,
+  fun: TokenType.FUNCTION
 } as { [key: string]: TokenType }
 
 export const synchronizeTokens = [

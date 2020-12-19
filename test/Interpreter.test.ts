@@ -705,6 +705,57 @@ describe('built-in functions work', () => {
   })
 })
 
+describe('functions work', () => {
+  it('should declare and run function of 2 variables', () => {
+    expectOutput(
+      `
+fun add(a, b, c)
+  return a + b + c
+
+add(1, 2, 3)
+`
+    ).toBe(6)
+  })
+
+  it('should declare and run functions of 3 variables', () => {
+    expectOutput(`
+fun sayHi(first, last)
+  return "Hi, " + first + " " + last + "!"
+
+sayHi("Dear", "Reader")
+    `).toBe('Hi, Dear Reader!')
+  })
+
+  it('should class functions as values', () => {
+    expectOutput(`
+let a = print
+a`).toBe('<function print>')
+  })
+
+  it('should not execute statements after return', () => {
+    expectOutput(`
+fun function()
+  return 1
+  let a = 2
+  return 2
+
+function()`).toBe(1)
+  })
+
+  it('should return null if no return', () => {
+    expectOutput(`
+fun function()
+  let a = 7
+
+function()`).toBe(null)
+    expectOutput(`
+fun function()
+  let a = 7
+
+type(function())`).toBe('null')
+  })
+})
+
 describe('_ is empty variable', () => {
   it('should be able to be declared multiple times in the same scope', () => {
     expectOutput(`

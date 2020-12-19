@@ -3,6 +3,7 @@ import { Expr } from './Expr'
 import { Literal, LiteralFunction } from '../literals'
 import { Enviroment } from '../Enviroment'
 import BangError from '../BangError'
+import { ReturnValue } from '../statements/Return'
 
 export class ExprCall extends Expr {
   callee: Expr
@@ -28,8 +29,12 @@ export class ExprCall extends Expr {
         throw new BangError(
           `Expected ${callee.arity} arguments but got ${argument.length}`
         )
-
-      return callee.call(argument)
+      try {
+        return callee.call(argument)
+      } catch (error) {
+        if (error instanceof ReturnValue) return error.value
+        else throw error
+      }
     } else throw new BangError('Can only call functions and classes.')
   }
 }
