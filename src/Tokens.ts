@@ -54,7 +54,6 @@ export enum TokenType {
   CLASS,
   SUPER,
   THIS,
-  PRINT,
 
   // Blocks
   BLOCK_START,
@@ -92,8 +91,7 @@ export const Keywords = {
   return: TokenType.RETURN,
   class: TokenType.CLASS,
   super: TokenType.SUPER,
-  this: TokenType.THIS,
-  print: TokenType.PRINT
+  this: TokenType.THIS
 } as { [key: string]: TokenType }
 
 export const synchronizeTokens = [

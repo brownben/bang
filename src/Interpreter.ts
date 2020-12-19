@@ -1,12 +1,14 @@
 import { Stmt, StmtResult } from './statements'
 import { Enviroment } from './Enviroment'
+import { defineBuiltInFunctions } from './library'
 
 export class Interpreter {
   private enviroment: Enviroment
   private statements: Stmt[]
+  readonly globals: Enviroment = defineBuiltInFunctions()
 
   constructor(statements: Stmt[]) {
-    this.enviroment = new Enviroment()
+    this.enviroment = this.globals
     this.statements = statements
   }
 

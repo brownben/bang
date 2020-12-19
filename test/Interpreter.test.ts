@@ -230,41 +230,6 @@ describe('inequalities can be calculated', () => {
   })
 })
 
-describe('print statments display result of expression', () => {
-  const originalConsoleLog = console.log
-
-  beforeAll(() => {
-    console.log = jest.fn()
-  })
-  afterAll(() => {
-    console.log = originalConsoleLog
-  })
-
-  it('should display literal values', () => {
-    execute('print 5')
-    expect(console.log).toHaveBeenLastCalledWith(5)
-    execute('print "hello world"')
-    expect(console.log).toHaveBeenLastCalledWith('hello world')
-    execute('print false')
-    expect(console.log).toHaveBeenLastCalledWith(false)
-    execute('print null')
-    expect(console.log).toHaveBeenLastCalledWith(null)
-  })
-
-  it('should display value of expressions', () => {
-    execute('print 5 + 5')
-    expect(console.log).toHaveBeenLastCalledWith(10)
-    execute('print 22 / 2')
-    expect(console.log).toHaveBeenLastCalledWith(11)
-    execute('print "hello " + "world"')
-    expect(console.log).toHaveBeenLastCalledWith('hello world')
-    execute('print false == 5 > 9')
-    expect(console.log).toHaveBeenLastCalledWith(true)
-    execute('print 5 * 5 - 9 == 8 * 2')
-    expect(console.log).toHaveBeenLastCalledWith(true)
-  })
-})
-
 describe('variables can be declared, assigned and read', () => {
   it('should declare values as null', () => {
     expectEnviroment('const a').toHaveValue('a', null)
@@ -434,7 +399,7 @@ b`)
 b`).toBe(10)
     execute(`let b = 10
       let b = 6
-      print b
+      print(b)
 b`)
     expect(console.log).toHaveBeenLastCalledWith(6)
   })
@@ -442,7 +407,7 @@ b`)
   it('should cope with setting a variable to a value in higher scope with the same name', () => {
     execute(`let a = 1
   let a = a + 2
-  print a`)
+  print(a)`)
     expect(console.log).toHaveBeenLastCalledWith(3)
   })
 })
@@ -576,7 +541,7 @@ describe('while statements execute correctly', () => {
     execute(`
 let a = 5
 while (a > 0)
-  print a
+  print(a)
   a = a - 1
 `)
     expect(console.log).toHaveBeenCalledTimes(5)
@@ -591,7 +556,7 @@ while (a > 0)
     execute(`
 let a = 5
 while (false)
-  print a
+  print(a)
   a = a - 1
 `)
     expect(console.log).not.toHaveBeenCalled()
@@ -661,5 +626,55 @@ a`)
 let a = null
 a *= 3
 a`)
+  })
+})
+
+describe('built-in functions work', () => {
+  describe('print functions', () => {
+    const originalConsoleLog = console.log
+
+    beforeEach(() => {
+      console.log = jest.fn()
+    })
+    afterEach(() => {
+      console.log = originalConsoleLog
+    })
+
+    it('should throw error if no arguments are passed', () => {
+      expectError('print(1, 2)')
+    })
+
+    it('should throw error if 2 arguments are passed', () => {
+      expectError('print()')
+    })
+
+    it('should display literal values', () => {
+      execute('print(5)')
+      expect(console.log).toHaveBeenLastCalledWith(5)
+      execute('print("hello world")')
+      expect(console.log).toHaveBeenLastCalledWith('hello world')
+      execute('print(false)')
+      expect(console.log).toHaveBeenLastCalledWith(false)
+      execute('print(null)')
+      expect(console.log).toHaveBeenLastCalledWith(null)
+    })
+
+    it('should display value of expressions', () => {
+      execute('print(5 + 5)')
+      expect(console.log).toHaveBeenLastCalledWith(10)
+      execute('print(22 / 2)')
+      expect(console.log).toHaveBeenLastCalledWith(11)
+      execute('print("hello " + "world")')
+      expect(console.log).toHaveBeenLastCalledWith('hello world')
+      execute('print(false == 5 > 9)')
+      expect(console.log).toHaveBeenLastCalledWith(true)
+      execute('print(5 * 5 - 9 == 8 * 2)')
+      expect(console.log).toHaveBeenLastCalledWith(true)
+    })
+
+    it('should have correct string representation value', () => {
+      execute('print(print)')
+      expect(console.log).toHaveBeenLastCalledWith('<function print>')
+    })
   })
 })

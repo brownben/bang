@@ -28,7 +28,6 @@ import {
   StmtBlock,
   StmtExpression,
   StmtIf,
-  StmtPrint,
   StmtVariable,
   StmtWhile
 } from './statements'
@@ -126,7 +125,6 @@ class Parser extends BaseParser {
   statement(): Stmt {
     if (this.match(TokenType.IF)) return this.ifStatement()
     if (this.match(TokenType.WHILE)) return this.whileStatement()
-    if (this.match(TokenType.PRINT)) return this.printStatement()
     if (this.match(TokenType.BLOCK_START)) return new StmtBlock(this.block())
 
     return this.expressionStatement()
@@ -203,15 +201,6 @@ class Parser extends BaseParser {
     const body = this.statement()
 
     return new StmtWhile(condition, body)
-  }
-
-  printStatement(): Stmt {
-    const value = this.expression()
-
-    if (this.peek()?.type !== TokenType.BLOCK_END)
-      this.assertToken(TokenType.NEW_LINE, 'Expect new line after value.')
-
-    return new StmtPrint(value)
   }
 
   expressionStatement(): Stmt {
