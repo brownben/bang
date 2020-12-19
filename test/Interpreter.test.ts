@@ -103,6 +103,33 @@ describe('mathematical operations can be calculated', () => {
     expectError(`false + 121`)
   })
 
+  it('should not subtract number and any other type', () => {
+    expectError(`1 - "2"`)
+    expectError(`"73" - 121`)
+    expectError(`1 - null`)
+    expectError(`null - 121`)
+    expectError(`1 - true`)
+    expectError(`false - 121`)
+  })
+
+  it('should not multiply number and any other type', () => {
+    expectError(`1 * "2"`)
+    expectError(`"73" * 121`)
+    expectError(`1 * null`)
+    expectError(`null * 121`)
+    expectError(`1 * true`)
+    expectError(`false * 121`)
+  })
+
+  it('should not divide number and any other type', () => {
+    expectError(`1 / "2"`)
+    expectError(`"73" / 121`)
+    expectError(`1 / null`)
+    expectError(`null / 121`)
+    expectError(`1 / true`)
+    expectError(`false / 121`)
+  })
+
   it('should throw error on divide by 0', () => {
     expectError('1 / 0')
     expectError('0 / 0')
@@ -219,6 +246,7 @@ describe('inequalities can be calculated', () => {
     expectError(`1 > "2"`)
     expectError(`"73" < 121`)
     expectError(`'1' >= null`)
+    expectError(`'1' <= 1`)
     expectError(`null <= "121"`)
     expectError(`'abcd' > true`)
     expectError(`false < 'efgr'`)

@@ -124,6 +124,17 @@ class Parser extends BaseParser {
     }
   }
 
+  declaration(): Stmt | null {
+    try {
+      if (this.match(...variableDeclarationTokens))
+        return this.variableDeclaration(this.previous())
+      else return this.statement()
+    } catch {
+      this.synchronize()
+      return null
+    }
+  }
+
   statement(): Stmt {
     if (this.match(TokenType.FUNCTION))
       return this.functionDeclaration('function')
@@ -143,17 +154,6 @@ class Parser extends BaseParser {
     }
     this.advance()
     return statements.filter(Boolean) as Stmt[]
-  }
-
-  declaration(): Stmt | null {
-    try {
-      if (this.match(...variableDeclarationTokens))
-        return this.variableDeclaration(this.previous())
-      else return this.statement()
-    } catch {
-      this.synchronize()
-      return null
-    }
   }
 
   functionDeclaration(kind: string): Stmt {
@@ -185,6 +185,20 @@ class Parser extends BaseParser {
     const functionBody = new ExprFunction(name, parameters, body)
 
     return new StmtVariable(name, true, functionBody)
+  }
+
+  returnStatement(): Stmt {
+    const keyword = this.previous()
+    let value: Expr | null = null
+
+    if (!this.check(TokenType.NEW_LINE, TokenType.BLOCK_END))
+      value = this.expression()
+
+    this.assertToken(
+      [TokenType.NEW_LINE, TokenType.BLOCK_END],
+      'Expect a new line after return value.'
+    )
+    return new StmtReturn(keyword, value)
   }
 
   variableDeclaration(initializerType: Token): Stmt {
@@ -239,21 +253,7 @@ class Parser extends BaseParser {
     return new StmtWhile(condition, body)
   }
 
-  returnStatement(): Stmt {
-    const keyword = this.previous()
-    let value: Expr | null = null
-
-    if (!this.check(TokenType.NEW_LINE, TokenType.BLOCK_END))
-      value = this.expression()
-
-    this.assertToken(
-      [TokenType.NEW_LINE, TokenType.BLOCK_END],
-      'Expect a new line after return value.'
-    )
-    return new StmtReturn(keyword, value)
-  }
-
-  expressionStatement(): Stmt {
+  expressionStatement(): StmtExpression {
     const expr = this.expression()
 
     this.assertToken(

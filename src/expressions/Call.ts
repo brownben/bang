@@ -2,8 +2,8 @@ import { Token } from '../Tokens'
 import { Expr } from './Expr'
 import { Literal, LiteralFunction } from '../literals'
 import { Enviroment } from '../Enviroment'
-import BangError from '../BangError'
 import { ReturnValue } from '../statements/Return'
+import BangError from '../BangError'
 
 export class ExprCall extends Expr {
   callee: Expr

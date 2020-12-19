@@ -7,9 +7,9 @@ export class LiteralNull extends Literal {
   value: string
   type = 'null'
 
-  constructor(value?: any, token?: Token) {
+  constructor(value?: string, token?: Token) {
     super()
-    this.value = token?.value ?? value?.toString() ?? ''
+    this.value = value ?? ''
     this.token = token
   }
 

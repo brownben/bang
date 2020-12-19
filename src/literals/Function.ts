@@ -1,5 +1,4 @@
-import { LiteralBoolean } from './Boolean'
-import { Literal } from './Literal'
+import { Literal, LiteralBoolean } from '.'
 import { Callable } from '../Callable'
 
 export class LiteralFunction extends Literal implements Callable {
