@@ -1,15 +1,9 @@
 import { Token } from '../Tokens'
 import { Expr } from '../expressions'
 import { Stmt } from './Stmt'
-import { Enviroment } from '../Enviroment'
 import { Literal, LiteralNull } from '../literals'
-
-export class ReturnValue {
-  value: Literal
-  constructor(value: Literal) {
-    this.value = value
-  }
-}
+import { ReturnValue } from '../ReturnValue'
+import { Enviroment } from '../Enviroment'
 
 export class StmtReturn extends Stmt {
   keyword: Token
