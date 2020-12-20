@@ -1,35 +1,11 @@
-import { Token, TokenType, Keywords } from './Tokens'
+import {
+  Token,
+  TokenType,
+  Keywords,
+  oneCharacterTokens,
+  twoCharacterTokens
+} from './Tokens'
 import BangError from './BangError'
-
-const oneCharacterTokens: { [key: string]: TokenType } = {
-  '!': TokenType.BANG,
-  '=': TokenType.EQUAL,
-  '<': TokenType.LESS,
-  '>': TokenType.GREATER,
-  '(': TokenType.LEFT_PAREN,
-  ')': TokenType.RIGHT_PAREN,
-  '{': TokenType.LEFT_BRACE,
-  '}': TokenType.RIGHT_BRACE,
-  '+': TokenType.PLUS,
-  '-': TokenType.MINUS,
-  '/': TokenType.SLASH,
-  '*': TokenType.STAR,
-  ',': TokenType.COMMA
-}
-
-const twoCharacterTokens: { [key: string]: TokenType } = {
-  '!=': TokenType.BANG_EQUAL,
-  '==': TokenType.EQUAL_EQUAL,
-  '<=': TokenType.LESS_EQUAL,
-  '>=': TokenType.GREATER_EQUAL,
-  '+=': TokenType.PLUS_EQUAL,
-  '-=': TokenType.MINUS_EQUAL,
-  '*=': TokenType.STAR_EQUAL,
-  '/=': TokenType.SLASH_EQUAL,
-  '**': TokenType.STAR_STAR,
-  '&&': TokenType.AND,
-  '||': TokenType.OR
-}
 
 const isDigit = (char: string): boolean => char >= '0' && char <= '9'
 const isAlpha = (char: string): boolean =>
@@ -69,7 +45,7 @@ class Tokenizer {
     this.getCurrentCharacter() === '\n' ||
     (this.getCurrentCharacter() === '.' && numberContents.includes('.')) ||
     (!isDigit(this.getCurrentCharacter()) &&
-      this.getCurrentCharacter() !== '.') ||
+      !['.', '_'].includes(this.getCurrentCharacter())) ||
     this.isEnd()
 
   getString() {
@@ -93,7 +69,7 @@ class Tokenizer {
     if (currentChar === '.' && !isDigit(this.getNextCharacter()))
       this.addToken(TokenType.DOT)
     else {
-      let numberContents = currentChar === '.' ? '0.' : currentChar
+      let numberContents: string = currentChar === '.' ? '0.' : currentChar
       this.currentPosition += 1
 
       while (!this.isEndOfNumber(numberContents))
@@ -101,6 +77,8 @@ class Tokenizer {
 
       if (numberContents[numberContents.length - 1] === '.')
         numberContents += '0'
+
+      numberContents = numberContents.replace(/_/g, '')
 
       this.currentPosition -= 1
       this.addToken(TokenType.NUMBER, numberContents)

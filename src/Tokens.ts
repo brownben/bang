@@ -96,6 +96,36 @@ export const Keywords = {
   fun: TokenType.FUNCTION
 } as { [key: string]: TokenType }
 
+export const oneCharacterTokens: { [key: string]: TokenType } = {
+  '!': TokenType.BANG,
+  '=': TokenType.EQUAL,
+  '<': TokenType.LESS,
+  '>': TokenType.GREATER,
+  '(': TokenType.LEFT_PAREN,
+  ')': TokenType.RIGHT_PAREN,
+  '{': TokenType.LEFT_BRACE,
+  '}': TokenType.RIGHT_BRACE,
+  '+': TokenType.PLUS,
+  '-': TokenType.MINUS,
+  '/': TokenType.SLASH,
+  '*': TokenType.STAR,
+  ',': TokenType.COMMA
+}
+
+export const twoCharacterTokens: { [key: string]: TokenType } = {
+  '!=': TokenType.BANG_EQUAL,
+  '==': TokenType.EQUAL_EQUAL,
+  '<=': TokenType.LESS_EQUAL,
+  '>=': TokenType.GREATER_EQUAL,
+  '+=': TokenType.PLUS_EQUAL,
+  '-=': TokenType.MINUS_EQUAL,
+  '*=': TokenType.STAR_EQUAL,
+  '/=': TokenType.SLASH_EQUAL,
+  '**': TokenType.STAR_STAR,
+  '&&': TokenType.AND,
+  '||': TokenType.OR
+}
+
 export const synchronizeTokens = [
   TokenType.CLASS,
   TokenType.LET,
