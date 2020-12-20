@@ -154,7 +154,7 @@ let a = "global"
     expect(console.log).toHaveBeenLastCalledWith('global')
   })
 
-  it('functions close over scope (with variable declaration)', () => {
+  it('should close scope over functions (with variable declaration)', () => {
     execute(`
 let a = "global"
 
@@ -166,6 +166,10 @@ let a = "global"
     expect(console.log).toHaveBeenCalledTimes(2)
     expect(console.log).toHaveBeenNthCalledWith(1, 'global')
     expect(console.log).toHaveBeenLastCalledWith('global')
+  })
+
+  it('should error on top level return', () => {
+    expectError('return 2')
   })
 })
 

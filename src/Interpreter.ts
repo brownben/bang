@@ -1,6 +1,8 @@
 import { Stmt, StmtResult } from './statements'
+import { ReturnValue } from './ReturnValue'
 import { Enviroment } from './Enviroment'
 import { defineBuiltInFunctions } from './library'
+import BangError from './BangError'
 
 export class Interpreter {
   private enviroment: Enviroment
@@ -14,8 +16,18 @@ export class Interpreter {
 
   run(): StmtResult[] {
     return this.statements.flatMap(statement =>
-      statement.execute(this.enviroment)
+      this.executeStatement(statement)
     )
+  }
+
+  executeStatement(statement: Stmt) {
+    try {
+      return statement.execute(this.enviroment)
+    } catch (error) {
+      if (error instanceof ReturnValue)
+        throw new BangError('No Top Level Return')
+      else throw error
+    }
   }
 
   getEnviroment(): Enviroment {
