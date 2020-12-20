@@ -20,10 +20,10 @@ export class ExprLogical extends Expr {
     const left = this.left.evaluate(enviroment)
     const right = this.right.evaluate(enviroment)
 
-    if (this.operator.type == TokenType.OR) {
+    if (this.operator.type === TokenType.OR) {
       if (left.isTruthy()) return left
       else return right
-    } else if (this.operator.type == TokenType.AND) {
+    } else if (this.operator.type === TokenType.AND) {
       if (left.isTruthy()) return right
       else return left
     } else

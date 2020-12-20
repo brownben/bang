@@ -1,5 +1,5 @@
 import { Token } from '../Tokens'
-import { Expr } from '.'
+import { Expr } from './Expr'
 import { Stmt, StmtBlock } from '../statements'
 import { Literal, LiteralNull, LiteralFunction } from '../literals'
 import { Enviroment } from '../Enviroment'

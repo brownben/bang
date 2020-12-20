@@ -129,7 +129,7 @@ class Tokenizer {
 
   getIndentationLevel() {
     let spaces = 0
-    while (this.getCurrentCharacter() == ' ') {
+    while (this.getCurrentCharacter() === ' ') {
       spaces += 1
       this.currentPosition += 1
       this.currentPositionInLine += 1

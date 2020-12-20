@@ -24,7 +24,7 @@ export class ExprCall extends Expr {
     )
 
     if (callee instanceof LiteralFunction) {
-      if (argument.length != callee.arity)
+      if (argument.length !== callee.arity)
         throw new BangError(
           `Expected ${callee.arity} arguments but got ${argument.length}`
         )
