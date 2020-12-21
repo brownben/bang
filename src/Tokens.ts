@@ -9,6 +9,7 @@ export enum TokenType {
   COMMA,
   DOT,
   SEMICOLON,
+  FAT_ARROW,
 
   // Operators
   PLUS,
@@ -50,7 +51,6 @@ export enum TokenType {
   FALSE,
   LET,
   CONST,
-  FUNCTION,
   RETURN,
   CLASS,
   SUPER,
@@ -92,8 +92,7 @@ export const Keywords = {
   return: TokenType.RETURN,
   class: TokenType.CLASS,
   super: TokenType.SUPER,
-  this: TokenType.THIS,
-  fun: TokenType.FUNCTION
+  this: TokenType.THIS
 } as { [key: string]: TokenType }
 
 export const oneCharacterTokens: { [key: string]: TokenType } = {
@@ -123,7 +122,8 @@ export const twoCharacterTokens: { [key: string]: TokenType } = {
   '/=': TokenType.SLASH_EQUAL,
   '**': TokenType.STAR_STAR,
   '&&': TokenType.AND,
-  '||': TokenType.OR
+  '||': TokenType.OR,
+  '=>': TokenType.FAT_ARROW
 }
 
 export const synchronizeTokens = [

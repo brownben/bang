@@ -2,19 +2,21 @@ import { Literal } from './Literal'
 import { LiteralBoolean } from './Boolean'
 import { Callable } from '../Callable'
 
+interface LiteralFunctionConstructor {
+  name?: string
+  arity: number
+  call: (argument: Literal[]) => Literal
+}
+
 export class LiteralFunction extends Literal implements Callable {
   token: undefined = undefined
   value: string = ''
   type = 'function'
-  name: string
+  name?: string
   arity: number
   call: (argument: Literal[]) => Literal
 
-  constructor(
-    name: string,
-    arity: number,
-    call: (argument: Literal[]) => Literal
-  ) {
+  constructor({ name, arity, call }: LiteralFunctionConstructor) {
     super()
     this.name = name
     this.arity = arity
@@ -22,7 +24,8 @@ export class LiteralFunction extends Literal implements Callable {
   }
 
   getValue(): string {
-    return `<function ${this.name}>`
+    if (this.name) return `<function ${this.name}>`
+    else return `<function>`
   }
 
   isTruthy(): boolean {

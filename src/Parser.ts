@@ -41,6 +41,10 @@ class BaseParser {
   tokens: Token[] = []
   source: string = ''
 
+  getToken(position: number): Token {
+    return this.tokens?.[position] ?? this.tokens[this.tokens.length - 1]
+  }
+
   peek(): Token {
     return this.tokens[this.current]
   }
@@ -88,8 +92,32 @@ class BaseParser {
     return false
   }
 
+  matchAtPoint(position: number, tokens: TokenType[]): boolean {
+    return tokens
+      .map((token, i) => this.getToken(position + i).type === token)
+      .every(Boolean)
+  }
+
   error(token: Token, message: string) {
     throw new BangError(message, this.source, token.line)
+  }
+
+  isTokenStartOfBlock(position: number) {
+    return [TokenType.EOF, ...synchronizeTokens].includes(
+      this.getToken(position).type
+    )
+  }
+
+  checkAhead(tokens: TokenType[], not?: TokenType): boolean {
+    let position = this.current + 1
+
+    while (!this.isTokenStartOfBlock(position)) {
+      if (this.getToken(position).type === not) return false
+      if (this.matchAtPoint(position, tokens)) return true
+      else position += 1
+    }
+
+    return false
   }
 }
 
@@ -136,8 +164,6 @@ class Parser extends BaseParser {
   }
 
   statement(): Stmt {
-    if (this.match(TokenType.FUNCTION))
-      return this.functionDeclaration('function')
     if (this.match(TokenType.IF)) return this.ifStatement()
     if (this.match(TokenType.WHILE)) return this.whileStatement()
     if (this.match(TokenType.RETURN)) return this.returnStatement()
@@ -156,42 +182,6 @@ class Parser extends BaseParser {
     return statements.filter(Boolean) as Stmt[]
   }
 
-  functionDeclaration(kind: string): Stmt {
-    const name: Token = this.assertToken(
-      TokenType.IDENTIFIER,
-      `Expect ${kind} name.`
-    )
-
-    this.assertToken(TokenType.LEFT_PAREN, `Expect '(' after ${kind} name.`)
-
-    const parameters: string[] = []
-
-    if (!this.check(TokenType.RIGHT_PAREN)) {
-      do {
-        if (parameters.length >= 255)
-          this.error(this.peek(), "Can't have more than 255 parameters.")
-
-        parameters.push(
-          this.assertToken(TokenType.IDENTIFIER, 'Expect parameter name.')
-            ?.value ?? '_'
-        )
-      } while (this.match(TokenType.COMMA))
-    }
-    this.assertToken(TokenType.RIGHT_PAREN, "Expect ')' after parameters.")
-    if (this.checkMultiple(TokenType.NEW_LINE, TokenType.BLOCK_START))
-      this.advance(2)
-
-    let functionBody: ExprFunction
-    if (this.previous().type === TokenType.BLOCK_START)
-      functionBody = new ExprFunction(name, parameters, this.block())
-    else
-      functionBody = new ExprFunction(name, parameters, [
-        new StmtReturn(this.peek(), this.expressionStatement().expression)
-      ])
-
-    return new StmtVariable(name, true, functionBody)
-  }
-
   returnStatement(): Stmt {
     const keyword = this.previous()
     let value: Expr | null = null
@@ -200,7 +190,7 @@ class Parser extends BaseParser {
       value = this.expression()
 
     this.assertToken(
-      [TokenType.NEW_LINE, TokenType.BLOCK_END],
+      [TokenType.NEW_LINE, TokenType.BLOCK_END, TokenType.EOF],
       'Expect a new line after return value.'
     )
     return new StmtReturn(keyword, value)
@@ -218,10 +208,12 @@ class Parser extends BaseParser {
       initializer = this.expression()
     }
 
-    this.assertToken(
-      [TokenType.NEW_LINE, TokenType.BLOCK_END],
-      'Expect a new line after variable declaration.'
-    )
+    if (!(initializer instanceof ExprFunction))
+      this.assertToken(
+        [TokenType.NEW_LINE, TokenType.BLOCK_END, TokenType.EOF],
+        'Expect a new line after variable declaration.'
+      )
+
     return new StmtVariable(name, constant, initializer)
   }
 
@@ -262,7 +254,7 @@ class Parser extends BaseParser {
     const expr = this.expression()
 
     this.assertToken(
-      [TokenType.NEW_LINE, TokenType.BLOCK_END],
+      [TokenType.NEW_LINE, TokenType.BLOCK_END, TokenType.EOF],
       'Expect a new line after expression.'
     )
     return new StmtExpression(expr)
@@ -398,10 +390,16 @@ class Parser extends BaseParser {
   }
 
   call(): Expr {
-    let expr: Expr = this.primary()
-
+    let expr: Expr = this.functionExpression()
     while (true) {
-      if (this.match(TokenType.LEFT_PAREN)) {
+      if (
+        this.check(TokenType.LEFT_PAREN) &&
+        !this.checkAhead(
+          [TokenType.RIGHT_PAREN, TokenType.FAT_ARROW],
+          TokenType.LEFT_PAREN
+        )
+      ) {
+        this.advance()
         expr = this.finishCall(expr)
       } else break
     }
@@ -426,6 +424,44 @@ class Parser extends BaseParser {
     )
 
     return new ExprCall(callee, paren, parameters)
+  }
+
+  functionExpression(): Expr {
+    if (
+      !this.check(TokenType.LEFT_PAREN) ||
+      !this.checkAhead(
+        [TokenType.RIGHT_PAREN, TokenType.FAT_ARROW],
+        TokenType.LEFT_PAREN
+      )
+    )
+      return this.primary()
+
+    this.advance()
+    const parameters: string[] = []
+    if (!this.check(TokenType.RIGHT_PAREN)) {
+      do {
+        if (parameters.length >= 255)
+          this.error(this.peek(), "Can't have more than 255 parameters.")
+
+        parameters.push(
+          this.assertToken(TokenType.IDENTIFIER, 'Expect parameter name.')
+            ?.value ?? '_'
+        )
+      } while (this.match(TokenType.COMMA))
+    }
+    this.assertToken(TokenType.RIGHT_PAREN, "Expect ')' after parameters.")
+    this.assertToken(TokenType.FAT_ARROW, "Expect '=>' after parameters.")
+
+    if (this.checkMultiple(TokenType.NEW_LINE, TokenType.BLOCK_START))
+      this.advance(2)
+
+    if (this.previous().type === TokenType.BLOCK_START)
+      return new ExprFunction(parameters, this.block())
+    else {
+      return new ExprFunction(parameters, [
+        new StmtReturn(this.peek(), this.expression())
+      ])
+    }
   }
 
   primary(): Expr {

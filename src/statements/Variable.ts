@@ -1,5 +1,5 @@
 import { Token } from '../Tokens'
-import { Expr } from '../expressions'
+import { Expr, ExprFunction } from '../expressions'
 import { Stmt } from './Stmt'
 import { Literal, LiteralNull } from '../literals'
 import { Enviroment } from '../Enviroment'
@@ -18,7 +18,10 @@ export class StmtVariable extends Stmt {
 
   execute(enviroment: Enviroment): null {
     let value: Literal = new LiteralNull()
-    if (this.expression) value = this.expression.evaluate(enviroment)
+    if (this.expression instanceof ExprFunction)
+      value = this.expression.evaluate(enviroment, this.name)
+    else if (this.expression) value = this.expression.evaluate(enviroment)
+
     enviroment.define(this.name, this.constant, value)
     return null
   }

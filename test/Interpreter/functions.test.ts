@@ -10,24 +10,24 @@ describe('functions work', () => {
     console.log = originalConsoleLog
   })
 
-  it('should declare and run function of 2 variables', () => {
+  it('should declare and run functions of 2 variables', () => {
+    expectOutput(`
+let sayHi = (first, last) =>
+  return "Hi, " + first + " " + last + "!"
+
+sayHi("Dear", "Reader")
+    `).toBe('Hi, Dear Reader!')
+  })
+
+  it('should declare and run function of 3 variables', () => {
     expectOutput(
       `
-fun add(a, b, c)
+let add = (a, b, c) =>
   return a + b + c
 
 add(1, 2, 3)
 `
     ).toBe(6)
-  })
-
-  it('should declare and run functions of 3 variables', () => {
-    expectOutput(`
-fun sayHi(first, last)
-  return "Hi, " + first + " " + last + "!"
-
-sayHi("Dear", "Reader")
-    `).toBe('Hi, Dear Reader!')
   })
 
   it('should class functions as values', () => {
@@ -38,7 +38,7 @@ a`).toBe('<function print>')
 
   it('should not execute statements after return', () => {
     expectOutput(`
-fun function()
+let function = () =>
   return 1
   let a = 2
   return 2
@@ -48,12 +48,12 @@ function()`).toBe(1)
 
   it('should return null if no return', () => {
     expectOutput(`
-fun function()
+let function = () =>
   let a = 7
 
 function()`).toBe(null)
     expectOutput(`
-fun function()
+let function = () =>
   let a = 7
 
 type(function())`).toBe('null')
@@ -61,16 +61,16 @@ type(function())`).toBe('null')
 
   it('should cope with inline functions', () => {
     expectOutput(`
-fun add(a,b) a + b
+const add = (a,b) => a + b
 
 add(2,3)`).toBe(5)
   })
 
   it('should work with closures', () => {
     const enviroment = expectEnviroment(`
-fun makeCounter()
+let makeCounter = () =>
   let i = 0
-  fun count()
+  let count = () =>
     i += 1
     return i
 
@@ -87,7 +87,7 @@ let b = counter()`)
 
   it('should execute a simple recursive loop', () => {
     execute(`
-fun count(n)
+let count = (n) =>
   if (n > 1) count(n - 1)
   print(n)
 
@@ -101,37 +101,37 @@ count(3)`)
 
   it('should calculate recursive fibonnaci', () => {
     expectOutput(`
-fun fib(n)
+let fib = (n) =>
   if (n <= 1) return 1
   return fib(n - 2) + fib(n - 1)
 
 fib(1)`).toBe(1)
     expectOutput(`
-fun fib(n)
+let fib = (n) =>
   if (n <= 1) return 1
   return fib(n - 2) + fib(n - 1)
 
 fib(2)`).toBe(2)
     expectOutput(`
-fun fib(n)
+let fib = (n) =>
   if (n <= 1) return 1
   return fib(n - 2) + fib(n - 1)
 
 fib(3)`).toBe(3)
     expectOutput(`
-fun fib(n)
+let fib = (n) =>
   if (n <= 1) return 1
   return fib(n - 2) + fib(n - 1)
 
 fib(4)`).toBe(5)
     expectOutput(`
-fun fib(n)
+let fib = (n) =>
   if (n <= 1) return 1
   return fib(n - 2) + fib(n - 1)
 
 fib(5)`).toBe(8)
     expectOutput(`
-fun fib(n)
+let fib = (n) =>
   if (n <= 1) return 1
   return fib(n - 2) + fib(n - 1)
 
@@ -142,7 +142,7 @@ fib(6)`).toBe(13)
     execute(`
 let a = "global"
 
-  fun showA()
+  let showA = () =>
     print(a)
 
   showA()
@@ -158,7 +158,7 @@ let a = "global"
     execute(`
 let a = "global"
 
-  fun showA()
+  let showA = () =>
     print(a)
   showA()
   let a = "block"
@@ -170,6 +170,24 @@ let a = "global"
 
   it('should error on top level return', () => {
     expectError('return 2')
+  })
+
+  it('should execute immediately invoked functions', () => {
+    execute(`((a) => print(a))('hello')`)
+    expect(console.log).toHaveBeenLastCalledWith('hello')
+  })
+
+  it('should not give a name to anonomous functions', () => {
+    execute('print((a,b) => a + b)')
+    expect(console.log).toHaveBeenLastCalledWith('<function>')
+  })
+
+  it('should calculate equality for functions', () => {
+    expectOutput('print == print').toBe(true)
+    expectOutput('print != print').toBe(false)
+    expectOutput('print != (a) => print(a)').toBe(true)
+    expectOutput('print == (a) => print(a)').toBe(false)
+    expectOutput('((a) => a * a) == ((a) => a * a)').toBe(false)
   })
 })
 
@@ -219,6 +237,15 @@ describe('built-in functions work', () => {
     it('should have correct string representation value', () => {
       execute('print(print)')
       expect(console.log).toHaveBeenLastCalledWith('<function print>')
+    })
+
+    it('should allow callbacks to be used', () => {
+      expectOutput(`
+let add = (a,b) => a + b
+let doOperation = (a,b, operation) => operation(a,b)
+
+doOperation(2,3,add)
+`).toBe(5)
     })
   })
 
