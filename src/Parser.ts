@@ -19,6 +19,7 @@ import {
   ExprBinary,
   ExprCall,
   ExprFunction,
+  ExprGet,
   ExprGrouping,
   ExprLiteral,
   ExprLogical,
@@ -184,20 +185,6 @@ class Parser extends BaseParser {
     return statements.filter(Boolean) as Stmt[]
   }
 
-  returnStatement(): Stmt {
-    const keyword = this.previous()
-    let value: Expr | null = null
-
-    if (!this.check(TokenType.NEW_LINE, TokenType.BLOCK_END))
-      value = this.expression()
-
-    this.assertToken(
-      [TokenType.NEW_LINE, TokenType.BLOCK_END, TokenType.EOF],
-      'Expect a new line after return value.'
-    )
-    return new StmtReturn(keyword, value)
-  }
-
   variableDeclaration(initializerType: Token): Stmt {
     const constant = initializerType.type === TokenType.CONST
     const name: Token = this.assertToken(
@@ -250,6 +237,20 @@ class Parser extends BaseParser {
     const body = this.statement()
 
     return new StmtWhile(condition, body)
+  }
+
+  returnStatement(): Stmt {
+    const keyword = this.previous()
+    let value: Expr | null = null
+
+    if (!this.check(TokenType.NEW_LINE, TokenType.BLOCK_END))
+      value = this.expression()
+
+    this.assertToken(
+      [TokenType.NEW_LINE, TokenType.BLOCK_END, TokenType.EOF],
+      'Expect a new line after return value.'
+    )
+    return new StmtReturn(keyword, value)
   }
 
   expressionStatement(): StmtExpression {
@@ -403,6 +404,12 @@ class Parser extends BaseParser {
       ) {
         this.advance()
         expr = this.finishCall(expr)
+      } else if (this.match(TokenType.DOT)) {
+        const name = this.assertToken(
+          TokenType.IDENTIFIER,
+          'Expect property name after "."'
+        )
+        expr = new ExprGet(name, expr)
       } else break
     }
 

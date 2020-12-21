@@ -4,7 +4,8 @@ import {
   Keywords,
   oneCharacterTokens,
   twoCharacterTokens,
-  assumeNewLineTokens
+  assumeNewLineTokens,
+  unacceptableLineStartCharacters
 } from './Tokens'
 import BangError from './BangError'
 
@@ -142,8 +143,9 @@ class Tokenizer extends BaseTokeniser {
   addNewLine() {
     if (
       assumeNewLineTokens.includes(this.getLastToken()?.type) &&
-      this.expressionLevel <= 0 &&
-      this.getNextNonWhitespaceCharacter() !== '('
+      !unacceptableLineStartCharacters.includes(
+        this.getNextNonWhitespaceCharacter()
+      )
     ) {
       this.addToken(TokenType.NEW_LINE)
       this.currentPositionInLine = 0

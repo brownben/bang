@@ -1,6 +1,9 @@
 import { Token } from '../Tokens'
-import { LiteralBoolean } from './Boolean'
 import { Literal } from './Literal'
+import { LiteralBoolean } from './Boolean'
+import { LiteralFunction } from './Function'
+import { LiteralString } from './String'
+import { LiteralNumber } from './Number'
 
 export class LiteralNull extends Literal {
   token: Token | undefined
@@ -30,5 +33,27 @@ export class LiteralNull extends Literal {
     return new LiteralBoolean(
       this.value !== value.value || this.type !== value.type
     )
+  }
+
+  builtInProperties(): { [property: string]: Literal } {
+    return {
+      toBoolean: new LiteralFunction({
+        name: 'toBoolean',
+        arity: 0,
+        call: () => new LiteralBoolean(false)
+      }),
+
+      toNumber: new LiteralFunction({
+        name: 'toNumber',
+        arity: 0,
+        call: () => new LiteralNumber(0)
+      }),
+
+      toString: new LiteralFunction({
+        name: 'toString',
+        arity: 0,
+        call: () => new LiteralString('null')
+      })
+    }
   }
 }

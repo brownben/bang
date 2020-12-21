@@ -1,5 +1,6 @@
 import { Literal } from './Literal'
 import { LiteralBoolean } from './Boolean'
+import { LiteralString } from './String'
 import { Callable } from '../Callable'
 
 interface LiteralFunctionConstructor {
@@ -12,6 +13,7 @@ export class LiteralFunction extends Literal implements Callable {
   token: undefined = undefined
   value: string = ''
   type = 'function'
+
   name?: string
   arity: number
   call: (argument: Literal[]) => Literal
@@ -41,5 +43,21 @@ export class LiteralFunction extends Literal implements Callable {
     return new LiteralBoolean(
       !(value instanceof LiteralFunction) || this.call !== value.call
     )
+  }
+
+  builtInProperties(): { [property: string]: Literal } {
+    return {
+      toString: new LiteralFunction({
+        name: 'toString',
+        arity: 0,
+        call: () => new LiteralString(this.getValue())
+      }),
+
+      toBoolean: new LiteralFunction({
+        name: 'toBoolean',
+        arity: 0,
+        call: () => new LiteralBoolean(true)
+      })
+    }
   }
 }

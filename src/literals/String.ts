@@ -1,6 +1,8 @@
 import { Token } from '../Tokens'
 import { Literal } from './Literal'
 import { LiteralBoolean } from './Boolean'
+import { LiteralFunction } from './Function'
+import { LiteralNumber } from './Number'
 import BangError from '../BangError'
 
 export class LiteralString extends Literal {
@@ -73,5 +75,33 @@ export class LiteralString extends Literal {
       throw new BangError(
         `No Operation "<=" on type "${this.type}" and type "${value.type}`
       )
+  }
+
+  builtInProperties(): { [property: string]: Literal } {
+    return {
+      length: new LiteralNumber(this.value.length),
+
+      toBoolean: new LiteralFunction({
+        name: 'toBoolean',
+        arity: 0,
+        call: () => new LiteralBoolean(this.value !== '')
+      }),
+
+      toNumber: new LiteralFunction({
+        name: 'toNumber',
+        arity: 0,
+        call: () => {
+          const asNumber = Number(this.value.replace(/_/g, ''))
+          if (!Number.isNaN(asNumber)) return new LiteralNumber(asNumber)
+          else throw new BangError(`Can't convert "${this.value}" to a number`)
+        }
+      }),
+
+      toString: new LiteralFunction({
+        name: 'toString',
+        arity: 0,
+        call: () => new LiteralString(this.value)
+      })
+    }
   }
 }

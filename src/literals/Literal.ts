@@ -8,11 +8,21 @@ export abstract class Literal {
   abstract type: string
 
   abstract getValue(): string | number | boolean | null
+  abstract isTruthy(): boolean
 
+  abstract builtInProperties(): { [property: string]: Literal }
+  getBuiltInProperty(property: string): Literal {
+    const value = this.builtInProperties()?.[property]
+    if (value) return value
+    else
+      throw new BangError(
+        `Property ${property} doesn't exists on type "${this.type}"`
+      )
+  }
+
+  // comparisons
   abstract equals(value: Literal): LiteralBoolean
   abstract notEquals(value: Literal): LiteralBoolean
-
-  abstract isTruthy(): boolean
 
   greaterThan(value: Literal): Literal {
     throw new BangError(
@@ -35,6 +45,7 @@ export abstract class Literal {
     )
   }
 
+  // unary operations
   not(): Literal {
     throw new BangError(`No Operation "!" on type "${this.type}"`)
   }
@@ -42,6 +53,7 @@ export abstract class Literal {
     throw new BangError(`No Operation "-" on type "${this.type}"`)
   }
 
+  // binary operations
   plus(value: Literal): Literal {
     throw new BangError(
       `No Operation "+" on type "${this.type}" and type "${value.type}"`

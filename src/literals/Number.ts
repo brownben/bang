@@ -1,6 +1,8 @@
 import { Token } from '../Tokens'
 import { Literal } from './Literal'
 import { LiteralBoolean } from './Boolean'
+import { LiteralFunction } from './Function'
+import { LiteralString } from './String'
 import BangError from '../BangError'
 
 export class LiteralNumber extends Literal {
@@ -111,5 +113,27 @@ export class LiteralNumber extends Literal {
 
   negative(): LiteralNumber {
     return new LiteralNumber(-this.getValue())
+  }
+
+  builtInProperties(): { [property: string]: Literal } {
+    return {
+      toBoolean: new LiteralFunction({
+        name: 'toBoolean',
+        arity: 0,
+        call: () => new LiteralBoolean(this.getValue() !== 0)
+      }),
+
+      toNumber: new LiteralFunction({
+        name: 'toNumber',
+        arity: 0,
+        call: () => new LiteralNumber(this.value)
+      }),
+
+      toString: new LiteralFunction({
+        name: 'toString',
+        arity: 0,
+        call: () => new LiteralString(this.value)
+      })
+    }
   }
 }

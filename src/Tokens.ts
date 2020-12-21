@@ -169,6 +169,8 @@ export const assumeNewLineTokens = [
   TokenType.BLOCK_END
 ]
 
+export const unacceptableLineStartCharacters = [')', '.', ',', '*', '/', '+']
+
 export const getAssignmentOperator = (operator: Token): Token => {
   if (operator.type === TokenType.PLUS_EQUAL)
     return { type: TokenType.PLUS, line: operator.line }
