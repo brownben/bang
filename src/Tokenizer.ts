@@ -25,7 +25,7 @@ class BaseTokeniser {
   currentPositionInLine: number = 0
 
   addToken(type: TokenType, value?: string): void {
-    this.tokens.push({ type, value, line: this.currentLine })
+    this.tokens.push({ type: type, value: value, line: this.currentLine })
   }
 
   getLastToken(): Token {
@@ -73,6 +73,11 @@ class Tokenizer extends BaseTokeniser {
     if (this.isEnd()) return true
     else if (this.getCurrentCharacter() === '\n') return true
     else if (this.getCurrentCharacter() === '.' && numberContents.includes('.'))
+      return true
+    else if (
+      this.getCurrentCharacter() === '.' &&
+      !isDigit(this.getNextCharacter())
+    )
       return true
     else if (
       !isDigit(this.getCurrentCharacter()) &&
@@ -126,7 +131,11 @@ class Tokenizer extends BaseTokeniser {
       identifierString += this.moveToNextCharacter()
 
     this.currentPosition -= 1
-    if (Keywords[identifierString]) this.addToken(Keywords[identifierString])
+    if (
+      Keywords[identifierString] &&
+      typeof Keywords[identifierString] !== 'function'
+    )
+      this.addToken(Keywords[identifierString])
     else this.addToken(TokenType.IDENTIFIER, identifierString)
   }
 

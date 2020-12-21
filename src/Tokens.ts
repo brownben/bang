@@ -38,6 +38,9 @@ export enum TokenType {
   IDENTIFIER,
   STRING,
   NUMBER,
+  TRUE,
+  FALSE,
+  NULL,
 
   // Keywords.
   AND,
@@ -46,9 +49,6 @@ export enum TokenType {
   ELSE,
   WHILE,
   FOR,
-  NULL,
-  TRUE,
-  FALSE,
   LET,
   CONST,
   RETURN,

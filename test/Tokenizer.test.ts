@@ -80,7 +80,7 @@ describe('identifies tokens', () => {
     expectTokens(` 2   `, [{ type: TokenType.NUMBER, value: '2' }])
     expectTokens(`.5`, [{ type: TokenType.NUMBER, value: '0.5' }])
     expectTokens(`7.56`, [{ type: TokenType.NUMBER, value: '7.56' }])
-    expectTokens(`9.`, [{ type: TokenType.NUMBER, value: '9.0' }])
+    expectTokens(`9.0`, [{ type: TokenType.NUMBER, value: '9.0' }])
   })
 
   it('should identify dots and commas', () => {
