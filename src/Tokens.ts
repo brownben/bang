@@ -155,6 +155,20 @@ export const assignmentOperatorTokens = [
   TokenType.SLASH_EQUAL
 ]
 
+export const assumeNewLineTokens = [
+  TokenType.RIGHT_PAREN,
+  TokenType.IDENTIFIER,
+  TokenType.STRING,
+  TokenType.NUMBER,
+  TokenType.TRUE,
+  TokenType.FALSE,
+  TokenType.NULL,
+  TokenType.FAT_ARROW,
+  TokenType.RETURN,
+  TokenType.NEW_LINE,
+  TokenType.BLOCK_END
+]
+
 export const getAssignmentOperator = (operator: Token): Token => {
   if (operator.type === TokenType.PLUS_EQUAL)
     return { type: TokenType.PLUS, line: operator.line }

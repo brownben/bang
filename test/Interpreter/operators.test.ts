@@ -206,6 +206,20 @@ describe('inequalities can be calculated', () => {
     expectError(`false > true`)
     expectError(`false < null`)
   })
+
+  it('should compute calulations across multiple lines', () => {
+    expectOutput(`1 +
+    2`).toEqual(3)
+    expectOutput(`(1 + 1
+     +2)`).toEqual(4)
+    expectOutput(`7 + 3 *
+    21 +
+      2`).toEqual(72)
+    expectOutput(`(7 + 3
+        *
+      21 +
+        2)`).toEqual(72)
+  })
 })
 
 describe('assigment operators compute correct value', () => {

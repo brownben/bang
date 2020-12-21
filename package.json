@@ -14,7 +14,7 @@
   },
   "scripts": {
     "start": "tsdx watch",
-    "lint": "tsdx lint",
+    "lint": "tsdx lint src test",
     "test": "tsdx test",
     "build": "tsdx build"
   },

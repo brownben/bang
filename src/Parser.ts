@@ -157,7 +157,9 @@ class Parser extends BaseParser {
       if (this.match(...variableDeclarationTokens))
         return this.variableDeclaration(this.previous())
       else return this.statement()
-    } catch {
+    } catch (error) {
+      if (error instanceof BangError) throw error
+
       this.synchronize()
       return null
     }

@@ -30,6 +30,49 @@ add(1, 2, 3)
     ).toBe(6)
   })
 
+  it('should accept paramters and arguments across multiple lines', () => {
+    expectOutput(
+      `
+let add = (
+  a,
+  b,
+  c
+) =>
+  return a + b + c
+
+add(1, 2, 3)
+`
+    ).toBe(6)
+    expectOutput(
+      `
+let add = (a, b, c ) =>
+  return a + b + c
+
+add(
+  1,
+  2,
+  3
+)
+`
+    ).toBe(6)
+    expectOutput(
+      `
+let add = (
+  a,
+  b,
+  c
+) =>
+  return a + b + c
+
+add(
+  1,
+  2,
+  3
+)
+`
+    ).toBe(6)
+  })
+
   it('should class functions as values', () => {
     expectOutput(`
 let a = print

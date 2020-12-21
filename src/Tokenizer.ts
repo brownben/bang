@@ -3,7 +3,8 @@ import {
   TokenType,
   Keywords,
   oneCharacterTokens,
-  twoCharacterTokens
+  twoCharacterTokens,
+  assumeNewLineTokens
 } from './Tokens'
 import BangError from './BangError'
 
@@ -13,40 +14,73 @@ const isAlpha = (char: string): boolean =>
 const isAlphaNumeric = (char: string): boolean => isAlpha(char) || isDigit(char)
 const isBlank = (char: string): boolean => [' ', '\t', '\r'].includes(char)
 
-class Tokenizer {
+class BaseTokeniser {
   source: string = ''
   tokens: Token[] = []
 
   blockLevel: number = 0
+  expressionLevel: number = 0
   currentPosition: number = 0
   currentLine: number = 1
   currentPositionInLine: number = 0
 
-  addToken = (type: TokenType, value?: string) =>
+  addToken(type: TokenType, value?: string): void {
     this.tokens.push({ type, value, line: this.currentLine })
+  }
 
-  getCurrentCharacter = (): string => this.source[this.currentPosition]
-  getNextCharacter = (): string => this.source[this.currentPosition + 1]
-  moveToNextCharacter = (): string => {
+  getLastToken(): Token {
+    return this.tokens[this.tokens.length - 1]
+  }
+
+  getCurrentCharacter(): string {
+    return this.source[this.currentPosition]
+  }
+  getNextCharacter(): string {
+    return this.source[this.currentPosition + 1]
+  }
+  getNextNonWhitespaceCharacter(): string {
+    let position = this.currentPosition + 1
+    while (isBlank(this.source[position])) position += 1
+    return this.source[position]
+  }
+  moveToNextCharacter(): string {
     const current = this.getCurrentCharacter()
     this.currentPosition += 1
     return current
   }
+
   goToNextLine() {
     while (this.getNextCharacter() !== '\n') this.currentPosition += 1
   }
 
-  isEnd = (): boolean => this.currentPosition >= this.source.length
-  isEndOfString = (multiline: boolean, openingChar: string) =>
-    (!multiline && this.getCurrentCharacter() === '\n') ||
-    this.getCurrentCharacter() === openingChar ||
-    this.isEnd()
-  isEndOfNumber = (numberContents: string) =>
-    this.getCurrentCharacter() === '\n' ||
-    (this.getCurrentCharacter() === '.' && numberContents.includes('.')) ||
-    (!isDigit(this.getCurrentCharacter()) &&
-      !['.', '_'].includes(this.getCurrentCharacter())) ||
-    this.isEnd()
+  isEnd(): boolean {
+    return this.currentPosition >= this.source.length
+  }
+
+  constructError(message: string) {
+    return new BangError(message, this.source, this.currentLine)
+  }
+}
+
+class Tokenizer extends BaseTokeniser {
+  isEndOfString(multiline: boolean, openingChar: string) {
+    if (this.isEnd()) return true
+    else if (this.getCurrentCharacter() === openingChar) return true
+    else if (!multiline && this.getCurrentCharacter() === '\n') return true
+    else return false
+  }
+  isEndOfNumber(numberContents: string) {
+    if (this.isEnd()) return true
+    else if (this.getCurrentCharacter() === '\n') return true
+    else if (this.getCurrentCharacter() === '.' && numberContents.includes('.'))
+      return true
+    else if (
+      !isDigit(this.getCurrentCharacter()) &&
+      !['.', '_'].includes(this.getCurrentCharacter())
+    )
+      return true
+    else return false
+  }
 
   getString() {
     const openingChar = this.getCurrentCharacter()
@@ -97,13 +131,17 @@ class Tokenizer {
   }
 
   addNewLine() {
-    this.addToken(TokenType.NEW_LINE)
-    this.currentLine += 1
-    this.currentPositionInLine = 0
-  }
+    if (
+      assumeNewLineTokens.includes(this.getLastToken()?.type) &&
+      this.expressionLevel <= 0 &&
+      this.getNextNonWhitespaceCharacter() !== '('
+    ) {
+      this.addToken(TokenType.NEW_LINE)
+      this.currentPositionInLine = 0
+    }
 
-  constructError = (message: string) =>
-    new BangError(message, this.source, this.currentLine)
+    this.currentLine += 1
+  }
 
   getIndentationLevel() {
     let spaces = 0
@@ -154,23 +192,27 @@ class Tokenizer {
     else if (!isBlank(char) && !this.isEnd())
       throw this.constructError(`Unidentified Character`)
 
+    if (char === '(') this.expressionLevel += 1
+    else if (char === ')') this.expressionLevel -= 1
+
     if (Object.keys(twoCharacterTokens).includes(twoChar)) {
       this.currentPositionInLine += 2
       this.currentPosition += 2
-    } else if (char !== '\n') {
+    } else if (char !== '\n' && twoChar !== '//') {
       this.currentPositionInLine += 1
       this.currentPosition += 1
-    } else {
+    } else if (twoChar !== '//') {
       this.currentPosition += 1
     }
   }
 
   constructor(source: string) {
+    super()
     this.source = source
     while (!this.isEnd()) this.scanSource()
 
     this.closeAllBlocks()
-    if (this.tokens[this.tokens.length - 1]?.type !== TokenType.NEW_LINE)
+    if (this.getLastToken()?.type !== TokenType.NEW_LINE)
       this.addToken(TokenType.NEW_LINE)
 
     this.addToken(TokenType.EOF)

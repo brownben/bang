@@ -18,7 +18,6 @@ export class StmtReturn extends Stmt {
   execute(enviroment: Enviroment): null {
     let value: Literal = new LiteralNull()
     if (this.value !== null) value = this.value.evaluate(enviroment)
-
     throw new ReturnValue(value)
   }
 }
