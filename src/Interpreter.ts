@@ -1,5 +1,5 @@
 import { Stmt, StmtResult } from './statements'
-import { ReturnValue } from './ReturnValue'
+import { ReturnValue } from './literals'
 import { Enviroment } from './Enviroment'
 import { defineBuiltInFunctions } from './library'
 import BangError from './BangError'

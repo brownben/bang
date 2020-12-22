@@ -1,8 +1,7 @@
 import { Token } from '../tokens'
 import { Expr } from '../expressions'
 import { Stmt } from './Stmt'
-import { Literal, LiteralNull } from '../literals'
-import { ReturnValue } from '../ReturnValue'
+import { Literal, LiteralNull, ReturnValue } from '../literals'
 import { Enviroment } from '../Enviroment'
 
 export class StmtReturn extends Stmt {

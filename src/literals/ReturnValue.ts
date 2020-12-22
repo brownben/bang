@@ -1,4 +1,4 @@
-import { Literal } from './literals'
+import { Literal } from './Literal'
 
 export class ReturnValue {
   value: Literal

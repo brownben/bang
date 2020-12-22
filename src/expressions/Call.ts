@@ -1,7 +1,6 @@
 import { Token } from '../tokens'
 import { Expr } from './Expr'
-import { Literal, LiteralFunction } from '../literals'
-import { ReturnValue } from '../ReturnValue'
+import { Literal, LiteralFunction, ReturnValue } from '../literals'
 import { Enviroment } from '../Enviroment'
 import BangError from '../BangError'
 

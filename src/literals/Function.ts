@@ -1,7 +1,7 @@
 import { Literal } from './Literal'
 import { LiteralBoolean } from './Boolean'
 import { LiteralString } from './String'
-import { Callable } from '../Callable'
+import { Callable } from './Callable'
 
 interface LiteralFunctionConstructor {
   name?: string
