@@ -1,5 +1,6 @@
 import { Token } from '../tokens'
 import { PrimitiveBoolean } from './Boolean'
+import { BuiltInPropertyVisitor } from './builtInProperties'
 import BangError from '../BangError'
 
 export abstract class Primitive {
@@ -10,15 +11,9 @@ export abstract class Primitive {
   abstract getValue(): string | number | boolean | null
   abstract isTruthy(): boolean
 
-  abstract builtInProperties(): { [property: string]: Primitive }
-  getBuiltInProperty(property: string): Primitive {
-    const value = this.builtInProperties()?.[property]
-    if (value) return value
-    else
-      throw new BangError(
-        `Property ${property} doesn't exists on type "${this.type}"`
-      )
-  }
+  abstract builtInProperties(
+    visitor: BuiltInPropertyVisitor
+  ): Record<string, Primitive>
 
   // comparisons
   abstract equals(value: Primitive): PrimitiveBoolean

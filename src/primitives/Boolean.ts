@@ -1,8 +1,6 @@
 import { Token } from '../tokens'
 import { Primitive } from './Primitive'
-import { PrimitiveFunction } from './Function'
-import { PrimitiveNumber } from './Number'
-import { PrimitiveString } from './String'
+import { BuiltInPropertyVisitor } from './builtInProperties'
 
 export class PrimitiveBoolean extends Primitive {
   token: Token | undefined
@@ -38,28 +36,9 @@ export class PrimitiveBoolean extends Primitive {
     return new PrimitiveBoolean(!this.getValue())
   }
 
-  builtInProperties(): { [property: string]: Primitive } {
-    return {
-      toBoolean: new PrimitiveFunction({
-        name: 'toBoolean',
-        arity: 0,
-        call: () => new PrimitiveBoolean(this.value)
-      }),
-
-      toNumber: new PrimitiveFunction({
-        name: 'toNumber',
-        arity: 0,
-        call: () => {
-          if (this.getValue()) return new PrimitiveNumber(1)
-          else return new PrimitiveNumber(0)
-        }
-      }),
-
-      toString: new PrimitiveFunction({
-        name: 'toString',
-        arity: 0,
-        call: () => new PrimitiveString(this.value)
-      })
-    }
+  builtInProperties(
+    visitor: BuiltInPropertyVisitor
+  ): Record<string, Primitive> {
+    return visitor.visitBoolean(this)
   }
 }

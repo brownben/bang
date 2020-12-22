@@ -2,6 +2,8 @@ import { Token } from '../tokens'
 import { Expr } from './Expr'
 import { Primitive } from '../primitives'
 import { Enviroment } from '../Enviroment'
+import { BuiltInPropertyVisitor } from '../primitives/builtInProperties'
+import BangError from '../BangError'
 
 export class ExprGet extends Expr {
   name: string
@@ -15,7 +17,14 @@ export class ExprGet extends Expr {
 
   evaluate(enviroment: Enviroment) {
     const instance: Primitive = this.object.evaluate(enviroment)
+    const visitor = new BuiltInPropertyVisitor()
+    const builtInProperties = instance.builtInProperties(visitor)
+    const value = builtInProperties[this.name]
 
-    return instance.getBuiltInProperty(this.name)
+    if (value) return value
+
+    throw new BangError(
+      `Property ${this.name} doesn't exists on type "${instance.type}"`
+    )
   }
 }

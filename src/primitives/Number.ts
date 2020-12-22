@@ -1,8 +1,7 @@
 import { Token } from '../tokens'
 import { Primitive } from './Primitive'
 import { PrimitiveBoolean } from './Boolean'
-import { PrimitiveFunction } from './Function'
-import { PrimitiveString } from './String'
+import { BuiltInPropertyVisitor } from './builtInProperties'
 import BangError from '../BangError'
 
 export class PrimitiveNumber extends Primitive {
@@ -115,25 +114,9 @@ export class PrimitiveNumber extends Primitive {
     return new PrimitiveNumber(-this.getValue())
   }
 
-  builtInProperties(): { [property: string]: Primitive } {
-    return {
-      toBoolean: new PrimitiveFunction({
-        name: 'toBoolean',
-        arity: 0,
-        call: () => new PrimitiveBoolean(this.getValue() !== 0)
-      }),
-
-      toNumber: new PrimitiveFunction({
-        name: 'toNumber',
-        arity: 0,
-        call: () => new PrimitiveNumber(this.value)
-      }),
-
-      toString: new PrimitiveFunction({
-        name: 'toString',
-        arity: 0,
-        call: () => new PrimitiveString(this.value)
-      })
-    }
+  builtInProperties(
+    visitor: BuiltInPropertyVisitor
+  ): Record<string, Primitive> {
+    return visitor.visitNumber(this)
   }
 }

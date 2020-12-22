@@ -1,8 +1,7 @@
 import { Token } from '../tokens'
 import { Primitive } from './Primitive'
 import { PrimitiveBoolean } from './Boolean'
-import { PrimitiveFunction } from './Function'
-import { PrimitiveNumber } from './Number'
+import { BuiltInPropertyVisitor } from './builtInProperties'
 import BangError from '../BangError'
 
 export class PrimitiveString extends Primitive {
@@ -77,31 +76,9 @@ export class PrimitiveString extends Primitive {
       )
   }
 
-  builtInProperties(): { [property: string]: Primitive } {
-    return {
-      length: new PrimitiveNumber(this.value.length),
-
-      toBoolean: new PrimitiveFunction({
-        name: 'toBoolean',
-        arity: 0,
-        call: () => new PrimitiveBoolean(this.value !== '')
-      }),
-
-      toNumber: new PrimitiveFunction({
-        name: 'toNumber',
-        arity: 0,
-        call: () => {
-          const asNumber = Number(this.value.replace(/_/g, ''))
-          if (!Number.isNaN(asNumber)) return new PrimitiveNumber(asNumber)
-          else throw new BangError(`Can't convert "${this.value}" to a number`)
-        }
-      }),
-
-      toString: new PrimitiveFunction({
-        name: 'toString',
-        arity: 0,
-        call: () => new PrimitiveString(this.value)
-      })
-    }
+  builtInProperties(
+    visitor: BuiltInPropertyVisitor
+  ): Record<string, Primitive> {
+    return visitor.visitString(this)
   }
 }

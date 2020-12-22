@@ -1,5 +1,4 @@
 import { Expr } from './Expr'
-import { ExprFunction } from './Function'
 import { Primitive } from '../primitives'
 import { Enviroment } from '../Enviroment'
 
@@ -14,10 +13,7 @@ export class ExprAssign extends Expr {
   }
 
   evaluate(enviroment: Enviroment): Primitive {
-    let evaluatedValue: Primitive
-    if (this.value instanceof ExprFunction)
-      evaluatedValue = this.value.evaluate(enviroment, this.name)
-    else evaluatedValue = this.value.evaluate(enviroment)
+    let evaluatedValue: Primitive = this.value.evaluate(enviroment, this.name)
 
     enviroment.assign(this.name, evaluatedValue)
     return evaluatedValue

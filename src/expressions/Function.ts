@@ -1,5 +1,6 @@
 import { Expr } from './Expr'
-import { Stmt, StmtBlock } from '../statements'
+import { Stmt } from '../statements/Stmt'
+import { StmtBlock } from '../statements/Block'
 import { Primitive, PrimitiveNull, PrimitiveFunction } from '../primitives'
 import { Enviroment } from '../Enviroment'
 

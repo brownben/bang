@@ -1,6 +1,6 @@
 import { Primitive } from './Primitive'
 import { PrimitiveBoolean } from './Boolean'
-import { PrimitiveString } from './String'
+import { BuiltInPropertyVisitor } from './builtInProperties'
 import { Callable } from './Callable'
 
 interface PrimitiveFunctionConstructor {
@@ -45,19 +45,9 @@ export class PrimitiveFunction extends Primitive implements Callable {
     )
   }
 
-  builtInProperties(): Record<string, Primitive> {
-    return {
-      toString: new PrimitiveFunction({
-        name: 'toString',
-        arity: 0,
-        call: () => new PrimitiveString(this.getValue())
-      }),
-
-      toBoolean: new PrimitiveFunction({
-        name: 'toBoolean',
-        arity: 0,
-        call: () => new PrimitiveBoolean(true)
-      })
-    }
+  builtInProperties(
+    visitor: BuiltInPropertyVisitor
+  ): Record<string, Primitive> {
+    return visitor.visitFunction(this)
   }
 }
