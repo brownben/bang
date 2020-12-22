@@ -1,6 +1,7 @@
 import { getAbstractSyntaxTree } from './Parser'
 import { interpret } from './Interpreter'
 import { program } from 'commander'
+import BangError from './BangError'
 import chalk from 'chalk'
 const fs = require('fs').promises
 
@@ -18,6 +19,7 @@ fs.readFile(file, { encoding: 'utf8' })
 
     interpret(abstractSyntaxTree)
   })
-  .catch(() => {
-    console.log(chalk.red.bold('Error: Problem Reading File'))
+  .catch((error: any) => {
+    if (error instanceof BangError) error.output()
+    else console.log(chalk.red.bold('Error: Problem Reading File'))
   })

@@ -218,7 +218,7 @@ export class Tokenizer extends BaseTokeniser {
 
   constructor(source: string) {
     super()
-    this.source = source
+    this.source = source.replace(/\r\n/g, '\n')
     while (!this.isEnd()) this.scanSource()
 
     this.closeAllBlocks()
