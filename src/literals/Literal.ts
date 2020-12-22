@@ -1,4 +1,4 @@
-import { Token } from '../Tokens'
+import { Token } from '../tokens'
 import { LiteralBoolean } from './Boolean'
 import BangError from '../BangError'
 

@@ -1,4 +1,4 @@
-import { Token } from '../Tokens'
+import { Token } from '../tokens'
 import { Expr } from '../expressions'
 import { Stmt } from './Stmt'
 import { Literal, LiteralNull } from '../literals'

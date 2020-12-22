@@ -1,4 +1,4 @@
-import { Token } from '../Tokens'
+import { Token } from '../tokens'
 import { Literal } from './Literal'
 import { LiteralBoolean } from './Boolean'
 import { LiteralFunction } from './Function'

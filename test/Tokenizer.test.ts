@@ -1,5 +1,4 @@
-import { getTokens } from '../src/Tokenizer'
-import { Token, TokenType } from '../src/Tokens'
+import { getTokens, Token, TokenType } from '../src/tokens'
 import BangError from '../src/BangError'
 
 const expectTokens = (code: string, tokens: Partial<Token>[]) =>

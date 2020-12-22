@@ -2,17 +2,17 @@ import {
   Token,
   TokenType,
   additionTokens,
+  assignmentOperatorTokens,
   comparisonTokens,
   equalityTokens,
-  synchronizeTokens,
+  getTokens,
+  indiceTokens,
   multiplicationTokens,
+  synchronizeTokens,
   unaryTokens,
   variableDeclarationTokens,
-  assignmentOperatorTokens,
-  getAssignmentOperator,
-  indiceTokens
-} from './Tokens'
-import { getTokens } from './Tokenizer'
+  getAssignmentOperator
+} from './tokens'
 import {
   Expr,
   ExprAssign,

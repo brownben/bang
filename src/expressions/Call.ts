@@ -1,4 +1,4 @@
-import { Token } from '../Tokens'
+import { Token } from '../tokens'
 import { Expr } from './Expr'
 import { Literal, LiteralFunction } from '../literals'
 import { ReturnValue } from '../ReturnValue'

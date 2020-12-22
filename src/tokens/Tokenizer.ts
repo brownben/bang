@@ -1,13 +1,12 @@
+import { Token } from './Token'
+import { TokenType, keywordTokens } from './TokenType'
 import {
-  Token,
-  TokenType,
-  Keywords,
+  assumeNewLineTokens,
   oneCharacterTokens,
   twoCharacterTokens,
-  assumeNewLineTokens,
   unacceptableLineStartCharacters
-} from './Tokens'
-import BangError from './BangError'
+} from './tokenGroups'
+import BangError from '../BangError'
 
 const isDigit = (char: string): boolean => char >= '0' && char <= '9'
 const isAlpha = (char: string): boolean =>
@@ -26,7 +25,7 @@ class BaseTokeniser {
   currentPositionInLine: number = 0
 
   addToken(type: TokenType, value?: string): void {
-    this.tokens.push({ type: type, value: value, line: this.currentLine })
+    this.tokens.push(new Token(type, this.currentLine, value))
   }
 
   getLastToken(): Token {
@@ -63,7 +62,7 @@ class BaseTokeniser {
   }
 }
 
-class Tokenizer extends BaseTokeniser {
+export class Tokenizer extends BaseTokeniser {
   isEndOfString(multiline: boolean, openingChar: string) {
     if (this.isEnd()) return true
     else if (this.getCurrentCharacter() === openingChar) return true
@@ -133,10 +132,10 @@ class Tokenizer extends BaseTokeniser {
 
     this.currentPosition -= 1
     if (
-      Keywords[identifierString] &&
-      typeof Keywords[identifierString] !== 'function'
+      keywordTokens[identifierString.toLowerCase()] &&
+      typeof keywordTokens[identifierString.toLowerCase()] !== 'function'
     )
-      this.addToken(Keywords[identifierString])
+      this.addToken(keywordTokens[identifierString.toLowerCase()])
     else this.addToken(TokenType.IDENTIFIER, identifierString)
   }
 
@@ -233,5 +232,3 @@ class Tokenizer extends BaseTokeniser {
     return this.tokens
   }
 }
-
-export const getTokens = (code: string) => new Tokenizer(code).getTokens()

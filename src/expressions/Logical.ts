@@ -1,4 +1,4 @@
-import { Token, TokenType } from '../Tokens'
+import { Token, TokenType } from '../tokens'
 import { Expr } from './Expr'
 import { Literal } from '../literals'
 import { Enviroment } from '../Enviroment'
