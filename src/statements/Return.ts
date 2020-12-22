@@ -1,7 +1,7 @@
 import { Token } from '../tokens'
 import { Expr } from '../expressions'
 import { Stmt } from './Stmt'
-import { Literal, LiteralNull, ReturnValue } from '../literals'
+import { Primitive, PrimitiveNull, ReturnValue } from '../primitives'
 import { Enviroment } from '../Enviroment'
 
 export class StmtReturn extends Stmt {
@@ -15,7 +15,7 @@ export class StmtReturn extends Stmt {
   }
 
   execute(enviroment: Enviroment): null {
-    let value: Literal = new LiteralNull()
+    let value: Primitive = new PrimitiveNull()
     if (this.value !== null) value = this.value.evaluate(enviroment)
     throw new ReturnValue(value)
   }

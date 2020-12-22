@@ -1,5 +1,5 @@
 import { Expr } from './Expr'
-import { Literal } from '../literals'
+import { Primitive } from '../primitives'
 import { Enviroment } from '../Enviroment'
 
 export class ExprGrouping extends Expr {
@@ -10,7 +10,7 @@ export class ExprGrouping extends Expr {
     this.expression = expression
   }
 
-  evaluate(enviroment: Enviroment): Literal {
+  evaluate(enviroment: Enviroment): Primitive {
     return this.expression.evaluate(enviroment)
   }
 }

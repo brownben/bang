@@ -1,7 +1,7 @@
 import { Token } from '../tokens'
 import { Expr, ExprFunction } from '../expressions'
 import { Stmt } from './Stmt'
-import { Literal, LiteralNull } from '../literals'
+import { Primitive, PrimitiveNull } from '../primitives'
 import { Enviroment } from '../Enviroment'
 
 export class StmtVariable extends Stmt {
@@ -17,7 +17,7 @@ export class StmtVariable extends Stmt {
   }
 
   execute(enviroment: Enviroment): null {
-    let value: Literal = new LiteralNull()
+    let value: Primitive = new PrimitiveNull()
     if (this.expression instanceof ExprFunction)
       value = this.expression.evaluate(enviroment, this.name)
     else if (this.expression) value = this.expression.evaluate(enviroment)

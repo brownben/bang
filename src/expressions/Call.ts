@@ -1,6 +1,6 @@
 import { Token } from '../tokens'
 import { Expr } from './Expr'
-import { Literal, LiteralFunction, ReturnValue } from '../literals'
+import { Primitive, PrimitiveFunction, ReturnValue } from '../primitives'
 import { Enviroment } from '../Enviroment'
 import BangError from '../BangError'
 
@@ -17,12 +17,12 @@ export class ExprCall extends Expr {
   }
 
   evaluate(enviroment: Enviroment) {
-    const callee: Literal = this.callee.evaluate(enviroment)
-    const argument: Literal[] = this.arguments.map(argument =>
+    const callee: Primitive = this.callee.evaluate(enviroment)
+    const argument: Primitive[] = this.arguments.map(argument =>
       argument.evaluate(enviroment)
     )
 
-    if (callee instanceof LiteralFunction) {
+    if (callee instanceof PrimitiveFunction) {
       if (argument.length !== callee.arity)
         throw new BangError(
           `Expected ${callee.arity} arguments but got ${argument.length}`

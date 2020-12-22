@@ -32,7 +32,7 @@ export enum TokenType {
   LESS = '<',
   LESS_EQUAL = '<=',
 
-  // Literals.
+  // Primitives.
   IDENTIFIER = 'IDENTIFIER',
   STRING = 'STRING',
   NUMBER = 'NUMBER',

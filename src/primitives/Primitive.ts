@@ -1,8 +1,8 @@
 import { Token } from '../tokens'
-import { LiteralBoolean } from './Boolean'
+import { PrimitiveBoolean } from './Boolean'
 import BangError from '../BangError'
 
-export abstract class Literal {
+export abstract class Primitive {
   abstract token: Token | undefined
   abstract value: string
   abstract type: string
@@ -10,8 +10,8 @@ export abstract class Literal {
   abstract getValue(): string | number | boolean | null
   abstract isTruthy(): boolean
 
-  abstract builtInProperties(): { [property: string]: Literal }
-  getBuiltInProperty(property: string): Literal {
+  abstract builtInProperties(): { [property: string]: Primitive }
+  getBuiltInProperty(property: string): Primitive {
     const value = this.builtInProperties()?.[property]
     if (value) return value
     else
@@ -21,60 +21,60 @@ export abstract class Literal {
   }
 
   // comparisons
-  abstract equals(value: Literal): LiteralBoolean
-  abstract notEquals(value: Literal): LiteralBoolean
+  abstract equals(value: Primitive): PrimitiveBoolean
+  abstract notEquals(value: Primitive): PrimitiveBoolean
 
-  greaterThan(value: Literal): Literal {
+  greaterThan(value: Primitive): Primitive {
     throw new BangError(
       `No Operation ">" on type "${this.type}" and type "${value.type}"`
     )
   }
-  lessThan(value: Literal): Literal {
+  lessThan(value: Primitive): Primitive {
     throw new BangError(
       `No Operation "<" on type "${this.type}" and type "${value.type}"`
     )
   }
-  greaterThanOrEqual(value: Literal): Literal {
+  greaterThanOrEqual(value: Primitive): Primitive {
     throw new BangError(
       `No Operation ">=" on type "${this.type}" and type "${value.type}"`
     )
   }
-  lessThanOrEqual(value: Literal): Literal {
+  lessThanOrEqual(value: Primitive): Primitive {
     throw new BangError(
       `No Operation "<=" on type "${this.type}" and type "${value.type}"`
     )
   }
 
   // unary operations
-  not(): Literal {
+  not(): Primitive {
     throw new BangError(`No Operation "!" on type "${this.type}"`)
   }
-  negative(): Literal {
+  negative(): Primitive {
     throw new BangError(`No Operation "-" on type "${this.type}"`)
   }
 
   // binary operations
-  plus(value: Literal): Literal {
+  plus(value: Primitive): Primitive {
     throw new BangError(
       `No Operation "+" on type "${this.type}" and type "${value.type}"`
     )
   }
-  minus(value: Literal): Literal {
+  minus(value: Primitive): Primitive {
     throw new BangError(
       `No Operation "-" on type "${this.type}" and type "${value.type}"`
     )
   }
-  multiply(value: Literal): Literal {
+  multiply(value: Primitive): Primitive {
     throw new BangError(
       `No Operation "*" on type "${this.type}" and type "${value.type}"`
     )
   }
-  divide(value: Literal): Literal {
+  divide(value: Primitive): Primitive {
     throw new BangError(
       `No Operation "/" on type "${this.type}" and type "${value.type}"`
     )
   }
-  power(value: Literal): Literal {
+  power(value: Primitive): Primitive {
     throw new BangError(
       `No Operation "**" on type "${this.type}" and type "${value.type}"`
     )

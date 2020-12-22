@@ -121,7 +121,7 @@ describe('equalities can be calculated', () => {
     expectOutput('null == null').toBe(true)
   })
 
-  it('should be not equal for the different literals', () => {
+  it('should be not equal for the different primitives', () => {
     expectOutput('5 == 7').toBe(false)
     expectOutput('`tree` == `trees`').toBe(false)
     expectOutput('false == true').toBe(false)

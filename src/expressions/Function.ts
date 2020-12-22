@@ -1,6 +1,6 @@
 import { Expr } from './Expr'
 import { Stmt, StmtBlock } from '../statements'
-import { Literal, LiteralNull, LiteralFunction } from '../literals'
+import { Primitive, PrimitiveNull, PrimitiveFunction } from '../primitives'
 import { Enviroment } from '../Enviroment'
 
 export class ExprFunction extends Expr {
@@ -19,7 +19,7 @@ export class ExprFunction extends Expr {
     const arity = this.arity
     const enviromentCopy = enviroment.clone()
 
-    const call = (argument: Literal[]): Literal => {
+    const call = (argument: Primitive[]): Primitive => {
       const functionEnviroment = new Enviroment(enviromentCopy)
 
       this.parameters.forEach((parameter, index) =>
@@ -27,11 +27,11 @@ export class ExprFunction extends Expr {
       )
       const block = new StmtBlock(this.body)
       block.execute(functionEnviroment)
-      return new LiteralNull()
+      return new PrimitiveNull()
     }
 
-    const functionLiteral = new LiteralFunction({ name, call, arity })
-    if (name) enviromentCopy.define(name, true, functionLiteral)
-    return functionLiteral
+    const functionPrimitive = new PrimitiveFunction({ name, call, arity })
+    if (name) enviromentCopy.define(name, true, functionPrimitive)
+    return functionPrimitive
   }
 }

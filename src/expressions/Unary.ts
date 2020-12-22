@@ -1,6 +1,6 @@
 import { Token, TokenType } from '../tokens'
 import { Expr } from './Expr'
-import { Literal } from '../literals'
+import { Primitive } from '../primitives'
 import { Enviroment } from '../Enviroment'
 import BangError from '../BangError'
 
@@ -14,7 +14,7 @@ export class ExprUnary extends Expr {
     this.right = right
   }
 
-  evaluate(enviroment: Enviroment): Literal {
+  evaluate(enviroment: Enviroment): Primitive {
     const rightEvaluated = this.right.evaluate(enviroment)
 
     const getOperator = (operator: TokenType) => {

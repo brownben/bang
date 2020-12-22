@@ -1,6 +1,6 @@
 import { Token, TokenType } from '../tokens'
 import { Expr } from './Expr'
-import { Literal } from '../literals'
+import { Primitive } from '../primitives'
 import { Enviroment } from '../Enviroment'
 import BangError from '../BangError'
 
@@ -16,7 +16,7 @@ export class ExprBinary extends Expr {
     this.right = right
   }
 
-  evaluate(enviroment: Enviroment): Literal {
+  evaluate(enviroment: Enviroment): Primitive {
     const leftEvaluated = this.left.evaluate(enviroment)
     const rightEvaluated = this.right.evaluate(enviroment)
 

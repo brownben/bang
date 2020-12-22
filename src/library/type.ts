@@ -1,9 +1,9 @@
-import { Literal, LiteralFunction, LiteralString } from '../literals'
+import { Primitive, PrimitiveFunction, PrimitiveString } from '../primitives'
 
-export const type = new LiteralFunction({
+export const type = new PrimitiveFunction({
   name: 'type',
   arity: 1,
-  call: (argument: Literal[]) => {
-    return new LiteralString(argument[0].type)
+  call: (argument: Primitive[]) => {
+    return new PrimitiveString(argument[0].type)
   }
 })

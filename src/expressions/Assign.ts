@@ -1,6 +1,6 @@
 import { Expr } from './Expr'
 import { ExprFunction } from './Function'
-import { Literal } from '../literals'
+import { Primitive } from '../primitives'
 import { Enviroment } from '../Enviroment'
 
 export class ExprAssign extends Expr {
@@ -13,8 +13,8 @@ export class ExprAssign extends Expr {
     this.value = value
   }
 
-  evaluate(enviroment: Enviroment): Literal {
-    let evaluatedValue: Literal
+  evaluate(enviroment: Enviroment): Primitive {
+    let evaluatedValue: Primitive
     if (this.value instanceof ExprFunction)
       evaluatedValue = this.value.evaluate(enviroment, this.name)
     else evaluatedValue = this.value.evaluate(enviroment)

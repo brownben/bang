@@ -1,12 +1,12 @@
 import { Token } from '../tokens'
 import { Expr } from './Expr'
 import {
-  Literal,
-  LiteralString,
-  LiteralNumber,
-  LiteralBoolean,
-  LiteralNull
-} from '../literals'
+  Primitive,
+  PrimitiveString,
+  PrimitiveNumber,
+  PrimitiveBoolean,
+  PrimitiveNull
+} from '../primitives'
 import BangError from '../BangError'
 
 export class ExprLiteral extends Expr {
@@ -21,12 +21,14 @@ export class ExprLiteral extends Expr {
     this.token = token
   }
 
-  evaluate(): Literal {
-    if (this.type === 'string') return new LiteralString(this.value, this.token)
-    if (this.type === 'number') return new LiteralNumber(this.value, this.token)
+  evaluate(): Primitive {
+    if (this.type === 'string')
+      return new PrimitiveString(this.value, this.token)
+    if (this.type === 'number')
+      return new PrimitiveNumber(this.value, this.token)
     if (this.type === 'boolean')
-      return new LiteralBoolean(this.value, this.token)
-    if (this.type === 'null') return new LiteralNull(this.value, this.token)
-    throw new BangError(`Unknown Literal Type "${this.type}"`)
+      return new PrimitiveBoolean(this.value, this.token)
+    if (this.type === 'null') return new PrimitiveNull(this.value, this.token)
+    throw new BangError(`Unknown Primitive Type "${this.type}"`)
   }
 }

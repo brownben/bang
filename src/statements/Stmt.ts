@@ -1,7 +1,7 @@
 import { Enviroment } from '../Enviroment'
-import { Literal } from '../literals'
+import { Primitive } from '../primitives'
 
-export type StmtResult = Literal | null
+export type StmtResult = Primitive | null
 
 export abstract class Stmt {
   abstract execute(enviroment: Enviroment): StmtResult | StmtResult[]

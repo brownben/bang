@@ -1,6 +1,6 @@
 import { Token } from '../tokens'
 import { Expr } from './Expr'
-import { Literal } from '../literals'
+import { Primitive } from '../primitives'
 import { Enviroment } from '../Enviroment'
 
 export class ExprGet extends Expr {
@@ -14,7 +14,7 @@ export class ExprGet extends Expr {
   }
 
   evaluate(enviroment: Enviroment) {
-    const instance: Literal = this.object.evaluate(enviroment)
+    const instance: Primitive = this.object.evaluate(enviroment)
 
     return instance.getBuiltInProperty(this.name)
   }

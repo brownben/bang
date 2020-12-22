@@ -1,6 +1,6 @@
 import { expectError, expectOutput } from './helpers'
 
-describe('literals should return values', () => {
+describe('primitives should return values', () => {
   it('should handle numbers', () => {
     expectOutput('.1').toBe(0.1)
     expectOutput('1').toBe(1)
@@ -30,7 +30,7 @@ describe('literals should return values', () => {
   })
 })
 
-describe('built in properties on literals', () => {
+describe('built in properties on primitives', () => {
   it('should have length property on strings', () => {
     expectOutput('"a".length').toBe(1)
     expectOutput('`Hello World`.length').toBe(11)

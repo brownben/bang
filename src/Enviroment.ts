@@ -1,7 +1,7 @@
-import { Literal, LiteralNull } from './literals'
+import { Primitive, PrimitiveNull } from './primitives'
 import BangError from './BangError'
 
-type EnviromentVariable = { value: Literal; constant: boolean }
+type EnviromentVariable = { value: Primitive; constant: boolean }
 export type EnviromentVariables = {
   [key: string]: EnviromentVariable
 }
@@ -14,18 +14,18 @@ export class Enviroment {
     if (enclosing) this.enclosing = enclosing
   }
 
-  define(name: string, constant: boolean, value?: Literal): void {
+  define(name: string, constant: boolean, value?: Primitive): void {
     if (name === '_') return
 
     if (this.existsInCurrentScope(name))
       throw new BangError(`Variable Already "${name}" Exists `)
 
     if (value) this.values[name] = { value, constant }
-    else this.values[name] = { value: new LiteralNull(), constant }
+    else this.values[name] = { value: new PrimitiveNull(), constant }
   }
 
-  get(name: string): Literal {
-    if (name === '_') return new LiteralNull()
+  get(name: string): Primitive {
+    if (name === '_') return new PrimitiveNull()
     else if (this.values[name]) return this.values[name]?.value
     else if (this.enclosing != null) return this.enclosing.get(name)
     else throw new BangError(`Unknown Variable "${name}"`)
@@ -41,7 +41,7 @@ export class Enviroment {
     return this.values[name]
   }
 
-  assign(name: string, value: Literal): void {
+  assign(name: string, value: Primitive): void {
     if (name === '_') return
 
     const valueInCurrentScope = this.existsInCurrentScope(name)
