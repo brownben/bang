@@ -232,6 +232,45 @@ let a = "global"
     expectOutput('print == (a) => print(a)').toBe(false)
     expectOutput('((a) => a * a) == ((a) => a * a)').toBe(false)
   })
+
+  it('should allow callbacks to be used', () => {
+    expectOutput(`
+let add = (a,b) => a + b
+let doOperation = (a,b, operation) => operation(a,b)
+
+doOperation(2,3,add)
+`).toBe(5)
+  })
+
+  it('should accept trailing commas in function parameters', () => {
+    expectOutput(`
+let add = (a, b, c,) => a + b + c
+
+add(1,4,5)`).toBe(10)
+    expectOutput(`
+let add = (
+  a,
+  b,
+  c,
+) => a + b + c
+
+add(1,4,10)`).toBe(15)
+  })
+
+  it('should accept trailing commas in function arguments', () => {
+    expectOutput(`
+let add = (a, b, c) => a + b + c
+
+add(1,4,5,)`).toBe(10)
+    expectOutput(`
+let add = (a, b, c ) => a + b + c
+
+add(
+  1,
+  4,
+  10,
+)`).toBe(15)
+  })
 })
 
 describe('built-in functions work', () => {
@@ -280,15 +319,6 @@ describe('built-in functions work', () => {
     it('should have correct string representation value', () => {
       execute('print(print)')
       expect(console.log).toHaveBeenLastCalledWith('<function print>')
-    })
-
-    it('should allow callbacks to be used', () => {
-      expectOutput(`
-let add = (a,b) => a + b
-let doOperation = (a,b, operation) => operation(a,b)
-
-doOperation(2,3,add)
-`).toBe(5)
     })
   })
 

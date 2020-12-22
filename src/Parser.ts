@@ -423,7 +423,8 @@ class Parser extends BaseParser {
         if (parameters.length >= 255)
           this.error(this.peek(), "Can't have more than 255 arguments.")
 
-        parameters.push(this.expression())
+        if (this.peek().type !== TokenType.RIGHT_PAREN)
+          parameters.push(this.expression())
       } while (this.match(TokenType.COMMA))
     }
 
@@ -452,10 +453,11 @@ class Parser extends BaseParser {
         if (parameters.length >= 255)
           this.error(this.peek(), "Can't have more than 255 parameters.")
 
-        parameters.push(
-          this.assertToken(TokenType.IDENTIFIER, 'Expect parameter name.')
-            ?.value ?? '_'
-        )
+        if (this.peek().type !== TokenType.RIGHT_PAREN)
+          parameters.push(
+            this.assertToken(TokenType.IDENTIFIER, 'Expect parameter name.')
+              ?.value ?? '_'
+          )
       } while (this.match(TokenType.COMMA))
     }
     this.assertToken(TokenType.RIGHT_PAREN, "Expect ')' after parameters.")
