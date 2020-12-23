@@ -4,7 +4,7 @@ import { BuiltInPropertyVisitor } from './builtInProperties'
 import BangError from '../BangError'
 
 export abstract class Primitive {
-  abstract token: Token | undefined
+  abstract token?: Token
   abstract value: string
   abstract type: string
 

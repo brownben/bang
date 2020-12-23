@@ -6,5 +6,5 @@ export const print = new PrimitiveFunction({
   call: (argument: Primitive[]) => {
     console.log(argument[0].getValue())
     return new PrimitiveNull()
-  }
+  },
 })

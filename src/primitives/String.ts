@@ -5,7 +5,7 @@ import { BuiltInPropertyVisitor } from './builtInProperties'
 import BangError from '../BangError'
 
 export class PrimitiveString extends Primitive {
-  token: Token | undefined
+  token?: Token
   value: string
   type = 'string'
 

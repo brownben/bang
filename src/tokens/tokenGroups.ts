@@ -31,7 +31,7 @@ export const twoCharacterTokens: { [key: string]: TokenType } = {
   '**': TokenType.STAR_STAR,
   '&&': TokenType.AND,
   '||': TokenType.OR,
-  '=>': TokenType.FAT_ARROW
+  '=>': TokenType.FAT_ARROW,
 }
 
 export const getAssignmentOperator = (operator: Token): Token => {
@@ -53,7 +53,7 @@ export const synchronizeTokens = [
   TokenType.FOR,
   TokenType.IF,
   TokenType.WHILE,
-  TokenType.RETURN
+  TokenType.RETURN,
 ]
 
 export const variableDeclarationTokens = [TokenType.CONST, TokenType.LET]
@@ -64,7 +64,7 @@ export const comparisonTokens = [
   TokenType.LESS,
   TokenType.LESS_EQUAL,
   TokenType.GREATER,
-  TokenType.GREATER_EQUAL
+  TokenType.GREATER_EQUAL,
 ]
 
 export const unaryTokens = [TokenType.BANG, TokenType.MINUS]
@@ -79,7 +79,7 @@ export const assignmentOperatorTokens = [
   TokenType.PLUS_EQUAL,
   TokenType.MINUS_EQUAL,
   TokenType.STAR_EQUAL,
-  TokenType.SLASH_EQUAL
+  TokenType.SLASH_EQUAL,
 ]
 
 export const assumeNewLineTokens = [
@@ -93,7 +93,7 @@ export const assumeNewLineTokens = [
   TokenType.FAT_ARROW,
   TokenType.RETURN,
   TokenType.NEW_LINE,
-  TokenType.BLOCK_END
+  TokenType.BLOCK_END,
 ]
 
 export const unacceptableLineStartCharacters = [')', '.', ',', '*', '/', '+']

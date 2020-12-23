@@ -1,7 +1,7 @@
 import { getAbstractSyntaxTree } from './Parser'
 import { interpret } from './Interpreter'
-import { program } from 'commander'
 import BangError from './BangError'
+import { program } from 'commander'
 import chalk from 'chalk'
 const fs = require('fs').promises
 

@@ -6,11 +6,11 @@ const expectTokens = (code: string, tokens: Partial<Token>[]) =>
     [
       ...tokens,
       { type: TokenType.NEW_LINE, line: code.split('\n').length },
-      { type: TokenType.EOF, line: code.split('\n').length }
-    ].map(token => ({
+      { type: TokenType.EOF, line: code.split('\n').length },
+    ].map((token) => ({
       ...token,
       value: token?.value?.toString(),
-      line: token?.line ?? 1
+      line: token?.line ?? 1,
     }))
   )
 const tokeniserResultError = (code: string, message: string) => {
@@ -31,7 +31,7 @@ describe('identifies tokens', () => {
   it('should add block on just indentation', () => {
     expectTokens('   ', [
       { type: TokenType.BLOCK_START },
-      { type: TokenType.BLOCK_END }
+      { type: TokenType.BLOCK_END },
     ])
   })
 
@@ -44,22 +44,22 @@ describe('identifies tokens', () => {
 
   it('should identify strings', () => {
     expectTokens(`'this is a string'`, [
-      { type: TokenType.STRING, value: 'this is a string' }
+      { type: TokenType.STRING, value: 'this is a string' },
     ])
     expectTokens(` 'this is a string'`, [
-      { type: TokenType.STRING, value: 'this is a string' }
+      { type: TokenType.STRING, value: 'this is a string' },
     ])
     expectTokens(`'this is a string'  `, [
-      { type: TokenType.STRING, value: 'this is a string' }
+      { type: TokenType.STRING, value: 'this is a string' },
     ])
     expectTokens(` 'this is a string'  `, [
-      { type: TokenType.STRING, value: 'this is a string' }
+      { type: TokenType.STRING, value: 'this is a string' },
     ])
     expectTokens(`"this is a string"`, [
-      { type: TokenType.STRING, value: 'this is a string' }
+      { type: TokenType.STRING, value: 'this is a string' },
     ])
     expectTokens(`\`this is a string\``, [
-      { type: TokenType.STRING, value: 'this is a string' }
+      { type: TokenType.STRING, value: 'this is a string' },
     ])
     expectTokens(
       `\`this is a
@@ -68,8 +68,8 @@ describe('identifies tokens', () => {
       [
         {
           type: TokenType.STRING,
-          value: `this is a\n    multiline\n      string`
-        }
+          value: `this is a\n    multiline\n      string`,
+        },
       ]
     )
   })
@@ -123,25 +123,25 @@ describe('identifies tokens', () => {
 
   it('should identify identifiers', () => {
     expectTokens(`doesthiswork`, [
-      { type: TokenType.IDENTIFIER, value: 'doesthiswork' }
+      { type: TokenType.IDENTIFIER, value: 'doesthiswork' },
     ])
     expectTokens(`dOEsTh1SWork`, [
-      { type: TokenType.IDENTIFIER, value: 'dOEsTh1SWork' }
+      { type: TokenType.IDENTIFIER, value: 'dOEsTh1SWork' },
     ])
     expectTokens(`_doesThisWork`, [
-      { type: TokenType.IDENTIFIER, value: '_doesThisWork' }
+      { type: TokenType.IDENTIFIER, value: '_doesThisWork' },
     ])
     expectTokens(`doesThisWork`, [
-      { type: TokenType.IDENTIFIER, value: 'doesThisWork' }
+      { type: TokenType.IDENTIFIER, value: 'doesThisWork' },
     ])
     expectTokens(`DoesThisWork`, [
-      { type: TokenType.IDENTIFIER, value: 'DoesThisWork' }
+      { type: TokenType.IDENTIFIER, value: 'DoesThisWork' },
     ])
     expectTokens(`DOESTHISWORK`, [
-      { type: TokenType.IDENTIFIER, value: 'DOESTHISWORK' }
+      { type: TokenType.IDENTIFIER, value: 'DOESTHISWORK' },
     ])
     expectTokens(`DOES_THIS_WORK`, [
-      { type: TokenType.IDENTIFIER, value: 'DOES_THIS_WORK' }
+      { type: TokenType.IDENTIFIER, value: 'DOES_THIS_WORK' },
     ])
   })
 })
@@ -150,21 +150,21 @@ describe('copes with edge cases', () => {
   it('should be a "dot" if a second decimal point is in a number', () => {
     expectTokens(`7.56.`, [
       { type: TokenType.NUMBER, value: '7.56' },
-      { type: TokenType.DOT }
+      { type: TokenType.DOT },
     ])
     expectTokens(`7.56.5`, [
       { type: TokenType.NUMBER, value: '7.56' },
-      { type: TokenType.NUMBER, value: '0.5' }
+      { type: TokenType.NUMBER, value: '0.5' },
     ])
     expectTokens(`7.56.5.`, [
       { type: TokenType.NUMBER, value: '7.56' },
       { type: TokenType.NUMBER, value: '0.5' },
-      { type: TokenType.DOT }
+      { type: TokenType.DOT },
     ])
     expectTokens(`7.56.5.4`, [
       { type: TokenType.NUMBER, value: '7.56' },
       { type: TokenType.NUMBER, value: '0.5' },
-      { type: TokenType.NUMBER, value: '0.4' }
+      { type: TokenType.NUMBER, value: '0.4' },
     ])
   })
 
@@ -200,10 +200,10 @@ describe('copes with edge cases', () => {
       '~',
       '#',
       '^',
-      ';'
+      ';',
     ]
 
-    unknownCharacters.map(character =>
+    unknownCharacters.map((character) =>
       tokeniserResultError(character, 'Unidentified Character')
     )
   })

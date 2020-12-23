@@ -11,7 +11,7 @@ export class StmtBlock extends Stmt {
 
   execute(enviroment: Enviroment): StmtResult[] {
     const newEnviroment: Enviroment = new Enviroment(enviroment)
-    return this.statements.flatMap(statement =>
+    return this.statements.flatMap((statement) =>
       statement.execute(newEnviroment)
     )
   }

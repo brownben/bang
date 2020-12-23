@@ -15,7 +15,7 @@ export class Interpreter {
   }
 
   run(): StmtResult[] {
-    return this.statements.flatMap(statement =>
+    return this.statements.flatMap((statement) =>
       this.executeStatement(statement)
     )
   }

@@ -11,7 +11,7 @@ import {
   synchronizeTokens,
   unaryTokens,
   variableDeclarationTokens,
-  getAssignmentOperator
+  getAssignmentOperator,
 } from './tokens'
 import {
   Expr,
@@ -33,7 +33,7 @@ import {
   StmtIf,
   StmtReturn,
   StmtVariable,
-  StmtWhile
+  StmtWhile,
 } from './statements'
 import BangError from './BangError'
 
@@ -50,17 +50,21 @@ class BaseParser {
     return this.tokens[this.current]
   }
 
+  peekType(): TokenType {
+    return this.peek().type
+  }
+
   previous(): Token {
     return this.tokens[this.current - 1]
   }
 
   isAtEnd(): boolean {
-    return this.peek().type === TokenType.EOF
+    return this.peekType() === TokenType.EOF
   }
 
   check(...type: TokenType[]) {
     if (this.isAtEnd()) return false
-    return type.includes(this.peek().type)
+    return type.includes(this.peekType())
   }
 
   checkMultiple(...tokens: TokenType[]): boolean {
@@ -132,7 +136,7 @@ class Parser extends BaseParser {
   parse(): Stmt[] {
     const statements: (Stmt | null)[] = []
     while (!this.isAtEnd()) statements.push(this.declaration())
-    return statements.filter(stmt => !!stmt) as Stmt[]
+    return statements.filter((stmt) => !!stmt) as Stmt[]
   }
 
   synchronize() {
@@ -143,9 +147,9 @@ class Parser extends BaseParser {
         [
           TokenType.NEW_LINE,
           TokenType.BLOCK_START,
-          TokenType.BLOCK_END
+          TokenType.BLOCK_END,
         ].includes(this.previous().type) ||
-        synchronizeTokens.includes(this.peek().type)
+        synchronizeTokens.includes(this.peekType())
       )
         return
 
@@ -423,7 +427,7 @@ class Parser extends BaseParser {
         if (parameters.length >= 255)
           this.error(this.peek(), "Can't have more than 255 arguments.")
 
-        if (this.peek().type !== TokenType.RIGHT_PAREN)
+        if (this.peekType() !== TokenType.RIGHT_PAREN)
           parameters.push(this.expression())
       } while (this.match(TokenType.COMMA))
     }
@@ -453,7 +457,7 @@ class Parser extends BaseParser {
         if (parameters.length >= 255)
           this.error(this.peek(), "Can't have more than 255 parameters.")
 
-        if (this.peek().type !== TokenType.RIGHT_PAREN)
+        if (this.peekType() !== TokenType.RIGHT_PAREN)
           parameters.push(
             this.assertToken(TokenType.IDENTIFIER, 'Expect parameter name.')
               ?.value ?? '_'
@@ -470,7 +474,7 @@ class Parser extends BaseParser {
       return new ExprFunction(parameters, this.block())
     else {
       return new ExprFunction(parameters, [
-        new StmtReturn(this.peek(), this.expression())
+        new StmtReturn(this.peek(), this.expression()),
       ])
     }
   }

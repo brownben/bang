@@ -4,7 +4,7 @@ import {
   assumeNewLineTokens,
   oneCharacterTokens,
   twoCharacterTokens,
-  unacceptableLineStartCharacters
+  unacceptableLineStartCharacters,
 } from './tokenGroups'
 import BangError from '../BangError'
 

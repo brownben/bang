@@ -1,0 +1,6 @@
+.gitignore
+.prettierignore
+LICENSE
+package-lock.json
+**/*.svg
+**/dist/**

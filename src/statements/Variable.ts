@@ -6,7 +6,7 @@ import { Enviroment } from '../Enviroment'
 
 export class StmtVariable extends Stmt {
   name: string
-  expression: Expr | undefined
+  expression?: Expr
   constant: boolean = false
 
   constructor(name: Token, constant: boolean, expression?: Expr) {

@@ -12,7 +12,7 @@ export {
   synchronizeTokens,
   unaryTokens,
   variableDeclarationTokens,
-  getAssignmentOperator
+  getAssignmentOperator,
 } from './tokenGroups'
 
 export const getTokens = (code: string) => new Tokenizer(code).getTokens()

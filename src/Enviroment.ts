@@ -2,12 +2,9 @@ import { Primitive, PrimitiveNull } from './primitives'
 import BangError from './BangError'
 
 type EnviromentVariable = { value: Primitive; constant: boolean }
-export type EnviromentVariables = {
-  [key: string]: EnviromentVariable
-}
 
 export class Enviroment {
-  private values: EnviromentVariables = {}
+  private values: Record<string, EnviromentVariable> = {}
   private enclosing: Enviroment | null = null
 
   constructor(enclosing?: Enviroment) {

@@ -60,7 +60,7 @@ export enum TokenType {
   BLOCK_END = 'BLOCK END',
 
   NEW_LINE = 'NEW LINE',
-  EOF = 'END OF FILE'
+  EOF = 'END OF FILE',
 }
 
 export const keywordTokens = {
@@ -78,5 +78,5 @@ export const keywordTokens = {
   return: TokenType.RETURN,
   class: TokenType.CLASS,
   super: TokenType.SUPER,
-  this: TokenType.THIS
+  this: TokenType.THIS,
 } as { [key: string]: TokenType }

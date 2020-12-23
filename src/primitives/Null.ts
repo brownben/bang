@@ -4,7 +4,7 @@ import { PrimitiveBoolean } from './Boolean'
 import { BuiltInPropertyVisitor } from './builtInProperties'
 
 export class PrimitiveNull extends Primitive {
-  token: Token | undefined
+  token?: Token
   value: string
   type = 'null'
 

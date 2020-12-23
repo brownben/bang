@@ -21,7 +21,7 @@ export class BuiltInPropertyVisitor
       toBoolean: new PrimitiveFunction({
         name: 'toBoolean',
         arity: 0,
-        call: () => new PrimitiveBoolean(primitive.value)
+        call: () => new PrimitiveBoolean(primitive.value),
       }),
 
       toNumber: new PrimitiveFunction({
@@ -30,14 +30,16 @@ export class BuiltInPropertyVisitor
         call: () => {
           if (primitive.getValue()) return new PrimitiveNumber(1)
           else return new PrimitiveNumber(0)
-        }
+        },
       }),
 
       toString: new PrimitiveFunction({
         name: 'toString',
         arity: 0,
-        call: () => new PrimitiveString(primitive.value)
-      })
+        call: () => new PrimitiveString(primitive.value),
+      }),
+    }
+  }
     }
   }
 
@@ -46,14 +48,14 @@ export class BuiltInPropertyVisitor
       toString: new PrimitiveFunction({
         name: 'toString',
         arity: 0,
-        call: () => new PrimitiveString(primitive.getValue())
+        call: () => new PrimitiveString(primitive.getValue()),
       }),
 
       toBoolean: new PrimitiveFunction({
         name: 'toBoolean',
         arity: 0,
-        call: () => new PrimitiveBoolean(true)
-      })
+        call: () => new PrimitiveBoolean(true),
+      }),
     }
   }
 
@@ -62,20 +64,20 @@ export class BuiltInPropertyVisitor
       toBoolean: new PrimitiveFunction({
         name: 'toBoolean',
         arity: 0,
-        call: () => new PrimitiveBoolean(false)
+        call: () => new PrimitiveBoolean(false),
       }),
 
       toNumber: new PrimitiveFunction({
         name: 'toNumber',
         arity: 0,
-        call: () => new PrimitiveNumber(0)
+        call: () => new PrimitiveNumber(0),
       }),
 
       toString: new PrimitiveFunction({
         name: 'toString',
         arity: 0,
-        call: () => new PrimitiveString('null')
-      })
+        call: () => new PrimitiveString('null'),
+      }),
     }
   }
 
@@ -84,20 +86,20 @@ export class BuiltInPropertyVisitor
       toBoolean: new PrimitiveFunction({
         name: 'toBoolean',
         arity: 0,
-        call: () => new PrimitiveBoolean(primitive.getValue() !== 0)
+        call: () => new PrimitiveBoolean(primitive.getValue() !== 0),
       }),
 
       toNumber: new PrimitiveFunction({
         name: 'toNumber',
         arity: 0,
-        call: () => new PrimitiveNumber(primitive.value)
+        call: () => new PrimitiveNumber(primitive.value),
       }),
 
       toString: new PrimitiveFunction({
         name: 'toString',
         arity: 0,
-        call: () => new PrimitiveString(primitive.value)
-      })
+        call: () => new PrimitiveString(primitive.value),
+      }),
     }
   }
 
@@ -108,7 +110,7 @@ export class BuiltInPropertyVisitor
       toBoolean: new PrimitiveFunction({
         name: 'toBoolean',
         arity: 0,
-        call: () => new PrimitiveBoolean(primitive.value !== '')
+        call: () => new PrimitiveBoolean(primitive.value !== ''),
       }),
 
       toNumber: new PrimitiveFunction({
@@ -121,14 +123,14 @@ export class BuiltInPropertyVisitor
             throw new BangError(
               `Can't convert "${primitive.value}" to a number`
             )
-        }
+        },
       }),
 
       toString: new PrimitiveFunction({
         name: 'toString',
         arity: 0,
-        call: () => new PrimitiveString(primitive.value)
-      })
+        call: () => new PrimitiveString(primitive.value),
+      }),
     }
   }
 }

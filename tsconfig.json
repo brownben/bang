@@ -4,12 +4,11 @@
   "compilerOptions": {
     "module": "esnext",
     "lib": ["dom", "esnext"],
-    "target":"ES2018",
+    "target": "ES2020",
     "importHelpers": true,
     "declaration": true,
     "sourceMap": true,
     "rootDir": "./src",
-
     "strict": true,
     "alwaysStrict": true,
     "noImplicitAny": true,
@@ -20,7 +19,6 @@
     "noUnusedParameters": true,
     "forceConsistentCasingInFileNames": true,
     "allowUnreachableCode": false,
-
     "moduleResolution": "node",
     "jsx": "react",
     "esModuleInterop": true,

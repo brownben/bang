@@ -5,5 +5,5 @@ export const type = new PrimitiveFunction({
   arity: 1,
   call: (argument: Primitive[]) => {
     return new PrimitiveString(argument[0].type)
-  }
+  },
 })

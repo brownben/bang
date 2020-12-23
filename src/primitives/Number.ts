@@ -5,7 +5,7 @@ import { BuiltInPropertyVisitor } from './builtInProperties'
 import BangError from '../BangError'
 
 export class PrimitiveNumber extends Primitive {
-  token: Token | undefined
+  token?: Token
   value: string
   type = 'number'
 

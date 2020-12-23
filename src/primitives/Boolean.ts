@@ -3,7 +3,7 @@ import { Primitive } from './Primitive'
 import { BuiltInPropertyVisitor } from './builtInProperties'
 
 export class PrimitiveBoolean extends Primitive {
-  token: Token | undefined
+  token?: Token
   value: string
   type = 'boolean'
 

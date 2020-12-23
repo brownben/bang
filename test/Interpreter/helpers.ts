@@ -16,8 +16,8 @@ export const expectEnviroment = (source: string) => {
       expect(enviroment.get(name)?.getValue()).toBe(value),
     not: {
       toHaveValue: (name: string) =>
-        expect(enviroment.get(name)?.getValue()).toBe(undefined)
-    }
+        expect(enviroment.get(name)?.getValue()).toBe(undefined),
+    },
   }
 }
 

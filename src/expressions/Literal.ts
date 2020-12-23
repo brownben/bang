@@ -5,16 +5,17 @@ import {
   PrimitiveString,
   PrimitiveNumber,
   PrimitiveBoolean,
-  PrimitiveNull
+  PrimitiveNull,
 } from '../primitives'
-import BangError from '../BangError'
+
+type LiteralTypes = 'string' | 'number' | 'boolean' | 'null'
 
 export class ExprLiteral extends Expr {
-  type: string
+  type: LiteralTypes
   value: string
-  token: Token | undefined
+  token?: Token
 
-  constructor(type: string, token?: Token, value?: any) {
+  constructor(type: LiteralTypes, token?: Token, value?: any) {
     super()
     this.type = type
     this.value = token?.value ?? value?.toString() ?? ''
@@ -22,13 +23,15 @@ export class ExprLiteral extends Expr {
   }
 
   evaluate(): Primitive {
-    if (this.type === 'string')
-      return new PrimitiveString(this.value, this.token)
-    if (this.type === 'number')
-      return new PrimitiveNumber(this.value, this.token)
-    if (this.type === 'boolean')
-      return new PrimitiveBoolean(this.value, this.token)
-    if (this.type === 'null') return new PrimitiveNull(this.value, this.token)
-    throw new BangError(`Unknown Primitive Type "${this.type}"`)
+    switch (this.type) {
+      case 'string':
+        return new PrimitiveString(this.value, this.token)
+      case 'number':
+        return new PrimitiveNumber(this.value, this.token)
+      case 'boolean':
+        return new PrimitiveBoolean(this.value, this.token)
+      case 'null':
+        return new PrimitiveNull(this.value, this.token)
+    }
   }
 }
