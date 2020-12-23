@@ -6,6 +6,7 @@ export enum TokenType {
   RIGHT_BRACE = '}',
   COMMA = ',',
   DOT = '.',
+  COLON = ':',
   SEMICOLON = ';',
   FAT_ARROW = '=>',
 

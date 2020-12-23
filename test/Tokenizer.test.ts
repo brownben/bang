@@ -200,7 +200,6 @@ describe('copes with edge cases', () => {
       '~',
       '#',
       '^',
-      ':',
       ';'
     ]
 

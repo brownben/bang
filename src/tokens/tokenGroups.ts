@@ -15,7 +15,8 @@ export const oneCharacterTokens: { [key: string]: TokenType } = {
   '-': TokenType.MINUS,
   '/': TokenType.SLASH,
   '*': TokenType.STAR,
-  ',': TokenType.COMMA
+  ',': TokenType.COMMA,
+  ':': TokenType.COLON,
 }
 
 export const twoCharacterTokens: { [key: string]: TokenType } = {
