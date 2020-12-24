@@ -1,8 +1,7 @@
-import { Token, TokenType } from '../tokens'
+import { Token, TokenType, UnaryOperator } from '../tokens'
 import { Expr } from './Expr'
 import { Primitive } from '../primitives'
 import { Enviroment } from '../Enviroment'
-import BangError from '../BangError'
 
 export class ExprUnary extends Expr {
   operator: Token
@@ -17,13 +16,16 @@ export class ExprUnary extends Expr {
   evaluate(enviroment: Enviroment): Primitive {
     const rightEvaluated = this.right.evaluate(enviroment)
 
-    const getOperator = (operator: TokenType) => {
-      if (operator === TokenType.MINUS) return 'negative'
-      else if (operator === TokenType.BANG) return 'not'
-      else throw new BangError(`Unknown Operator ${this.operator.value}`)
+    const getOperator = (operator: UnaryOperator) => {
+      switch (operator) {
+        case TokenType.MINUS:
+          return 'negative'
+        case TokenType.BANG:
+          return 'not'
+      }
     }
 
-    const operator = getOperator(this.operator.type)
+    const operator = getOperator(this.operator.type as UnaryOperator)
 
     return rightEvaluated[operator]()
   }

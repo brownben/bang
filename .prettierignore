@@ -4,3 +4,5 @@ LICENSE
 package-lock.json
 **/*.svg
 **/dist/**
+**/coverage/**
+**/node_modules/**

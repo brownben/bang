@@ -4,6 +4,15 @@ import { Primitive, PrimitiveFunction, ReturnValue } from '../primitives'
 import { Enviroment } from '../Enviroment'
 import BangError from '../BangError'
 
+const callFunction = (func: PrimitiveFunction, argument: Primitive[]) => {
+  try {
+    return func.call(argument)
+  } catch (error) {
+    if (error instanceof ReturnValue) return error.value
+    else throw error
+  }
+}
+
 export class ExprCall extends Expr {
   callee: Expr
   paren: Token
@@ -22,17 +31,14 @@ export class ExprCall extends Expr {
       argument.evaluate(enviroment)
     )
 
-    if (callee instanceof PrimitiveFunction) {
-      if (argument.length !== callee.arity)
-        throw new BangError(
-          `Expected ${callee.arity} arguments but got ${argument.length}`
-        )
-      try {
-        return callee.call(argument)
-      } catch (error) {
-        if (error instanceof ReturnValue) return error.value
-        else throw error
-      }
-    } else throw new BangError('Can only call functions and classes.')
+    if (!(callee instanceof PrimitiveFunction))
+      throw new BangError('Can only call functions and classes.')
+
+    if (argument.length !== callee.arity)
+      throw new BangError(
+        `Expected ${callee.arity} arguments but got ${argument.length}`
+      )
+
+    return callFunction(callee, argument)
   }
 }

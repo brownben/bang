@@ -26,10 +26,10 @@ export class PrimitiveString extends Primitive {
   plus(value: Primitive): PrimitiveString {
     if (value instanceof PrimitiveString)
       return new PrimitiveString(this.getValue() + value.getValue())
-    else
-      throw new BangError(
-        `No Operation "+" on type "${this.type}" and type "${value.type}`
-      )
+
+    throw new BangError(
+      `No Operation "+" on type "${this.type}" and type "${value.type}`
+    )
   }
 
   equals(value: Primitive): PrimitiveBoolean {
@@ -46,34 +46,34 @@ export class PrimitiveString extends Primitive {
   greaterThan(value: Primitive): PrimitiveBoolean {
     if (value instanceof PrimitiveString)
       return new PrimitiveBoolean(this.getValue() > value.getValue())
-    else
-      throw new BangError(
-        `No Operation ">" on type "${this.type}" and type "${value.type}`
-      )
+
+    throw new BangError(
+      `No Operation ">" on type "${this.type}" and type "${value.type}`
+    )
   }
   lessThan(value: Primitive): PrimitiveBoolean {
     if (value instanceof PrimitiveString)
       return new PrimitiveBoolean(this.getValue() < value.getValue())
-    else
-      throw new BangError(
-        `No Operation "<" on type "${this.type}" and type "${value.type}`
-      )
+
+    throw new BangError(
+      `No Operation "<" on type "${this.type}" and type "${value.type}`
+    )
   }
   greaterThanOrEqual(value: Primitive): PrimitiveBoolean {
     if (value instanceof PrimitiveString)
       return new PrimitiveBoolean(this.getValue() >= value.getValue())
-    else
-      throw new BangError(
-        `No Operation ">=" on type "${this.type}" and type "${value.type}`
-      )
+
+    throw new BangError(
+      `No Operation ">=" on type "${this.type}" and type "${value.type}`
+    )
   }
   lessThanOrEqual(value: Primitive): PrimitiveBoolean {
     if (value instanceof PrimitiveString)
       return new PrimitiveBoolean(this.getValue() <= value.getValue())
-    else
-      throw new BangError(
-        `No Operation "<=" on type "${this.type}" and type "${value.type}`
-      )
+
+    throw new BangError(
+      `No Operation "<=" on type "${this.type}" and type "${value.type}`
+    )
   }
 
   builtInProperties(

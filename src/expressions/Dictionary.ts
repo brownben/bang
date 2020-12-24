@@ -40,12 +40,10 @@ export class ExprDictionary extends Expr {
       token: this.token,
       keys: this.keys.map((key) => {
         if (typeof key === 'string') return key
-        else {
-          const evaluated: Primitive = key.evaluate(enviroment)
-          if (evaluated instanceof PrimitiveString) return evaluated.value
-          else
-            throw new BangError('Only Strings Can Be Used as Dictionary Keys')
-        }
+
+        const evaluated: Primitive = key.evaluate(enviroment)
+        if (evaluated instanceof PrimitiveString) return evaluated.value
+        else throw new BangError('Only Strings Can Be Used as Dictionary Keys')
       }),
       values: this.values.map((value) => value?.evaluate(enviroment)),
     })

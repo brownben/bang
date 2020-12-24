@@ -50,7 +50,8 @@ class BaseTokeniser {
   }
 
   goToNextLine() {
-    while (this.getNextCharacter() !== '\n') this.currentPosition += 1
+    while (this.getNextCharacter() !== '\n' && !this.isEnd())
+      this.currentPosition += 1
   }
 
   isEnd(): boolean {
@@ -113,9 +114,6 @@ export class Tokenizer extends BaseTokeniser {
 
       while (!this.isEndOfNumber(numberContents))
         numberContents += this.moveToNextCharacter()
-
-      if (numberContents[numberContents.length - 1] === '.')
-        numberContents += '0'
 
       numberContents = numberContents.replace(/_/g, '')
 

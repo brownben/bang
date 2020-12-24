@@ -1,6 +1,25 @@
 import { Token } from './Token'
 import { TokenType } from './TokenType'
-import BangError from '../BangError'
+
+export type AssignmentOperator =
+  | TokenType.PLUS_EQUAL
+  | TokenType.MINUS_EQUAL
+  | TokenType.STAR_EQUAL
+  | TokenType.SLASH_EQUAL
+export type BinaryOperator =
+  | TokenType.EQUAL_EQUAL
+  | TokenType.BANG_EQUAL
+  | TokenType.PLUS
+  | TokenType.MINUS
+  | TokenType.STAR
+  | TokenType.SLASH
+  | TokenType.STAR_STAR
+  | TokenType.LESS
+  | TokenType.GREATER
+  | TokenType.LESS_EQUAL
+  | TokenType.GREATER_EQUAL
+export type LogicalOperator = TokenType.AND | TokenType.OR
+export type UnaryOperator = TokenType.MINUS | TokenType.BANG
 
 export const oneCharacterTokens: { [key: string]: TokenType } = {
   '!': TokenType.BANG,
@@ -34,17 +53,21 @@ export const twoCharacterTokens: { [key: string]: TokenType } = {
   '=>': TokenType.FAT_ARROW,
 }
 
-export const getAssignmentOperator = (operator: Token): Token => {
-  if (operator.type === TokenType.PLUS_EQUAL)
-    return new Token(TokenType.PLUS, operator.line)
-  else if (operator.type === TokenType.MINUS_EQUAL)
-    return new Token(TokenType.MINUS, operator.line)
-  else if (operator.type === TokenType.STAR_EQUAL)
-    return new Token(TokenType.STAR, operator.line)
-  else if (operator.type === TokenType.SLASH_EQUAL)
-    return new Token(TokenType.SLASH, operator.line)
-  else throw new BangError(`Unknown Token`)
-}
+export const unacceptableLineStartCharacters = [')', '.', ',', '*', '/', '+']
+
+export const blankTokens = [
+  TokenType.NEW_LINE,
+  TokenType.BLOCK_START,
+  TokenType.BLOCK_END,
+]
+
+export const blockStart = [TokenType.NEW_LINE, TokenType.BLOCK_START]
+
+export const newLineTokens = [
+  TokenType.NEW_LINE,
+  TokenType.BLOCK_END,
+  TokenType.EOF,
+]
 
 export const synchronizeTokens = [
   TokenType.CLASS,
@@ -54,6 +77,20 @@ export const synchronizeTokens = [
   TokenType.IF,
   TokenType.WHILE,
   TokenType.RETURN,
+]
+
+export const assumeNewLineTokens = [
+  TokenType.RIGHT_PAREN,
+  TokenType.IDENTIFIER,
+  TokenType.STRING,
+  TokenType.NUMBER,
+  TokenType.TRUE,
+  TokenType.FALSE,
+  TokenType.NULL,
+  TokenType.FAT_ARROW,
+  TokenType.RETURN,
+  TokenType.NEW_LINE,
+  TokenType.BLOCK_END,
 ]
 
 export const variableDeclarationTokens = [TokenType.CONST, TokenType.LET]
@@ -82,18 +119,49 @@ export const assignmentOperatorTokens = [
   TokenType.SLASH_EQUAL,
 ]
 
-export const assumeNewLineTokens = [
-  TokenType.RIGHT_PAREN,
-  TokenType.IDENTIFIER,
-  TokenType.STRING,
-  TokenType.NUMBER,
-  TokenType.TRUE,
-  TokenType.FALSE,
-  TokenType.NULL,
-  TokenType.FAT_ARROW,
-  TokenType.RETURN,
-  TokenType.NEW_LINE,
-  TokenType.BLOCK_END,
-]
+type BinaryOperatorNames =
+  | 'equals'
+  | 'notEquals'
+  | 'plus'
+  | 'minus'
+  | 'multiply'
+  | 'divide'
+  | 'power'
+  | 'lessThan'
+  | 'greaterThan'
+  | 'lessThanOrEqual'
+  | 'greaterThanOrEqual'
 
-export const unacceptableLineStartCharacters = [')', '.', ',', '*', '/', '+']
+export const getBinaryOperator = (
+  operator: Token<BinaryOperator>
+): BinaryOperatorNames => {
+  const mapping: Record<BinaryOperator, BinaryOperatorNames> = {
+    [TokenType.EQUAL_EQUAL]: 'equals',
+    [TokenType.BANG_EQUAL]: 'notEquals',
+    [TokenType.PLUS]: 'plus',
+    [TokenType.MINUS]: 'minus',
+    [TokenType.STAR]: 'multiply',
+    [TokenType.SLASH]: 'divide',
+    [TokenType.STAR_STAR]: 'power',
+    [TokenType.LESS]: 'lessThan',
+    [TokenType.GREATER]: 'greaterThan',
+    [TokenType.LESS_EQUAL]: 'lessThanOrEqual',
+    [TokenType.GREATER_EQUAL]: 'greaterThanOrEqual',
+  }
+  return mapping[operator.type]
+}
+
+export const getAssignmentOperator = (
+  operator: Token<AssignmentOperator>
+): Token => {
+  switch (operator.type) {
+    case TokenType.PLUS_EQUAL:
+      return new Token(TokenType.PLUS, operator.line)
+    case TokenType.MINUS_EQUAL:
+      return new Token(TokenType.MINUS, operator.line)
+    case TokenType.STAR_EQUAL:
+      return new Token(TokenType.STAR, operator.line)
+    case TokenType.SLASH_EQUAL:
+      return new Token(TokenType.SLASH, operator.line)
+  }
+}

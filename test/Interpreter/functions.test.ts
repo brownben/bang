@@ -271,6 +271,19 @@ add(
   10,
 )`).toBe(15)
   })
+
+  it('should not allow string or numbers to be called', () => {
+    expectError('123()')
+    expectError('123(1)')
+    expectError('"Hello"()')
+  })
+
+  it('should return null on blank return statement', () => {
+    expectOutput(`
+let a = () =>
+  return
+a()`).toBe(null)
+  })
 })
 
 describe('built-in functions work', () => {

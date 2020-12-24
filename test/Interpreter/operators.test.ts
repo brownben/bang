@@ -194,20 +194,45 @@ describe('inequalities can be calculated', () => {
 
   it('should not compare string to any other type', () => {
     expectError(`1 > "2"`)
+    expectError(`1 < "2"`)
+    expectError(`1 <= "2"`)
     expectError(`"73" < 121`)
     expectError(`'1' >= null`)
+    expectError(`null >= '1'`)
     expectError(`'1' <= 1`)
     expectError(`null <= "121"`)
     expectError(`'abcd' > true`)
     expectError(`false < 'efgr'`)
   })
 
-  it('should not compare  any other type', () => {
+  it('should not compare any other type', () => {
     expectError(`false > true`)
     expectError(`false < null`)
   })
 
+  it('should have unary minus on boolean', () => {
+    expectOutput(`-123`).toBe(-123)
+    expectOutput(`--23`).toBe(23)
   })
+
+  it('should not have unary minus on any other type', () => {
+    expectError(`-false `)
+    expectError(`-null`)
+    expectError(`-'hello'`)
+  })
+
+  it('should have unary not on boolean', () => {
+    expectOutput(`!false`).toBe(true)
+    expectOutput(`!true`).toBe(false)
+  })
+
+  it('should not have unary not on any other type', () => {
+    expectError(`!"false"`)
+    expectError(`!null`)
+    expectError(`!'hello'`)
+    expectError('!123')
+  })
+
   it('should compute calulations across multiple lines', () => {
     expectOutput(`1 +
     2`).toEqual(3)
@@ -301,6 +326,8 @@ describe('logical operators can be used', () => {
     expectOutput('"hello" && 77').toBe(77)
     expectOutput('0 && 77').toBe(77)
     expectOutput('2 && "hello"').toBe('hello')
+    expectOutput('((a) => a + 1) && "hello"').toBe('hello')
+    expectOutput('{} && "hello"').toBe('hello')
   })
 
   it('should return first value of an AND statement if falsy', () => {
@@ -323,6 +350,7 @@ describe('logical operators can be used', () => {
     expectOutput('1 || true').toBe(1)
     expectOutput('"hello" || 77').toBe('hello')
     expectOutput('0 || 77').toBe(0)
+    expectOutput('((a) => a + 1) || "hello"').toBe('<function>')
     expectOutput('{} || "hello"').toEqual({})
   })
 

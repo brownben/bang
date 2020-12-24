@@ -28,6 +28,10 @@ describe('identifies tokens', () => {
     expectTokens('', [])
   })
 
+  it('should just have end of line for a comment', () => {
+    expectTokens('// ignore this', [])
+  })
+
   it('should add block on just indentation', () => {
     expectTokens('   ', [
       { type: TokenType.BLOCK_START },

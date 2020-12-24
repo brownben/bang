@@ -15,7 +15,7 @@ export class ExprLiteral extends Expr {
   value: string
   token?: Token
 
-  constructor(type: LiteralTypes, token?: Token, value?: any) {
+  constructor(type: LiteralTypes, token: Token, value?: any) {
     super()
     this.type = type
     this.value = token?.value ?? value?.toString() ?? ''

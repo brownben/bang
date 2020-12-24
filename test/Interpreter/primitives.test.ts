@@ -1,6 +1,6 @@
 import { expectError, expectOutput } from './helpers'
 
-describe('primitives should return values', () => {
+describe('literals should return values', () => {
   it('should handle numbers', () => {
     expectOutput('.1').toBe(0.1)
     expectOutput('1').toBe(1)
@@ -55,6 +55,8 @@ describe('built in properties on primitives', () => {
   it('should have toNumber methods', () => {
     expectOutput(`'123'.toNumber()`).toBe(123)
     expectOutput(`'123.12'.toNumber()`).toBe(123.12)
+    expectOutput(`123.toNumber()`).toBe(123)
+    expectOutput(`123.12.toNumber()`).toBe(123.12)
     expectOutput('true.toNumber()').toBe(1)
     expectOutput('false.toNumber()').toBe(0)
     expectOutput('null.toNumber()').toBe(0)
