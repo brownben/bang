@@ -1,6 +1,6 @@
 import { Token } from '../tokens'
 import { Expr } from './Expr'
-import { Primitive } from '../primitives'
+import { Primitive, PrimitiveDictionary } from '../primitives'
 import { Enviroment } from '../Enviroment'
 import { BuiltInPropertyVisitor } from '../primitives/builtInProperties'
 import BangError from '../BangError'
@@ -17,6 +17,13 @@ export class ExprGet extends Expr {
 
   evaluate(enviroment: Enviroment) {
     const instance: Primitive = this.object.evaluate(enviroment)
+
+    if (
+      instance instanceof PrimitiveDictionary &&
+      instance.keyExists(this.name)
+    )
+      return instance.dictionary[this.name]
+
     const visitor = new BuiltInPropertyVisitor()
     const builtInProperties = instance.builtInProperties(visitor)
     const value = builtInProperties[this.name]

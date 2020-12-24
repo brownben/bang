@@ -18,6 +18,7 @@ import {
   ExprAssign,
   ExprBinary,
   ExprCall,
+  ExprDictionary,
   ExprFunction,
   ExprGet,
   ExprGrouping,
@@ -491,14 +492,43 @@ class Parser extends BaseParser {
       return new ExprLiteral('string', this.previous())
     else if (this.match(TokenType.IDENTIFIER))
       return new ExprVariable(this.previous())
-    else if (this.match(TokenType.LEFT_PAREN)) {
-      const expr = this.expression()
-      this.assertToken(TokenType.RIGHT_PAREN, "Expect ')' after expression.")
-      return new ExprGrouping(expr)
+    else if (this.match(TokenType.LEFT_BRACE)) return this.dictionary()
+    else if (this.match(TokenType.LEFT_PAREN)) return this.grouping()
+    else return new ExprGrouping(this.expression())
+  }
+
+  grouping(): Expr {
+    const expr = this.expression()
+    this.assertToken(TokenType.RIGHT_PAREN, "Expect ')' after expression.")
+    return new ExprGrouping(expr)
+  }
+
+  dictionary(): Expr {
+    const token = this.previous()
+
+    let keyValues: ([ExprVariable, null] | [Expr, Expr])[] = []
+
+    if (!this.check(TokenType.RIGHT_BRACE)) {
+      do {
+        if (this.peekType() !== TokenType.RIGHT_BRACE) {
+          const identifier = this.expression()
+
+          if (
+            !(identifier instanceof ExprVariable) ||
+            this.peekType() === TokenType.COLON
+          ) {
+            this.assertToken(TokenType.COLON, 'Expect token after key')
+            keyValues.push([identifier, this.expression()])
+          } else if (identifier instanceof ExprVariable)
+            keyValues.push([identifier, null])
+          else throw new BangError('Unexpected Identifier')
+        }
+      } while (this.match(TokenType.COMMA))
     }
 
-    const expr = this.expression()
-    return new ExprGrouping(expr)
+    this.assertToken(TokenType.RIGHT_BRACE, "Expect '}' after dictionary.")
+
+    return new ExprDictionary(token, keyValues)
   }
 }
 

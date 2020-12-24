@@ -140,11 +140,14 @@ export class Tokenizer extends BaseTokeniser {
   }
 
   addNewLine() {
+    const validLineStartCharacter = !unacceptableLineStartCharacters.includes(
+      this.getNextNonWhitespaceCharacter()
+    )
+
     if (
       assumeNewLineTokens.includes(this.getLastToken()?.type) &&
-      !unacceptableLineStartCharacters.includes(
-        this.getNextNonWhitespaceCharacter()
-      )
+      validLineStartCharacter &&
+      this.expressionLevel <= 0
     ) {
       this.addToken(TokenType.NEW_LINE)
       this.currentPositionInLine = 0
@@ -202,8 +205,8 @@ export class Tokenizer extends BaseTokeniser {
     else if (!isBlank(char) && !this.isEnd())
       throw this.constructError(`Unidentified Character`)
 
-    if (char === '(') this.expressionLevel += 1
-    else if (char === ')') this.expressionLevel -= 1
+    if (['{', '(', '['].includes(char)) this.expressionLevel += 1
+    else if (['}', ')', '}'].includes(char)) this.expressionLevel -= 1
 
     if (Object.keys(twoCharacterTokens).includes(twoChar)) {
       this.currentPositionInLine += 2

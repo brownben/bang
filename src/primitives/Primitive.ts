@@ -3,12 +3,18 @@ import { PrimitiveBoolean } from './Boolean'
 import { BuiltInPropertyVisitor } from './builtInProperties'
 import BangError from '../BangError'
 
+type RawLiteralValue = string | number | boolean | null
+interface RawPrimitiveDictionaryValue {
+  [key: string]: RawLiteralValue | RawPrimitiveDictionaryValue
+}
+export type RawPrimitiveValue = RawLiteralValue | RawPrimitiveDictionaryValue
+
 export abstract class Primitive {
   abstract token?: Token
   abstract value: string
   abstract type: string
 
-  abstract getValue(): string | number | boolean | null
+  abstract getValue(): RawPrimitiveValue
   abstract isTruthy(): boolean
 
   abstract builtInProperties(

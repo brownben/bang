@@ -207,6 +207,7 @@ describe('inequalities can be calculated', () => {
     expectError(`false < null`)
   })
 
+  })
   it('should compute calulations across multiple lines', () => {
     expectOutput(`1 +
     2`).toEqual(3)
@@ -322,6 +323,7 @@ describe('logical operators can be used', () => {
     expectOutput('1 || true').toBe(1)
     expectOutput('"hello" || 77').toBe('hello')
     expectOutput('0 || 77').toBe(0)
+    expectOutput('{} || "hello"').toEqual({})
   })
 
   it('should return second value of an OR statement if falsy', () => {

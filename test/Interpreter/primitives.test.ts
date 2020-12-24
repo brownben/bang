@@ -47,6 +47,9 @@ describe('built in properties on primitives', () => {
     expectOutput('print.toString()').toBe('<function print>')
     expectOutput('34.toString').toBe('<function toString>')
     expectOutput(`'hello'.toString()`).toBe('hello')
+    expectOutput('{hello:{world:"hi"}}.toString()').toBe(
+      JSON.stringify({ hello: { world: 'hi' } })
+    )
   })
 
   it('should have toNumber methods', () => {
@@ -57,6 +60,7 @@ describe('built in properties on primitives', () => {
     expectOutput('null.toNumber()').toBe(0)
     expectError(`'hello'.toNumber()`)
     expectError('print.toNumber()')
+    expectError('{}.toNumber()')
   })
 
   it('should have toBoolean methods', () => {
@@ -69,5 +73,99 @@ describe('built in properties on primitives', () => {
     expectOutput('null.toBoolean()').toBe(false)
     expectOutput('true.toBoolean()').toBe(true)
     expectOutput('false.toBoolean()').toBe(false)
+    expectOutput('{}.toBoolean()').toBe(true)
+    expectOutput('{hello:false}.toBoolean()').toBe(true)
+  })
+})
+
+describe('dictionaries can be used', () => {
+  it('should create dictionaries with identifier keys', () => {
+    expectOutput(`{hello:'world'}`).toEqual({ hello: 'world' })
+    expectOutput(`
+    {
+      hello:'world',
+      does: 'this work',
+      well: 77,
+    }`).toEqual({ hello: 'world', does: 'this work', well: 77 })
+    expectOutput(`{bang: 'is an awesome', language:true}`).toEqual({
+      bang: 'is an awesome',
+      language: true,
+    })
+  })
+
+  it('should create dictionaries with string keys', () => {
+    expectOutput(`{"hello":'world',}`).toEqual({ hello: 'world' })
+    expectOutput(`{'hello':'world', does: 'this work', "well": 77}`).toEqual({
+      hello: 'world',
+      does: 'this work',
+      well: 77,
+    })
+    expectOutput(`
+    {
+      'hello':'world',
+      does: 'this work',
+      "well": 77
+    }`).toEqual({ hello: 'world', does: 'this work', well: 77 })
+    expectOutput(`{'bang': 'is an awesome', 'language':true}`).toEqual({
+      bang: 'is an awesome',
+      language: true,
+    })
+  })
+
+  it('should work with nested dictionaries', () => {
+    expectOutput('{hello:{world:"hi"}}').toEqual({ hello: { world: 'hi' } })
+  })
+
+  it('should get values from dot notation', () => {
+    expectOutput(`{'bang': 'is an awesome', 'language':true}.bang`).toBe(
+      'is an awesome'
+    )
+    expectOutput(`{'bang': 'is an awesome', 'language':true}.language`).toBe(
+      true
+    )
+    expectOutput('{hello:{world:"hi"}}.hello.world').toBe('hi')
+  })
+
+  it('should get values from get method', () => {
+    expectOutput(`{'bang': 'is an awesome', 'language':true}.get('bang')`).toBe(
+      'is an awesome'
+    )
+    expectOutput(
+      `{'bang': 'is an awesome', 'language':true}.get('language')`
+    ).toBe(true)
+    expectOutput(
+      `{'bang': 'is an awesome', 'language':true}.get('other')`
+    ).toBe(null)
+    expectOutput(`{'bang': 'is an awesome', 'language':true}.get(11)`).toBe(
+      null
+    )
+    expectOutput(`{'bang': 'is an awesome', 'language':true}.get(null)`).toBe(
+      null
+    )
+  })
+
+  it('should be equal if they have the same properties', () => {
+    expectOutput('{a:1,b:2,c:3} == {a:1,b:2,c:3}').toBe(true)
+    expectOutput('{a:1,b:2,c:3} != {a:1,b:2,c:3,}').toBe(false)
+    expectOutput('{a:1,b:2,c:3} == {}').toBe(false)
+    expectOutput('{a:1,b:2,c:3} == {a:1,b:2}').toBe(false)
+  })
+
+  it('should expand variable identifiers if no colon', () => {
+    expectOutput(`
+let a = 0
+let b = 'hello'
+{a,b}`).toEqual({ a: 0, b: 'hello' })
+
+    expectOutput(`
+let a = 'world'
+let b = 7
+{a,b, c:false}`).toEqual({ a: 'world', b: 7, c: false })
+  })
+
+  it('should only allow strings as keys', () => {
+    expectError('{true:1}')
+    expectError('{1:1}')
+    expectError('{null:1}')
   })
 })

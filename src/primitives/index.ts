@@ -1,5 +1,6 @@
 export { Primitive } from './Primitive'
 export { PrimitiveBoolean } from './Boolean'
+export { PrimitiveDictionary } from './Dictionary'
 export { PrimitiveFunction } from './Function'
 export { PrimitiveNull } from './Null'
 export { PrimitiveNumber } from './Number'

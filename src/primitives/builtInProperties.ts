@@ -1,5 +1,6 @@
 import { Primitive } from './Primitive'
 import { PrimitiveBoolean } from './Boolean'
+import { PrimitiveDictionary } from './Dictionary'
 import { PrimitiveFunction } from './Function'
 import { PrimitiveNull } from './Null'
 import { PrimitiveNumber } from './Number'
@@ -8,6 +9,7 @@ import BangError from '../BangError'
 
 export interface VisitPrimitives<T> {
   visitBoolean: (primitive: PrimitiveBoolean) => T
+  visitDictionary: (primitive: PrimitiveDictionary) => T
   visitFunction: (primitive: PrimitiveFunction) => T
   visitNull: (primitive: PrimitiveNull) => T
   visitNumber: (primitive: PrimitiveNumber) => T
@@ -40,6 +42,35 @@ export class BuiltInPropertyVisitor
       }),
     }
   }
+
+  visitDictionary(primitive: PrimitiveDictionary) {
+    return {
+      get: new PrimitiveFunction({
+        name: 'get',
+        arity: 1,
+        call: (argument: Primitive[]) => {
+          const [key] = argument
+
+          if (
+            key instanceof PrimitiveString &&
+            primitive.dictionary?.[key.value]
+          )
+            return primitive.dictionary[key.value]
+          else return new PrimitiveNull()
+        },
+      }),
+
+      toBoolean: new PrimitiveFunction({
+        name: 'toBoolean',
+        arity: 0,
+        call: () => new PrimitiveBoolean(true),
+      }),
+
+      toString: new PrimitiveFunction({
+        name: 'toString',
+        arity: 0,
+        call: () => new PrimitiveString(JSON.stringify(primitive.getValue())),
+      }),
     }
   }
 
