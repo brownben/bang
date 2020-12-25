@@ -3,6 +3,8 @@ import {
   TokenType,
   additionTokens,
   assignmentOperatorTokens,
+  blankTokens,
+  blockStart,
   comparisonTokens,
   equalityTokens,
   getTokens,
@@ -12,6 +14,9 @@ import {
   unaryTokens,
   variableDeclarationTokens,
   getAssignmentOperator,
+  AssignmentOperator,
+  LogicalOperator,
+  newLineTokens,
 } from './tokens'
 import {
   Expr,
@@ -25,7 +30,7 @@ import {
   ExprLiteral,
   ExprLogical,
   ExprUnary,
-  ExprVariable
+  ExprVariable,
 } from './expressions'
 import {
   Stmt,
@@ -43,53 +48,65 @@ class BaseParser {
   tokens: Token[] = []
   source: string = ''
 
-  getToken(position: number): Token {
+  getTokenAt(position: number): Token {
     return this.tokens?.[position] ?? this.tokens[this.tokens.length - 1]
   }
 
-  peek(): Token {
+  getToken(): Token {
     return this.tokens[this.current]
   }
 
-  peekType(): TokenType {
-    return this.peek().type
+  getTokenType(): TokenType {
+    return this.getToken().type
   }
 
-  previous(): Token {
+  getPreviousToken(): Token {
     return this.tokens[this.current - 1]
   }
 
+  getPreviousTokenType(): TokenType {
+    return this.getPreviousToken().type
+  }
+
   isAtEnd(): boolean {
-    return this.peekType() === TokenType.EOF
-  }
-
-  check(...type: TokenType[]) {
-    if (this.isAtEnd()) return false
-    return type.includes(this.peekType())
-  }
-
-  checkMultiple(...tokens: TokenType[]): boolean {
-    return tokens
-      .map((token, index) => this.tokens[this.current + index]?.type === token)
-      .every(Boolean)
+    return this.getTokenType() === TokenType.EOF
   }
 
   advance(by: number = 1): Token {
     if (!this.isAtEnd()) this.current += by
-    return this.previous()
+    return this.getPreviousToken()
   }
 
-  assertToken(type: TokenType | TokenType[], message: string) {
+  error(token: Token, message: string) {
+    throw new BangError(message, this.source, token.line)
+  }
+
+  tokenIsType(...type: TokenType[]): boolean {
+    if (this.isAtEnd()) return false
+    return type.includes(this.getTokenType())
+  }
+
+  matchTokensAtPoint(position: number, tokens: TokenType[]): boolean {
+    return tokens
+      .map((token, i) => this.getTokenAt(position + i).type === token)
+      .every(Boolean)
+  }
+
+  assertTokenIs(type: TokenType | TokenType[], message: string) {
     if (typeof type === 'object') {
-      if (this.check(...type)) return this.advance()
-    } else if (this.check(type)) return this.advance()
+      if (this.tokenIsType(...type)) return this.advance()
+    } else if (this.tokenIsType(type)) return this.advance()
 
-    throw this.error(this.peek(), message)
+    throw this.error(this.getToken(), message)
   }
 
-  match(...types: TokenType[]): boolean {
+  nextTokensAreType(...tokens: TokenType[]): boolean {
+    return this.matchTokensAtPoint(this.current, tokens)
+  }
+
+  tokenMatches(...types: TokenType[]): boolean {
     for (const type of types) {
-      if (this.check(type)) {
+      if (this.tokenIsType(type)) {
         this.advance()
         return true
       }
@@ -98,32 +115,26 @@ class BaseParser {
     return false
   }
 
-  matchAtPoint(position: number, tokens: TokenType[]): boolean {
-    return tokens
-      .map((token, i) => this.getToken(position + i).type === token)
-      .every(Boolean)
-  }
-
-  error(token: Token, message: string) {
-    throw new BangError(message, this.source, token.line)
-  }
-
-  isTokenStartOfBlock(position: number) {
+  isTokenStartOfStatement(position: number) {
     return [TokenType.EOF, ...synchronizeTokens].includes(
-      this.getToken(position).type
+      this.getTokenAt(position).type
     )
   }
 
-  checkAhead(tokens: TokenType[], not?: TokenType): boolean {
+  doesSequenceOccur(tokens: TokenType[], not?: TokenType): boolean {
     let position = this.current + 1
 
-    while (!this.isTokenStartOfBlock(position)) {
-      if (this.getToken(position).type === not) return false
-      if (this.matchAtPoint(position, tokens)) return true
+    while (!this.isTokenStartOfStatement(position)) {
+      if (this.getTokenAt(position).type === not) return false
+      if (this.matchTokensAtPoint(position, tokens)) return true
       else position += 1
     }
 
     return false
+  }
+
+  skipNewLineIfBlockFollows() {
+    if (this.nextTokensAreType(...blockStart)) this.advance()
   }
 }
 
@@ -144,24 +155,32 @@ class Parser extends BaseParser {
     this.advance()
 
     while (!this.isAtEnd()) {
-      if (
-        [
-          TokenType.NEW_LINE,
-          TokenType.BLOCK_START,
-          TokenType.BLOCK_END,
-        ].includes(this.previous().type) ||
-        synchronizeTokens.includes(this.peekType())
-      )
-        return
+      if (blankTokens.includes(this.getPreviousTokenType())) return
+      if (synchronizeTokens.includes(this.getTokenType())) return
 
       this.advance()
     }
   }
 
+  getCommaSeparatedValues({
+    closingBracket,
+    processArguments,
+  }: {
+    closingBracket: TokenType
+    processArguments: () => void
+  }) {
+    if (this.getTokenType() !== closingBracket) {
+      do {
+        if (this.getTokenType() === closingBracket) break
+        processArguments()
+      } while (this.tokenMatches(TokenType.COMMA))
+    }
+  }
+
   declaration(): Stmt | null {
     try {
-      if (this.match(...variableDeclarationTokens))
-        return this.variableDeclaration(this.previous())
+      if (this.tokenMatches(...variableDeclarationTokens))
+        return this.variableDeclaration(this.getPreviousToken())
       else return this.statement()
     } catch (error) {
       if (error instanceof BangError) throw error
@@ -172,10 +191,11 @@ class Parser extends BaseParser {
   }
 
   statement(): Stmt {
-    if (this.match(TokenType.IF)) return this.ifStatement()
-    if (this.match(TokenType.WHILE)) return this.whileStatement()
-    if (this.match(TokenType.RETURN)) return this.returnStatement()
-    if (this.match(TokenType.BLOCK_START)) return new StmtBlock(this.block())
+    if (this.tokenMatches(TokenType.IF)) return this.ifStatement()
+    if (this.tokenMatches(TokenType.WHILE)) return this.whileStatement()
+    if (this.tokenMatches(TokenType.RETURN)) return this.returnStatement()
+    if (this.tokenMatches(TokenType.BLOCK_START))
+      return new StmtBlock(this.block())
 
     return this.expressionStatement()
   }
@@ -183,28 +203,26 @@ class Parser extends BaseParser {
   block(): Stmt[] {
     const statements: (Stmt | null)[] = []
 
-    while (!this.check(TokenType.BLOCK_END) && !this.isAtEnd()) {
+    while (!this.tokenIsType(TokenType.BLOCK_END) && !this.isAtEnd())
       statements.push(this.declaration())
-    }
+
     this.advance()
     return statements.filter(Boolean) as Stmt[]
   }
 
   variableDeclaration(initializerType: Token): Stmt {
     const constant = initializerType.type === TokenType.CONST
-    const name: Token = this.assertToken(
+    const name = this.assertTokenIs(
       TokenType.IDENTIFIER,
       'Expect variable name.'
     )
 
     let initializer: Expr | undefined = undefined
-    if (this.match(TokenType.EQUAL)) {
-      initializer = this.expression()
-    }
+    if (this.tokenMatches(TokenType.EQUAL)) initializer = this.expression()
 
     if (!(initializer instanceof ExprFunction))
-      this.assertToken(
-        [TokenType.NEW_LINE, TokenType.BLOCK_END, TokenType.EOF],
+      this.assertTokenIs(
+        newLineTokens,
         'Expect a new line after variable declaration.'
       )
 
@@ -212,20 +230,17 @@ class Parser extends BaseParser {
   }
 
   ifStatement(): Stmt {
-    this.assertToken(TokenType.LEFT_PAREN, "Expect '(' after 'if'.")
+    this.assertTokenIs(TokenType.LEFT_PAREN, "Expect '(' after 'if'.")
     const condition: Expr = this.expression()
-    this.assertToken(TokenType.RIGHT_PAREN, "Expect ')' after if condition.")
+    this.assertTokenIs(TokenType.RIGHT_PAREN, "Expect ')' after if condition.")
 
-    if (this.checkMultiple(TokenType.NEW_LINE, TokenType.BLOCK_START))
-      this.advance()
+    this.skipNewLineIfBlockFollows()
 
     const thenBranch = this.statement()
 
     let elseBranch = null
-    if (this.match(TokenType.ELSE)) {
-      if (this.checkMultiple(TokenType.NEW_LINE, TokenType.BLOCK_START))
-        this.advance()
-
+    if (this.tokenMatches(TokenType.ELSE)) {
+      this.skipNewLineIfBlockFollows()
       elseBranch = this.statement()
     }
 
@@ -233,38 +248,32 @@ class Parser extends BaseParser {
   }
 
   whileStatement() {
-    this.assertToken(TokenType.LEFT_PAREN, "Expect '(' after 'while'.")
+    this.assertTokenIs(TokenType.LEFT_PAREN, "Expect '(' after 'while'.")
     const condition = this.expression()
-    this.assertToken(TokenType.RIGHT_PAREN, "Expect ')' after condition.")
+    this.assertTokenIs(TokenType.RIGHT_PAREN, "Expect ')' after condition.")
 
-    if (this.checkMultiple(TokenType.NEW_LINE, TokenType.BLOCK_START))
-      this.advance()
+    this.skipNewLineIfBlockFollows()
     const body = this.statement()
 
     return new StmtWhile(condition, body)
   }
 
   returnStatement(): Stmt {
-    const keyword = this.previous()
+    const keyword = this.getPreviousToken()
     let value: Expr | null = null
 
-    if (!this.check(TokenType.NEW_LINE, TokenType.BLOCK_END))
+    if (!this.tokenIsType(TokenType.NEW_LINE, TokenType.BLOCK_END))
       value = this.expression()
 
-    this.assertToken(
-      [TokenType.NEW_LINE, TokenType.BLOCK_END, TokenType.EOF],
-      'Expect a new line after return value.'
-    )
+    this.assertTokenIs(newLineTokens, 'Expect a new line after return.')
+
     return new StmtReturn(keyword, value)
   }
 
   expressionStatement(): StmtExpression {
     const expr = this.expression()
 
-    this.assertToken(
-      [TokenType.NEW_LINE, TokenType.BLOCK_END, TokenType.EOF],
-      'Expect a new line after expression.'
-    )
+    this.assertTokenIs(newLineTokens, 'Expect a new line after expression.')
     return new StmtExpression(expr)
   }
 
@@ -275,39 +284,45 @@ class Parser extends BaseParser {
   assignment(): Expr {
     const expr: Expr = this.or()
 
-    if (this.match(TokenType.EQUAL)) {
-      const equals: Token = this.previous()
-      const value: Expr = this.expression()
+    if (this.tokenMatches(...assignmentOperatorTokens))
+      return this.assignmentOperator(expr)
+    else if (this.tokenMatches(TokenType.EQUAL))
+      return this.assignmentVariable(expr)
+    else return expr
+  }
 
-      if (expr instanceof ExprVariable) {
-        const name = expr.name
-        return new ExprAssign(name, value)
-      }
+  assignmentVariable(expr: Expr): ExprAssign {
+    const equals: Token = this.getPreviousToken()
+    const value: Expr = this.expression()
 
-      this.error(equals, 'Invalid Assignment Target')
-    } else if (this.match(...assignmentOperatorTokens)) {
-      const equals: Token = this.previous()
-      const incrementValue: Expr = this.expression()
-
-      const operator = getAssignmentOperator(equals)
-      const value = new ExprBinary(expr, operator, incrementValue)
-
-      if (expr instanceof ExprVariable) {
-        const name = expr.name
-        return new ExprAssign(name, value)
-      }
-
-      this.error(equals, 'Invalid Assignment Target')
+    if (expr instanceof ExprVariable) {
+      const name = expr.name
+      return new ExprAssign(name, value)
     }
 
-    return expr
+    throw this.error(equals, 'Invalid Assignment Target')
+  }
+
+  assignmentOperator(expr: Expr): ExprAssign {
+    const equals = this.getPreviousToken() as Token<AssignmentOperator>
+    const incrementValue: Expr = this.expression()
+
+    const operator = getAssignmentOperator(equals)
+    const value = new ExprBinary(expr, operator, incrementValue)
+
+    if (expr instanceof ExprVariable) {
+      const name = expr.name
+      return new ExprAssign(name, value)
+    }
+
+    throw this.error(equals, 'Invalid Assignment Target')
   }
 
   or(): Expr {
     let expr = this.and()
 
-    while (this.match(TokenType.OR)) {
-      const operator = this.previous()
+    while (this.tokenMatches(TokenType.OR)) {
+      const operator = this.getPreviousToken() as Token<LogicalOperator>
       const right = this.and()
       expr = new ExprLogical(expr, operator, right)
     }
@@ -318,8 +333,8 @@ class Parser extends BaseParser {
   and(): Expr {
     let expr = this.equality()
 
-    while (this.match(TokenType.AND)) {
-      const operator = this.previous()
+    while (this.tokenMatches(TokenType.AND)) {
+      const operator = this.getPreviousToken() as Token<LogicalOperator>
       const right = this.and()
       expr = new ExprLogical(expr, operator, right)
     }
@@ -330,8 +345,8 @@ class Parser extends BaseParser {
   equality(): Expr {
     let expr: Expr = this.comparison()
 
-    while (this.match(...equalityTokens)) {
-      const operator: Token = this.previous()
+    while (this.tokenMatches(...equalityTokens)) {
+      const operator: Token = this.getPreviousToken()
       const right: Expr = this.comparison()
       expr = new ExprBinary(expr, operator, right)
     }
@@ -342,8 +357,8 @@ class Parser extends BaseParser {
   comparison(): Expr {
     let expr: Expr = this.addition()
 
-    while (this.match(...comparisonTokens)) {
-      const operator: Token = this.previous()
+    while (this.tokenMatches(...comparisonTokens)) {
+      const operator: Token = this.getPreviousToken()
       const right: Expr = this.addition()
       expr = new ExprBinary(expr, operator, right)
     }
@@ -354,8 +369,8 @@ class Parser extends BaseParser {
   addition(): Expr {
     let expr: Expr = this.multiplication()
 
-    while (this.match(...additionTokens)) {
-      const operator: Token = this.previous()
+    while (this.tokenMatches(...additionTokens)) {
+      const operator: Token = this.getPreviousToken()
       const right: Expr = this.multiplication()
       expr = new ExprBinary(expr, operator, right)
     }
@@ -366,8 +381,8 @@ class Parser extends BaseParser {
   multiplication(): Expr {
     let expr: Expr = this.indices()
 
-    while (this.match(...multiplicationTokens)) {
-      const operator: Token = this.previous()
+    while (this.tokenMatches(...multiplicationTokens)) {
+      const operator: Token = this.getPreviousToken()
       const right: Expr = this.unary()
       expr = new ExprBinary(expr, operator, right)
     }
@@ -378,8 +393,8 @@ class Parser extends BaseParser {
   indices(): Expr {
     let expr: Expr = this.unary()
 
-    while (this.match(...indiceTokens)) {
-      const operator: Token = this.previous()
+    while (this.tokenMatches(...indiceTokens)) {
+      const operator: Token = this.getPreviousToken()
       const right: Expr = this.unary()
       expr = new ExprBinary(expr, operator, right)
     }
@@ -388,8 +403,8 @@ class Parser extends BaseParser {
   }
 
   unary(): Expr {
-    if (this.match(...unaryTokens)) {
-      const operator: Token = this.previous()
+    if (this.tokenMatches(...unaryTokens)) {
+      const operator: Token = this.getPreviousToken()
       const right: Expr = this.unary()
       return new ExprUnary(operator, right)
     }
@@ -399,134 +414,128 @@ class Parser extends BaseParser {
 
   call(): Expr {
     let expr: Expr = this.functionExpression()
+
     while (true) {
-      if (
-        this.check(TokenType.LEFT_PAREN) &&
-        !this.checkAhead(
-          [TokenType.RIGHT_PAREN, TokenType.FAT_ARROW],
-          TokenType.LEFT_PAREN
-        )
-      ) {
-        this.advance()
+      if (this.tokenMatches(TokenType.DOT)) expr = this.getExpression(expr)
+      else if (!this.functionAhead() && this.tokenMatches(TokenType.LEFT_PAREN))
         expr = this.finishCall(expr)
-      } else if (this.match(TokenType.DOT)) {
-        const name = this.assertToken(
-          TokenType.IDENTIFIER,
-          'Expect property name after "."'
-        )
-        expr = new ExprGet(name, expr)
-      } else break
+      else break
     }
 
     return expr
   }
 
+  getExpression(expr: Expr): ExprGet {
+    const name = this.assertTokenIs(
+      TokenType.IDENTIFIER,
+      'Expect property name after "."'
+    )
+    return new ExprGet(name, expr)
+  }
+
   finishCall(callee: Expr) {
     const parameters: Expr[] = []
-    if (!this.check(TokenType.RIGHT_PAREN)) {
-      do {
+
+    this.getCommaSeparatedValues({
+      closingBracket: TokenType.RIGHT_PAREN,
+      processArguments: () => {
         if (parameters.length >= 255)
-          this.error(this.peek(), "Can't have more than 255 arguments.")
+          this.error(this.getToken(), "Can't have more than 255 arguments.")
 
-        if (this.peekType() !== TokenType.RIGHT_PAREN)
-          parameters.push(this.expression())
-      } while (this.match(TokenType.COMMA))
-    }
+        parameters.push(this.expression())
+      },
+    })
 
-    const paren: Token = this.assertToken(
+    const paren = this.assertTokenIs(
       TokenType.RIGHT_PAREN,
-      "Expect ')' after arguments."
+      'Expect ")" after arguments.'
     )
 
     return new ExprCall(callee, paren, parameters)
   }
 
-  functionExpression(): Expr {
-    if (
-      !this.check(TokenType.LEFT_PAREN) ||
-      !this.checkAhead(
-        [TokenType.RIGHT_PAREN, TokenType.FAT_ARROW],
-        TokenType.LEFT_PAREN
-      )
+  functionAhead(): boolean {
+    return this.doesSequenceOccur(
+      [TokenType.RIGHT_PAREN, TokenType.FAT_ARROW],
+      TokenType.LEFT_PAREN
     )
-      return this.primary()
+  }
+
+  functionExpression(): Expr {
+    if (!this.tokenIsType(TokenType.LEFT_PAREN)) return this.primary()
+    if (!this.functionAhead()) return this.primary()
 
     this.advance()
+
     const parameters: string[] = []
-    if (!this.check(TokenType.RIGHT_PAREN)) {
-      do {
+    this.getCommaSeparatedValues({
+      closingBracket: TokenType.RIGHT_PAREN,
+      processArguments: () => {
         if (parameters.length >= 255)
-          this.error(this.peek(), "Can't have more than 255 parameters.")
+          this.error(this.getToken(), "Can't have more than 255 parameters.")
 
-        if (this.peekType() !== TokenType.RIGHT_PAREN)
-          parameters.push(
-            this.assertToken(TokenType.IDENTIFIER, 'Expect parameter name.')
-              ?.value ?? '_'
-          )
-      } while (this.match(TokenType.COMMA))
-    }
-    this.assertToken(TokenType.RIGHT_PAREN, "Expect ')' after parameters.")
-    this.assertToken(TokenType.FAT_ARROW, "Expect '=>' after parameters.")
+        parameters.push(
+          this.assertTokenIs(TokenType.IDENTIFIER, 'Expect parameter name.')
+            .value
+        )
+      },
+    })
 
-    if (this.checkMultiple(TokenType.NEW_LINE, TokenType.BLOCK_START))
-      this.advance(2)
+    this.assertTokenIs(TokenType.RIGHT_PAREN, "Expect ')' after parameters.")
+    this.assertTokenIs(TokenType.FAT_ARROW, "Expect '=>' after parameters.")
+    this.skipNewLineIfBlockFollows()
 
-    if (this.previous().type === TokenType.BLOCK_START)
+    if (this.tokenMatches(TokenType.BLOCK_START))
       return new ExprFunction(parameters, this.block())
-    else {
+    else
       return new ExprFunction(parameters, [
-        new StmtReturn(this.peek(), this.expression()),
+        new StmtReturn(this.getToken(), this.expression()),
       ])
-    }
   }
 
   primary(): Expr {
-    if (this.match(TokenType.FALSE))
-      return new ExprLiteral('boolean', this.previous(), 'false')
-    else if (this.match(TokenType.TRUE))
-      return new ExprLiteral('boolean', this.previous(), 'true')
-    else if (this.match(TokenType.NULL)) return new ExprLiteral('null')
-    else if (this.match(TokenType.NUMBER))
-      return new ExprLiteral('number', this.previous())
-    else if (this.match(TokenType.STRING))
-      return new ExprLiteral('string', this.previous())
-    else if (this.match(TokenType.IDENTIFIER))
-      return new ExprVariable(this.previous())
-    else if (this.match(TokenType.LEFT_BRACE)) return this.dictionary()
-    else if (this.match(TokenType.LEFT_PAREN)) return this.grouping()
+    if (this.tokenMatches(TokenType.FALSE))
+      return new ExprLiteral('boolean', this.getPreviousToken(), 'false')
+    else if (this.tokenMatches(TokenType.TRUE))
+      return new ExprLiteral('boolean', this.getPreviousToken(), 'true')
+    else if (this.tokenMatches(TokenType.NULL))
+      return new ExprLiteral('null', this.getPreviousToken())
+    else if (this.tokenMatches(TokenType.NUMBER))
+      return new ExprLiteral('number', this.getPreviousToken())
+    else if (this.tokenMatches(TokenType.STRING))
+      return new ExprLiteral('string', this.getPreviousToken())
+    else if (this.tokenMatches(TokenType.IDENTIFIER))
+      return new ExprVariable(this.getPreviousToken())
+    else if (this.tokenMatches(TokenType.LEFT_BRACE)) return this.dictionary()
+    else if (this.tokenMatches(TokenType.LEFT_PAREN)) return this.grouping()
     else return new ExprGrouping(this.expression())
   }
 
   grouping(): Expr {
     const expr = this.expression()
-    this.assertToken(TokenType.RIGHT_PAREN, "Expect ')' after expression.")
+    this.assertTokenIs(TokenType.RIGHT_PAREN, "Expect ')' after expression.")
     return new ExprGrouping(expr)
   }
 
   dictionary(): Expr {
-    const token = this.previous()
+    const token = this.getPreviousToken()
 
     let keyValues: ([ExprVariable, null] | [Expr, Expr])[] = []
 
-    if (!this.check(TokenType.RIGHT_BRACE)) {
-      do {
-        if (this.peekType() !== TokenType.RIGHT_BRACE) {
-          const identifier = this.expression()
+    this.getCommaSeparatedValues({
+      closingBracket: TokenType.RIGHT_BRACE,
+      processArguments: () => {
+        const identifier = this.expression()
 
-          if (
-            !(identifier instanceof ExprVariable) ||
-            this.peekType() === TokenType.COLON
-          ) {
-            this.assertToken(TokenType.COLON, 'Expect token after key')
-            keyValues.push([identifier, this.expression()])
-          } else if (identifier instanceof ExprVariable)
-            keyValues.push([identifier, null])
-          else throw new BangError('Unexpected Identifier')
-        }
-      } while (this.match(TokenType.COMMA))
-    }
+        if (this.tokenMatches(TokenType.COLON))
+          keyValues.push([identifier, this.expression()])
+        else if (identifier instanceof ExprVariable)
+          keyValues.push([identifier, null])
+        else throw this.error(this.getToken(), 'Expect Colon After Key')
+      },
+    })
 
-    this.assertToken(TokenType.RIGHT_BRACE, "Expect '}' after dictionary.")
+    this.assertTokenIs(TokenType.RIGHT_BRACE, "Expect '}' after dictionary.")
 
     return new ExprDictionary(token, keyValues)
   }
