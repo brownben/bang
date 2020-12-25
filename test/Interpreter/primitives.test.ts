@@ -170,4 +170,24 @@ let b = 7
     expectError('{1:1}')
     expectError('{null:1}')
   })
+
+  it('should work with nested dictionaries', () => {
+    expectOutput('{hello:{world:"hi"}}').toEqual({ hello: { world: 'hi' } })
+  })
+
+  it('should get values from square bracket expression notation', () => {
+    expectOutput(`{'bang': 'is an awesome', 'language':true}['bang']`).toBe(
+      'is an awesome'
+    )
+    expectOutput(
+      `{'bang': 'is an awesome', 'language':true}['languag'+'e']`
+    ).toBe(true)
+    expectOutput(`{hello:{world:"hi"}}['hello'].world`).toBe('hi')
+    expectOutput(`{hello:{world:"hi"}}['hello']['world']`).toBe('hi')
+    expectOutput(`{hello:{world:"hi"}}.hello['world']`).toBe('hi')
+    expectError(`{hello:'world'}['hi']`)
+    expectError(`{hello:'world'}[false]`)
+    expectError(`{hello:'world'}[123]`)
+    expectError(`{hello:'world'}[null]`)
+  })
 })

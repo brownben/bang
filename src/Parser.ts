@@ -416,7 +416,10 @@ class Parser extends BaseParser {
     let expr: Expr = this.functionExpression()
 
     while (true) {
-      if (this.tokenMatches(TokenType.DOT)) expr = this.getExpression(expr)
+      if (this.tokenMatches(TokenType.DOT))
+        expr = this.getPropertyIdentifier(expr)
+      else if (this.tokenMatches(TokenType.LEFT_SQUARE))
+        expr = this.getPropertyExpression(expr)
       else if (!this.functionAhead() && this.tokenMatches(TokenType.LEFT_PAREN))
         expr = this.finishCall(expr)
       else break
@@ -425,12 +428,21 @@ class Parser extends BaseParser {
     return expr
   }
 
-  getExpression(expr: Expr): ExprGet {
+  getPropertyIdentifier(expr: Expr): ExprGet {
     const name = this.assertTokenIs(
       TokenType.IDENTIFIER,
       'Expect property name after "."'
     )
     return new ExprGet(name, expr)
+  }
+
+  getPropertyExpression(expr: Expr): ExprGet {
+    const identifier = this.expression()
+    this.assertTokenIs(
+      TokenType.RIGHT_SQUARE,
+      'Expected "]" after identifier expression'
+    )
+    return new ExprGet(identifier, expr)
   }
 
   finishCall(callee: Expr) {

@@ -30,6 +30,8 @@ export const oneCharacterTokens: { [key: string]: TokenType } = {
   ')': TokenType.RIGHT_PAREN,
   '{': TokenType.LEFT_BRACE,
   '}': TokenType.RIGHT_BRACE,
+  '[': TokenType.LEFT_SQUARE,
+  ']': TokenType.RIGHT_SQUARE,
   '+': TokenType.PLUS,
   '-': TokenType.MINUS,
   '/': TokenType.SLASH,
@@ -53,7 +55,31 @@ export const twoCharacterTokens: { [key: string]: TokenType } = {
   '=>': TokenType.FAT_ARROW,
 }
 
-export const unacceptableLineStartCharacters = [')', '.', ',', '*', '/', '+']
+export const unacceptableLineStartCharacters = [
+  ')',
+  '}',
+  ']',
+  '.',
+  ',',
+  '*',
+  '/',
+  '+',
+  '!=',
+  '==',
+  '<=',
+  '>=',
+  '+=',
+  '-=',
+  '*=',
+  '/=',
+  '**',
+  '&&',
+  '||',
+  '=>',
+  ':',
+  '<',
+  '>',
+]
 
 export const blankTokens = [
   TokenType.NEW_LINE,
@@ -82,6 +108,7 @@ export const synchronizeTokens = [
 export const assumeNewLineTokens = [
   TokenType.RIGHT_PAREN,
   TokenType.RIGHT_BRACE,
+  TokenType.RIGHT_SQUARE,
   TokenType.IDENTIFIER,
   TokenType.STRING,
   TokenType.NUMBER,
