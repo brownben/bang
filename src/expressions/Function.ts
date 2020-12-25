@@ -16,9 +16,9 @@ export class ExprFunction extends Expr {
     this.body = body
   }
 
-  evaluate(enviroment: Enviroment, name?: string) {
+  evaluate(enviroment: Enviroment, name?: string): PrimitiveFunction {
     const arity = this.arity
-    const enviromentCopy = enviroment.clone()
+    const enviromentCopy = enviroment
 
     const call = (argument: Primitive[]): Primitive => {
       const functionEnviroment = new Enviroment(enviromentCopy)
@@ -31,8 +31,6 @@ export class ExprFunction extends Expr {
       return new PrimitiveNull()
     }
 
-    const functionPrimitive = new PrimitiveFunction({ name, call, arity })
-    if (name) enviromentCopy.define(name, true, functionPrimitive)
-    return functionPrimitive
+    return new PrimitiveFunction({ name, call, arity })
   }
 }

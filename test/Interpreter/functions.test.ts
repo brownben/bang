@@ -1,15 +1,6 @@
 import { expectOutput, expectEnviroment, execute, expectError } from './helpers'
 
 describe('functions work', () => {
-  const originalConsoleLog = console.log
-
-  beforeEach(() => {
-    console.log = jest.fn()
-  })
-  afterEach(() => {
-    console.log = originalConsoleLog
-  })
-
   it('should declare and run functions of 2 variables', () => {
     expectOutput(`
 let sayHi = (first, last) =>
@@ -128,20 +119,6 @@ let b = counter()`)
     enviroment.toHaveValue('counter', '<function count>')
   })
 
-  it('should execute a simple recursive loop', () => {
-    execute(`
-let count = (n) =>
-  if (n > 1) count(n - 1)
-  print(n)
-
-
-count(3)`)
-    expect(console.log).toBeCalledTimes(3)
-    expect(console.log).toHaveBeenCalledWith(1)
-    expect(console.log).toHaveBeenCalledWith(2)
-    expect(console.log).toHaveBeenCalledWith(3)
-  })
-
   it('should calculate recursive fibonnaci', () => {
     expectOutput(`
 let fib = (n) =>
@@ -181,55 +158,15 @@ let fib = (n) =>
 fib(6)`).toBe(13)
   })
 
-  it('functions close over scope', () => {
-    execute(`
-let a = "global"
-
-  let showA = () =>
-    print(a)
-
-  showA()
-  a = "block"
-  showA()
-`)
-    expect(console.log).toHaveBeenCalledTimes(2)
-    expect(console.log).toHaveBeenNthCalledWith(1, 'global')
-    expect(console.log).toHaveBeenLastCalledWith('global')
-  })
-
-  it('should close scope over functions (with variable declaration)', () => {
-    execute(`
-let a = "global"
-
-  let showA = () =>
-    print(a)
-  showA()
-  let a = "block"
-  showA()`)
-    expect(console.log).toHaveBeenCalledTimes(2)
-    expect(console.log).toHaveBeenNthCalledWith(1, 'global')
-    expect(console.log).toHaveBeenLastCalledWith('global')
-  })
-
-  it('should error on top level return', () => {
-    expectError('return 2')
-  })
-
-  it('should execute immediately invoked functions', () => {
-    execute(`((a) => print(a))('hello')`)
-    expect(console.log).toHaveBeenLastCalledWith('hello')
-  })
-
   it('should not give a name to anonomous functions', () => {
-    execute('print((a,b) => a + b)')
-    expect(console.log).toHaveBeenLastCalledWith('<function>')
+    expectOutput('((a,b) => a + b)').toBe('<function>')
   })
 
   it('should calculate equality for functions', () => {
     expectOutput('print == print').toBe(true)
     expectOutput('print != print').toBe(false)
-    expectOutput('print != (a) => print(a)').toBe(true)
-    expectOutput('print == (a) => print(a)').toBe(false)
+    expectOutput('type != (a) => type(a)').toBe(true)
+    expectOutput('type == (a) => type(a)').toBe(false)
     expectOutput('((a) => a * a) == ((a) => a * a)').toBe(false)
   })
 
@@ -283,6 +220,89 @@ add(
 let a = () =>
   return
 a()`).toBe(null)
+  })
+
+  it('should be able to implement a class like behavior', () => {
+    expectOutput(`
+let aClass = () =>
+  let state = 0
+
+  let getState = () =>
+    return state
+  let setState = (value) =>
+    state = value
+
+  return {
+    getState,
+    setState,
+  }
+
+let a = aClass()
+a.setState(2)
+a.getState()`).toBe(2)
+  })
+
+  it('should error on top level return', () => {
+    expectError('return 2')
+  })
+
+  it('should execute immediately invoked functions', () => {
+    expectOutput(`((a) => type(a))('hello')`).toBe('string')
+  })
+
+  describe('with print output', () => {
+    const originalConsoleLog = console.log
+
+    beforeEach(() => {
+      console.log = jest.fn()
+    })
+    afterEach(() => {
+      console.log = originalConsoleLog
+    })
+
+    it('should execute a simple recursive loop', () => {
+      execute(`
+let count = (n) =>
+  if (n > 1) count(n - 1)
+  print(n)
+
+count(3)`)
+      expect(console.log).toBeCalledTimes(3)
+      expect(console.log).toHaveBeenCalledWith(1)
+      expect(console.log).toHaveBeenCalledWith(2)
+      expect(console.log).toHaveBeenCalledWith(3)
+    })
+
+    it('functions close over scope', () => {
+      execute(`
+let a = "global"
+
+let showA = () =>
+  print(a)
+
+showA()
+  a = "block"
+  showA()
+`)
+      expect(console.log).toHaveBeenCalledTimes(2)
+      expect(console.log).toHaveBeenNthCalledWith(1, 'global')
+      expect(console.log).toHaveBeenLastCalledWith('block')
+    })
+
+    it('should close scope over functions (with variable declaration)', () => {
+      execute(`
+let a = "global"
+
+let showA = () =>
+  print(a)
+
+showA()
+  let a = "block"
+  showA()`)
+      expect(console.log).toHaveBeenCalledTimes(2)
+      expect(console.log).toHaveBeenNthCalledWith(1, 'global')
+      expect(console.log).toHaveBeenLastCalledWith('global')
+    })
   })
 })
 

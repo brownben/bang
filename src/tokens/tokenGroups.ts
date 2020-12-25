@@ -81,6 +81,7 @@ export const synchronizeTokens = [
 
 export const assumeNewLineTokens = [
   TokenType.RIGHT_PAREN,
+  TokenType.RIGHT_BRACE,
   TokenType.IDENTIFIER,
   TokenType.STRING,
   TokenType.NUMBER,
@@ -156,12 +157,12 @@ export const getAssignmentOperator = (
 ): Token => {
   switch (operator.type) {
     case TokenType.PLUS_EQUAL:
-      return new Token(TokenType.PLUS, operator.line)
+      return new Token(TokenType.PLUS, operator.line, '+')
     case TokenType.MINUS_EQUAL:
-      return new Token(TokenType.MINUS, operator.line)
+      return new Token(TokenType.MINUS, operator.line, '-')
     case TokenType.STAR_EQUAL:
-      return new Token(TokenType.STAR, operator.line)
+      return new Token(TokenType.STAR, operator.line, '*')
     case TokenType.SLASH_EQUAL:
-      return new Token(TokenType.SLASH, operator.line)
+      return new Token(TokenType.SLASH, operator.line, '/')
   }
 }

@@ -52,12 +52,4 @@ export class Enviroment {
     else if (valueExists && this.enclosing) this.enclosing?.assign(name, value)
     else throw new BangError(`Variable "${name}" is not defined`)
   }
-
-  clone(): Enviroment {
-    const newEnviroment = new Enviroment(this.enclosing?.clone())
-    for (const [name, value] of Object.entries(this.values))
-      newEnviroment.define(name, value.constant, value.value)
-
-    return newEnviroment
-  }
 }
