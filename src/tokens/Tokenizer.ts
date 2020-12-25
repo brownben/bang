@@ -24,7 +24,7 @@ class BaseTokeniser {
   currentLine: number = 1
   currentPositionInLine: number = 0
 
-  addToken(type: TokenType, value?: string): void {
+  addToken(type: TokenType, value: string): void {
     this.tokens.push(new Token(type, this.currentLine, value))
   }
 
@@ -107,7 +107,7 @@ export class Tokenizer extends BaseTokeniser {
   getNumber() {
     const currentChar = this.getCurrentCharacter()
     if (currentChar === '.' && !isDigit(this.getNextCharacter()))
-      this.addToken(TokenType.DOT)
+      this.addToken(TokenType.DOT, currentChar)
     else {
       let numberContents: string = currentChar === '.' ? '0.' : currentChar
       this.currentPosition += 1
@@ -133,7 +133,10 @@ export class Tokenizer extends BaseTokeniser {
       keywordTokens[identifierString.toLowerCase()] &&
       typeof keywordTokens[identifierString.toLowerCase()] !== 'function'
     )
-      this.addToken(keywordTokens[identifierString.toLowerCase()])
+      this.addToken(
+        keywordTokens[identifierString.toLowerCase()],
+        identifierString
+      )
     else this.addToken(TokenType.IDENTIFIER, identifierString)
   }
 
@@ -147,7 +150,7 @@ export class Tokenizer extends BaseTokeniser {
       validLineStartCharacter &&
       this.expressionLevel <= 0
     ) {
-      this.addToken(TokenType.NEW_LINE)
+      this.addToken(TokenType.NEW_LINE, '\n')
       this.currentPositionInLine = 0
     }
 
@@ -170,18 +173,18 @@ export class Tokenizer extends BaseTokeniser {
     let indentationLevel = this.getIndentationLevel()
     while (this.blockLevel > indentationLevel) {
       this.blockLevel -= 1
-      this.addToken(TokenType.BLOCK_END)
+      this.addToken(TokenType.BLOCK_END, '')
     }
     while (this.blockLevel < indentationLevel) {
       this.blockLevel += 1
-      this.addToken(TokenType.BLOCK_START)
+      this.addToken(TokenType.BLOCK_START, '')
     }
   }
 
   closeAllBlocks() {
     while (this.blockLevel > 0) {
       this.blockLevel -= 1
-      this.addToken(TokenType.BLOCK_END)
+      this.addToken(TokenType.BLOCK_END, '')
     }
   }
 
@@ -192,10 +195,10 @@ export class Tokenizer extends BaseTokeniser {
     const twoChar = char + this.getNextCharacter()
 
     if (twoCharacterTokens?.[twoChar])
-      this.addToken(twoCharacterTokens?.[twoChar])
+      this.addToken(twoCharacterTokens?.[twoChar], twoChar)
     else if (twoChar === '//') this.goToNextLine()
     else if (oneCharacterTokens?.[char])
-      this.addToken(oneCharacterTokens?.[char])
+      this.addToken(oneCharacterTokens?.[char], char)
     else if (char === `'` || char === '"' || char === '`') this.getString()
     else if (isDigit(char) || char === '.') this.getNumber()
     else if (isAlpha(char)) this.getIdentifier()
@@ -224,9 +227,9 @@ export class Tokenizer extends BaseTokeniser {
 
     this.closeAllBlocks()
     if (this.getLastToken()?.type !== TokenType.NEW_LINE)
-      this.addToken(TokenType.NEW_LINE)
+      this.addToken(TokenType.NEW_LINE, '\n')
 
-    this.addToken(TokenType.EOF)
+    this.addToken(TokenType.EOF, '')
   }
 
   getTokens(): Token[] {

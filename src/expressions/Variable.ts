@@ -8,7 +8,7 @@ export class ExprVariable extends Expr {
 
   constructor(name: Token) {
     super()
-    this.name = name.value ?? ''
+    this.name = name.value
   }
 
   evaluate(enviroment: Enviroment): Primitive {

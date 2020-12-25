@@ -15,10 +15,14 @@ export class ExprLiteral extends Expr {
   value: string
   token?: Token
 
-  constructor(type: LiteralTypes, token: Token, value?: any) {
+  constructor(
+    type: LiteralTypes,
+    token: Token,
+    value?: string | number | boolean | null
+  ) {
     super()
     this.type = type
-    this.value = token?.value ?? value?.toString() ?? ''
+    this.value = value?.toString() ?? ''
     this.token = token
   }
 

@@ -11,7 +11,7 @@ export class ExprGet extends Expr {
 
   constructor(name: Token, object: Expr) {
     super()
-    this.name = name?.value ?? ''
+    this.name = name.value
     this.object = object
   }
 

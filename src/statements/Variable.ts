@@ -11,7 +11,7 @@ export class StmtVariable extends Stmt {
 
   constructor(name: Token, constant: boolean, expression?: Expr) {
     super()
-    this.name = name.value ?? '_'
+    this.name = name.value
     this.expression = expression
     this.constant = constant
   }

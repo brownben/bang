@@ -9,9 +9,9 @@ export class PrimitiveString extends Primitive {
   value: string
   type = 'string'
 
-  constructor(value?: string, token?: Token) {
+  constructor(value: string, token?: Token) {
     super()
-    this.value = token?.value ?? value?.toString() ?? ''
+    this.value = token?.value ?? value.toString()
     this.token = token
   }
 

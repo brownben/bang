@@ -7,9 +7,9 @@ export class PrimitiveBoolean extends Primitive {
   value: string
   type = 'boolean'
 
-  constructor(value: any, token?: Token) {
+  constructor(value: string | boolean, token?: Token) {
     super()
-    this.value = token?.value ?? value.toString()
+    this.value = value.toString()
     this.token = token
   }
 

@@ -10,7 +10,7 @@ export class PrimitiveNull extends Primitive {
 
   constructor(value?: string, token?: Token) {
     super()
-    this.value = value ?? ''
+    this.value = token?.value ?? value ?? ''
     this.token = token
   }
 

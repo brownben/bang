@@ -9,7 +9,7 @@ const expectTokens = (code: string, tokens: Partial<Token>[]) =>
       { type: TokenType.EOF, line: code.split('\n').length },
     ].map((token) => ({
       ...token,
-      value: token?.value?.toString(),
+      value: token?.value?.toString() ?? expect.any(String),
       line: token?.line ?? 1,
     }))
   )

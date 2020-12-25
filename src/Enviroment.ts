@@ -11,14 +11,13 @@ export class Enviroment {
     if (enclosing) this.enclosing = enclosing
   }
 
-  define(name: string, constant: boolean, value?: Primitive): void {
+  define(name: string, constant: boolean, value: Primitive): void {
     if (name === '_') return
 
     if (this.existsInCurrentScope(name))
       throw new BangError(`Variable Already "${name}" Exists `)
 
-    if (value) this.values[name] = { value, constant }
-    else this.values[name] = { value: new PrimitiveNull(), constant }
+    this.values[name] = { value, constant }
   }
 
   get(name: string): Primitive {
