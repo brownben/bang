@@ -31,12 +31,6 @@ describe('literals should return values', () => {
 })
 
 describe('built in properties on primitives', () => {
-  it('should have length property on strings', () => {
-    expectOutput('"a".length').toBe(1)
-    expectOutput('`Hello World`.length').toBe(11)
-    expectOutput(`'abc'.length`).toBe(3)
-  })
-
   it('should have toString methods', () => {
     expectOutput(`123.toString()`).toBe('123')
     expectOutput(`123.12.toString()`).toBe('123.12')
@@ -78,6 +72,14 @@ describe('built in properties on primitives', () => {
     expectOutput('{}.toBoolean()').toBe(true)
     expectOutput('{hello:false}.toBoolean()').toBe(true)
   })
+})
+
+describe('string built-in functions', () => {
+  it('should have length property on strings', () => {
+    expectOutput('"a".length').toBe(1)
+    expectOutput('`Hello World`.length').toBe(11)
+    expectOutput(`'abc'.length`).toBe(3)
+  })
 
   it('should have case changing methods on strings', () => {
     expectOutput(`'hello'.toUppercase()`).toBe('HELLO')
@@ -93,6 +95,62 @@ describe('built in properties on primitives', () => {
     expectError('123.toLowercase()')
   })
 
+  it('should have reverse method', () => {
+    expectOutput(`'hello'.reverse()`).toBe('olleh')
+    expectOutput(`''.reverse()`).toBe('')
+    expectOutput(`'Hello World'.reverse()`).toBe('dlroW olleH')
+  })
+
+  it('should have trim methods', () => {
+    expectOutput(`'hello'.trim()`).toBe('hello')
+    expectOutput(`'  hello   '.trim()`).toBe('hello')
+    expectOutput(`' hello'.trim()`).toBe('hello')
+    expectOutput(`'hello  '.trim()`).toBe('hello')
+
+    expectOutput(`'hello'.trimStart()`).toBe('hello')
+    expectOutput(`'  hello   '.trimStart()`).toBe('hello   ')
+    expectOutput(`' hello'.trimStart()`).toBe('hello')
+    expectOutput(`'hello  '.trimStart()`).toBe('hello  ')
+
+    expectOutput(`'hello'.trimEnd()`).toBe('hello')
+    expectOutput(`'  hello   '.trimEnd()`).toBe('  hello')
+    expectOutput(`' hello'.trimEnd()`).toBe(' hello')
+    expectOutput(`'hello  '.trimEnd()`).toBe('hello')
+  })
+
+  it('should have replace methods', () => {
+    expectOutput(`'hello'.replace('l', '-')`).toBe('he--o')
+    expectOutput(`'hello'.replace('ll', '11')`).toBe('he11o')
+    expectOutput(`'hello'.replaceOne('l', '-')`).toBe('he-lo')
+    expectOutput(`'hello'.replaceOne('ll', '11')`).toBe('he11o')
+
+    expectError(`'hello'.replace('ll', 11)`)
+    expectError(`'hello'.replace(11, '11')`)
+    expectError(`'hello'.replaceOne('ll', 11)`)
+    expectError(`'hello'.replaceOne(11, '11')`)
+  })
+
+  it('should have split method', () => {
+    expectError(`'hello hello'.split()`)
+    expectError(`'hello hello'.split(1)`)
+    expectOutput(`'hello hello'.split('l')`).toEqual([
+      'he',
+      '',
+      'o he',
+      '',
+      'o',
+    ])
+    expectOutput(`'hello'.split('e')`).toEqual(['h', 'llo'])
+  })
+
+  it('should have includes method', () => {
+    expectOutput(`'hello'.includes('hell')`).toBe(true)
+    expectOutput(`'hello'.includes('helloo')`).toBe(false)
+    expectOutput(`'hello hello'.includes(1)`).toBe(false)
+  })
+})
+
+describe('immutible primitive functions', () => {
   it('should have freeze methods on dictionaries', () => {
     expectOutput(`{}.isImmutable`).toBe(false)
     expectOutput(`{}.freeze().isImmutable`).toBe(true)

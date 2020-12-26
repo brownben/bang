@@ -139,7 +139,7 @@ export class BuiltInPropertyVisitor
       toString: new PrimitiveFunction({
         name: 'toString',
         arity: 0,
-        call: () => new PrimitiveString(primitive.getValue().join(', ')),
+        call: () => new PrimitiveString(JSON.stringify(primitive.getValue())),
       }),
 
       toBoolean: new PrimitiveFunction({
@@ -208,6 +208,102 @@ export class BuiltInPropertyVisitor
         name: 'toLowercase',
         arity: 0,
         call: () => new PrimitiveString(primitive.value.toLowerCase()),
+      }),
+
+      reverse: new PrimitiveFunction({
+        name: 'reverse',
+        arity: 0,
+        call: () =>
+          new PrimitiveString([...primitive.value].reverse().join('')),
+      }),
+
+      replaceOne: new PrimitiveFunction({
+        name: 'replaceOne',
+        arity: 2,
+        call: (argument: Primitive[]) => {
+          const [target, newString] = argument
+
+          if (!(target instanceof PrimitiveString))
+            throw new BangError('Replace target must be a string')
+
+          if (!(newString instanceof PrimitiveString))
+            throw new BangError('Replacement must be a string')
+
+          return new PrimitiveString(
+            primitive.value.replace(target.getValue(), newString.getValue())
+          )
+        },
+      }),
+
+      replace: new PrimitiveFunction({
+        name: 'replace',
+        arity: 2,
+        call: (argument: Primitive[]) => {
+          const [target, newString] = argument
+
+          if (!(target instanceof PrimitiveString))
+            throw new BangError('Replace target must be a string')
+
+          if (!(newString instanceof PrimitiveString))
+            throw new BangError('Replacement must be a string')
+
+          return new PrimitiveString(
+            primitive.value.replace(
+              new RegExp(target.getValue(), 'g'),
+              newString.getValue()
+            )
+          )
+        },
+      }),
+
+      split: new PrimitiveFunction({
+        name: 'split',
+        arity: 1,
+        call: (argument: Primitive[]) => {
+          const [value] = argument
+
+          if (!(value instanceof PrimitiveString))
+            throw new BangError('Split specifier must be a string')
+
+          return new PrimitiveList({
+            values: primitive.value
+              .split(value.getValue())
+              .map((value) => new PrimitiveString(value)),
+          })
+        },
+      }),
+
+      trim: new PrimitiveFunction({
+        name: 'trim',
+        arity: 0,
+        call: () => new PrimitiveString(primitive.value.trim()),
+      }),
+
+      trimStart: new PrimitiveFunction({
+        name: 'trimStart',
+        arity: 0,
+        call: () => new PrimitiveString(primitive.value.trimStart()),
+      }),
+
+      trimEnd: new PrimitiveFunction({
+        name: 'trimEnd',
+        arity: 0,
+        call: () => new PrimitiveString(primitive.value.trimEnd()),
+      }),
+
+      includes: new PrimitiveFunction({
+        name: 'includes',
+        arity: 1,
+        call: (argument: Primitive[]) => {
+          const [value] = argument
+
+          if (!(value instanceof PrimitiveString))
+            return new PrimitiveBoolean(false)
+
+          return new PrimitiveBoolean(
+            primitive.value.includes(value.getValue())
+          )
+        },
       }),
 
       toBoolean: new PrimitiveFunction({
