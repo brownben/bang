@@ -5,9 +5,12 @@ import BangError from '../BangError'
 
 type RawLiteralValue = string | number | boolean | null
 interface RawPrimitiveDictionaryValue {
-  [key: string]: RawLiteralValue | RawPrimitiveDictionaryValue
+  [key: string]: RawPrimitiveValue
 }
-export type RawPrimitiveValue = RawLiteralValue | RawPrimitiveDictionaryValue
+export type RawPrimitiveValue =
+  | RawLiteralValue
+  | RawPrimitiveDictionaryValue
+  | RawPrimitiveValue[]
 
 export abstract class Primitive {
   abstract token?: Token

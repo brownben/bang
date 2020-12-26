@@ -2,6 +2,7 @@ import { Primitive } from './Primitive'
 import { PrimitiveBoolean } from './Boolean'
 import { PrimitiveDictionary } from './Dictionary'
 import { PrimitiveFunction } from './Function'
+import { PrimitiveList } from './List'
 import { PrimitiveNull } from './Null'
 import { PrimitiveNumber } from './Number'
 import { PrimitiveString } from './String'
@@ -11,6 +12,7 @@ export interface VisitPrimitives<T> {
   visitBoolean: (primitive: PrimitiveBoolean) => T
   visitDictionary: (primitive: PrimitiveDictionary) => T
   visitFunction: (primitive: PrimitiveFunction) => T
+  visitList: (primitive: PrimitiveList) => T
   visitNull: (primitive: PrimitiveNull) => T
   visitNumber: (primitive: PrimitiveNumber) => T
   visitString: (primitive: PrimitiveString) => T
@@ -106,6 +108,44 @@ export class BuiltInPropertyVisitor
         name: 'toBoolean',
         arity: 0,
         call: () => new PrimitiveBoolean(true),
+      }),
+    }
+  }
+
+  visitList(primitive: PrimitiveList) {
+    return {
+      length: new PrimitiveNumber(primitive.list.length),
+
+      isImmutable: new PrimitiveBoolean(primitive.immutable),
+
+      freeze: new PrimitiveFunction({
+        name: 'freeze',
+        arity: 0,
+        call: () => {
+          primitive.immutable = true
+          return primitive
+        },
+      }),
+
+      unfreeze: new PrimitiveFunction({
+        name: 'unfreeze',
+        arity: 0,
+        call: () => {
+          primitive.immutable = false
+          return primitive
+        },
+      }),
+
+      toString: new PrimitiveFunction({
+        name: 'toString',
+        arity: 0,
+        call: () => new PrimitiveString(primitive.getValue().join(', ')),
+      }),
+
+      toBoolean: new PrimitiveFunction({
+        name: 'toBoolean',
+        arity: 0,
+        call: () => new PrimitiveBoolean(primitive.list.length > 0),
       }),
     }
   }
