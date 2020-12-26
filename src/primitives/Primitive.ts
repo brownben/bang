@@ -13,6 +13,7 @@ export abstract class Primitive {
   abstract token?: Token
   abstract value: string
   abstract type: string
+  abstract immutable: boolean
 
   abstract getValue(): RawPrimitiveValue
   abstract isTruthy(): boolean

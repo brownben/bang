@@ -5,7 +5,8 @@ import { BuiltInPropertyVisitor } from './builtInProperties'
 export class PrimitiveBoolean extends Primitive {
   token?: Token
   value: string
-  type = 'boolean'
+  readonly type = 'boolean'
+  readonly immutable: true = true
 
   constructor(value: string | boolean, token?: Token) {
     super()

@@ -10,9 +10,10 @@ interface PrimitiveFunctionConstructor {
 }
 
 export class PrimitiveFunction extends Primitive implements Callable {
-  token: undefined = undefined
-  value: string = ''
-  type = 'function'
+  readonly token: undefined = undefined
+  readonly value: string = ''
+  readonly type = 'function'
+  readonly immutable: true = true
 
   name?: string
   arity: number

@@ -7,7 +7,8 @@ import BangError from '../BangError'
 export class PrimitiveString extends Primitive {
   token?: Token
   value: string
-  type = 'string'
+  readonly type = 'string'
+  readonly immutable: true = true
 
   constructor(value: string, token?: Token) {
     super()

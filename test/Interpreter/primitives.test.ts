@@ -92,6 +92,15 @@ describe('built in properties on primitives', () => {
 
     expectError('123.toLowercase()')
   })
+
+  it('should have freeze methods on dictionaries', () => {
+    expectOutput(`{}.isImmutable`).toBe(false)
+    expectOutput(`{}.freeze().isImmutable`).toBe(true)
+    expectOutput(`{}.freeze().unfreeze().isImmutable`).toBe(false)
+
+    expectError('123.isImmutable')
+    expectError('123.freeze()')
+  })
 })
 
 describe('dictionaries can be used', () => {

@@ -45,7 +45,7 @@ export class ExprDictionary extends Expr {
         if (evaluated instanceof PrimitiveString) return evaluated.value
         else throw new BangError('Only Strings Can Be Used as Dictionary Keys')
       }),
-      values: this.values.map((value) => value?.evaluate(enviroment)),
+      values: this.values.map((value) => value.evaluate(enviroment)),
     })
   }
 }

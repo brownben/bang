@@ -19,8 +19,9 @@ interface PrimitiveDictionaryConstructor {
 
 export class PrimitiveDictionary extends Primitive {
   token: Token
-  type = 'dictionary'
   value = ''
+  type = 'dictionary'
+  immutable: boolean = false
 
   dictionary: Record<string, Primitive> = {}
 

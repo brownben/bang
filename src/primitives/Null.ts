@@ -5,8 +5,9 @@ import { BuiltInPropertyVisitor } from './builtInProperties'
 
 export class PrimitiveNull extends Primitive {
   token?: Token
-  value: string
-  type = 'null'
+  readonly value: string
+  readonly type = 'null'
+  readonly immutable: true = true
 
   constructor(value?: string, token?: Token) {
     super()

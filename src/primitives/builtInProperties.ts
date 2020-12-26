@@ -45,6 +45,26 @@ export class BuiltInPropertyVisitor
 
   visitDictionary(primitive: PrimitiveDictionary) {
     return {
+      isImmutable: new PrimitiveBoolean(primitive.immutable),
+
+      freeze: new PrimitiveFunction({
+        name: 'freeze',
+        arity: 0,
+        call: () => {
+          primitive.immutable = true
+          return primitive
+        },
+      }),
+
+      unfreeze: new PrimitiveFunction({
+        name: 'unfreeze',
+        arity: 0,
+        call: () => {
+          primitive.immutable = false
+          return primitive
+        },
+      }),
+
       get: new PrimitiveFunction({
         name: 'get',
         arity: 1,
