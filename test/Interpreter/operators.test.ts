@@ -328,6 +328,7 @@ describe('logical operators can be used', () => {
     expectOutput('2 && "hello"').toBe('hello')
     expectOutput('((a) => a + 1) && "hello"').toBe('hello')
     expectOutput('{} && "hello"').toBe('hello')
+    expectOutput('[] && "hello"').toBe('hello')
   })
 
   it('should return first value of an AND statement if falsy', () => {

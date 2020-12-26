@@ -27,6 +27,7 @@ import {
   ExprFunction,
   ExprGet,
   ExprGrouping,
+  ExprList,
   ExprLiteral,
   ExprLogical,
   ExprSet,
@@ -523,8 +524,9 @@ class Parser extends BaseParser {
       return new ExprLiteral('string', this.getPreviousToken())
     else if (this.tokenMatches(TokenType.IDENTIFIER))
       return new ExprVariable(this.getPreviousToken())
-    else if (this.tokenMatches(TokenType.LEFT_BRACE)) return this.dictionary()
     else if (this.tokenMatches(TokenType.LEFT_PAREN)) return this.grouping()
+    else if (this.tokenMatches(TokenType.LEFT_BRACE)) return this.dictionary()
+    else if (this.tokenMatches(TokenType.LEFT_SQUARE)) return this.list()
     else return new ExprGrouping(this.expression())
   }
 
@@ -536,8 +538,7 @@ class Parser extends BaseParser {
 
   dictionary(): Expr {
     const token = this.getPreviousToken()
-
-    let keyValues: ([ExprVariable, null] | [Expr, Expr])[] = []
+    const keyValues: ([ExprVariable, null] | [Expr, Expr])[] = []
 
     this.getCommaSeparatedValues({
       closingBracket: TokenType.RIGHT_BRACE,
@@ -553,8 +554,24 @@ class Parser extends BaseParser {
     })
 
     this.assertTokenIs(TokenType.RIGHT_BRACE, "Expect '}' after dictionary.")
-
     return new ExprDictionary(token, keyValues)
+  }
+
+  list(): Expr {
+    const token = this.getPreviousToken()
+    const values: Expr[] = []
+
+    this.getCommaSeparatedValues({
+      closingBracket: TokenType.RIGHT_SQUARE,
+      processArguments: () => {
+        if (this.getTokenType() === TokenType.COMMA)
+          values.push(new ExprLiteral('null', this.getToken(), null))
+        else values.push(this.expression())
+      },
+    })
+
+    this.assertTokenIs(TokenType.RIGHT_SQUARE, "Expect ']' after dictionary.")
+    return new ExprList(token, values)
   }
 }
 

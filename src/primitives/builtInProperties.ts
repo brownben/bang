@@ -6,6 +6,7 @@ import { PrimitiveList } from './List'
 import { PrimitiveNull } from './Null'
 import { PrimitiveNumber } from './Number'
 import { PrimitiveString } from './String'
+import { ReturnValue } from './ReturnValue'
 import BangError from '../BangError'
 
 export interface VisitPrimitives<T> {
@@ -16,6 +17,15 @@ export interface VisitPrimitives<T> {
   visitNull: (primitive: PrimitiveNull) => T
   visitNumber: (primitive: PrimitiveNumber) => T
   visitString: (primitive: PrimitiveString) => T
+}
+
+const callFunction = (func: PrimitiveFunction, argument: Primitive[]) => {
+  try {
+    return func.call(argument)
+  } catch (error) {
+    if (error instanceof ReturnValue) return error.value
+    else throw error
+  }
 }
 
 export class BuiltInPropertyVisitor
@@ -144,6 +154,204 @@ export class BuiltInPropertyVisitor
           primitive.immutable = false
           return primitive
         },
+      }),
+
+      map: new PrimitiveFunction({
+        name: 'map',
+        arity: 1,
+        call: (argument: Primitive[]) => {
+          const [func] = argument
+          if (!(func instanceof PrimitiveFunction))
+            throw new BangError('Transform must be a Function')
+
+          return new PrimitiveList({
+            values: primitive.list.map((value) => callFunction(func, [value])),
+          })
+        },
+      }),
+
+      filter: new PrimitiveFunction({
+        name: 'filter',
+        arity: 1,
+        call: (argument: Primitive[]) => {
+          const [func] = argument
+          if (!(func instanceof PrimitiveFunction))
+            throw new BangError('Predicate must be a Function')
+
+          return new PrimitiveList({
+            values: primitive.list.filter((value) =>
+              callFunction(func, [value]).isTruthy()
+            ),
+          })
+        },
+      }),
+
+      forEach: new PrimitiveFunction({
+        name: 'forEach',
+        arity: 1,
+        call: (argument: Primitive[]) => {
+          const [func] = argument
+          if (!(func instanceof PrimitiveFunction))
+            throw new BangError('Transform must be a Function')
+
+          primitive.list.map((value) => callFunction(func, [value]))
+          return new PrimitiveNull()
+        },
+      }),
+
+      every: new PrimitiveFunction({
+        name: 'every',
+        arity: 0,
+        call: () =>
+          new PrimitiveBoolean(
+            primitive.list.map((value) => value.isTruthy()).every(Boolean)
+          ),
+      }),
+
+      any: new PrimitiveFunction({
+        name: 'every',
+        arity: 0,
+        call: () =>
+          new PrimitiveBoolean(
+            primitive.list.map((value) => value.isTruthy()).some(Boolean)
+          ),
+      }),
+
+      reverse: new PrimitiveFunction({
+        name: 'reverse',
+        arity: 0,
+        call: () => new PrimitiveList({ values: primitive.list.reverse() }),
+      }),
+
+      includes: new PrimitiveFunction({
+        name: 'includes',
+        arity: 1,
+        call: (argument: Primitive[]) => {
+          const [value] = argument
+
+          return new PrimitiveBoolean(
+            primitive.list
+              .map((value) => value.getValue())
+              .includes(value.getValue())
+          )
+        },
+      }),
+
+      pop: new PrimitiveFunction({
+        name: 'pop',
+        arity: 0,
+        call: () => {
+          if (primitive.immutable)
+            throw new BangError('List is immutable, it cannot be edited')
+
+          return primitive.list.pop() ?? new PrimitiveNull()
+        },
+      }),
+
+      push: new PrimitiveFunction({
+        name: 'push',
+        arity: 1,
+        call: (argument: Primitive[]) => {
+          if (primitive.immutable)
+            throw new BangError('List is immutable, it cannot be edited')
+
+          const [value] = argument
+          primitive.list.push(value)
+          return primitive
+        },
+      }),
+
+      shift: new PrimitiveFunction({
+        name: 'shift',
+        arity: 0,
+        call: () => {
+          if (primitive.immutable)
+            throw new BangError('List is immutable, it cannot be edited')
+
+          return primitive.list.shift() ?? new PrimitiveNull()
+        },
+      }),
+
+      unshift: new PrimitiveFunction({
+        name: 'unshift',
+        arity: 1,
+        call: (argument: Primitive[]) => {
+          if (primitive.immutable)
+            throw new BangError('List is immutable, it cannot be edited')
+
+          const [value] = argument
+          primitive.list.unshift(value)
+          return primitive
+        },
+      }),
+
+      join: new PrimitiveFunction({
+        name: 'join',
+        arity: 1,
+        call: (argument: Primitive[]) => {
+          const [value] = argument
+
+          if (!(value instanceof PrimitiveString))
+            throw new BangError('Argument must be a string')
+
+          return new PrimitiveString(
+            primitive.list
+              .map((value) => value.getValue())
+              .join(value.getValue())
+          )
+        },
+      }),
+
+      find: new PrimitiveFunction({
+        name: 'find',
+        arity: 1,
+        call: (argument: Primitive[]) => {
+          const [func] = argument
+          if (!(func instanceof PrimitiveFunction))
+            throw new BangError('Predicate must be a Function')
+
+          return (
+            primitive.list.find((value) =>
+              callFunction(func, [value]).isTruthy()
+            ) ?? new PrimitiveNull()
+          )
+        },
+      }),
+
+      findIndex: new PrimitiveFunction({
+        name: 'findIndex',
+        arity: 1,
+        call: (argument: Primitive[]) => {
+          const [func] = argument
+          if (!(func instanceof PrimitiveFunction))
+            throw new BangError('Predicate must be a Function')
+
+          const value = primitive.list.findIndex((value) =>
+            callFunction(func, [value]).isTruthy()
+          )
+          if (value < 0) return new PrimitiveNull()
+          else return new PrimitiveNumber(value)
+        },
+      }),
+
+      indexOf: new PrimitiveFunction({
+        name: 'indexOf',
+        arity: 1,
+        call: (argument: Primitive[]) => {
+          const [value] = argument
+
+          const listValues = primitive.list.map((value) => value.getValue())
+          const result = listValues.indexOf(value.getValue())
+
+          if (result < 0) return new PrimitiveNull()
+          else return new PrimitiveNumber(result)
+        },
+      }),
+
+      copy: new PrimitiveFunction({
+        name: 'copy',
+        arity: 0,
+        call: () => new PrimitiveList({ values: primitive.list }),
       }),
 
       toString: new PrimitiveFunction({

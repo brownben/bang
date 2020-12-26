@@ -2,6 +2,7 @@ import { Token } from '../tokens'
 import { Primitive, RawPrimitiveValue } from './Primitive'
 import { PrimitiveBoolean } from './Boolean'
 import { BuiltInPropertyVisitor } from './builtInProperties'
+import BangError from '../BangError'
 
 const listsHaveEqualValues = (a: Primitive[], b: Primitive[]) =>
   a
@@ -14,7 +15,7 @@ interface PrimitiveListConstructor {
 }
 
 export class PrimitiveList extends Primitive {
-  token: Token
+  token?: Token
   value = ''
   type = 'list'
   immutable: boolean = false
@@ -48,6 +49,16 @@ export class PrimitiveList extends Primitive {
         !listsHaveEqualValues(this.list, value.list) ||
         this.list.length !== value.list.length
     )
+  }
+
+  plus(value: Primitive): Primitive {
+    if (this.immutable)
+      throw new BangError('List is immutable, it cannot be edited')
+
+    if (value instanceof PrimitiveList) this.list = this.list.concat(value.list)
+    else this.list.push(value)
+
+    return this
   }
 
   builtInProperties(
