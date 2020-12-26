@@ -318,4 +318,17 @@ a.key`).toBe(11)
     expectError('null.toString = "hello"')
     expectError('false["22"] = true')
   })
+
+  it('should have keys and values properties', () => {
+    expectOutput(`{a:1, "hello":'world', other: false}.keys`).toEqual([
+      'a',
+      'hello',
+      'other',
+    ])
+    expectOutput(`{a:1, "hello":'world', other: false}.values`).toEqual([
+      1,
+      'world',
+      false,
+    ])
+  })
 })

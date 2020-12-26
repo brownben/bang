@@ -82,6 +82,16 @@ export class BuiltInPropertyVisitor
         },
       }),
 
+      keys: new PrimitiveList({
+        values: Object.keys(primitive.dictionary).map(
+          (value) => new PrimitiveString(value)
+        ),
+      }),
+
+      values: new PrimitiveList({
+        values: Object.values(primitive.dictionary),
+      }),
+
       toBoolean: new PrimitiveFunction({
         name: 'toBoolean',
         arity: 0,
