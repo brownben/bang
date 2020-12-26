@@ -2,6 +2,7 @@ import { Token } from '../tokens'
 import { Primitive, RawPrimitiveValue } from './Primitive'
 import { PrimitiveBoolean } from './Boolean'
 import { BuiltInPropertyVisitor } from './builtInProperties'
+import BangError from '../BangError'
 
 const dictionariesHaveEqualValues = (
   a: Record<string, Primitive>,
@@ -39,6 +40,13 @@ export class PrimitiveDictionary extends Primitive {
   }
   keyExists(key: string): boolean {
     return this.keys.includes(key)
+  }
+  set(key: string, value: Primitive) {
+    if (this.immutable)
+      throw new BangError('Dictionary is Immutable, Property cannot be Set')
+
+    this.dictionary[key] = value
+    return value
   }
 
   getValue(): Record<string, RawPrimitiveValue> {

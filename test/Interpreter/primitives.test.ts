@@ -213,4 +213,51 @@ let b = 7
     expectError(`{hello:'world'}[123]`)
     expectError(`{hello:'world'}[null]`)
   })
+
+  it('should set properties on dictionaries', () => {
+    expectOutput(`
+let a = {}
+a.hello = 'world'
+a.hello`).toBe('world')
+    expectOutput(`
+let a = {}
+a['hello'] = 'world'
+a.hello`).toBe('world')
+    expectError(`
+let a = {}
+a[77] = 'world'`)
+  })
+
+  it('should throw error when setting properties on immutable dictionaries', () => {
+    expectError(`
+let a = {}.freeze()
+a.hello = 'world'
+a.hello`)
+    expectError(`
+let a = {}.freeze()
+a['hello'] = 'world'
+a.hello`)
+    expectError(`
+let a = {d:1}
+let b = {c:4, a}.freeze()
+b.a = 11`)
+  })
+
+  it('should be able to use assignment operators to update properties', () => {
+    expectOutput(`
+let a = {hello:'hello'}
+a.hello += 'world'
+a.hello`)
+    expectOutput(`
+let a = {key:77}
+a['key'] /= 7
+a.key`).toBe(11)
+  })
+
+  it('should not set properties on other primitives', () => {
+    expectError('123.property = 1')
+    expectError('null.property = "hello"')
+    expectError('null.toString = "hello"')
+    expectError('false["22"] = true')
+  })
 })

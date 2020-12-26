@@ -1,8 +1,8 @@
 import { Token } from '../tokens'
 import { Expr } from './Expr'
 import { Primitive, PrimitiveDictionary, PrimitiveString } from '../primitives'
-import { Enviroment } from '../Enviroment'
 import { BuiltInPropertyVisitor } from '../primitives/builtInProperties'
+import { Enviroment } from '../Enviroment'
 import BangError from '../BangError'
 
 export class ExprGet extends Expr {

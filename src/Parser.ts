@@ -29,6 +29,7 @@ import {
   ExprGrouping,
   ExprLiteral,
   ExprLogical,
+  ExprSet,
   ExprUnary,
   ExprVariable,
 } from './expressions'
@@ -291,19 +292,21 @@ class Parser extends BaseParser {
     else return expr
   }
 
-  assignmentVariable(expr: Expr): ExprAssign {
+  assignmentVariable(expr: Expr): Expr {
     const equals: Token = this.getPreviousToken()
     const value: Expr = this.expression()
 
     if (expr instanceof ExprVariable) {
       const name = expr.name
       return new ExprAssign(name, value)
+    } else if (expr instanceof ExprGet) {
+      return new ExprSet(expr.object, expr.lookup, value)
     }
 
     throw this.error(equals, 'Invalid Assignment Target')
   }
 
-  assignmentOperator(expr: Expr): ExprAssign {
+  assignmentOperator(expr: Expr): Expr {
     const equals = this.getPreviousToken() as Token<AssignmentOperator>
     const incrementValue: Expr = this.expression()
 
@@ -313,6 +316,8 @@ class Parser extends BaseParser {
     if (expr instanceof ExprVariable) {
       const name = expr.name
       return new ExprAssign(name, value)
+    } else if (expr instanceof ExprGet) {
+      return new ExprSet(expr.object, expr.lookup, value)
     }
 
     throw this.error(equals, 'Invalid Assignment Target')

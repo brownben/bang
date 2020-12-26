@@ -207,7 +207,7 @@ export class Tokenizer extends BaseTokeniser {
       throw this.constructError(`Unidentified Character`)
 
     if (['{', '(', '['].includes(char)) this.expressionLevel += 1
-    else if (['}', ')', '}'].includes(char)) this.expressionLevel -= 1
+    else if (['}', ')', ']'].includes(char)) this.expressionLevel -= 1
 
     if (Object.keys(twoCharacterTokens).includes(twoChar)) {
       this.currentPositionInLine += 2
