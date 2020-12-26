@@ -78,6 +78,20 @@ describe('built in properties on primitives', () => {
     expectOutput('{}.toBoolean()').toBe(true)
     expectOutput('{hello:false}.toBoolean()').toBe(true)
   })
+
+  it('should have case changing methods on strings', () => {
+    expectOutput(`'hello'.toUppercase()`).toBe('HELLO')
+    expectOutput(`'Hello'.toUppercase()`).toBe('HELLO')
+    expectOutput(`'hElLo'.toUppercase()`).toBe('HELLO')
+    expectOutput(`'HELLO'.toUppercase()`).toBe('HELLO')
+
+    expectOutput(`'hello'.toLowercase()`).toBe('hello')
+    expectOutput(`'Hello'.toLowercase()`).toBe('hello')
+    expectOutput(`'hElLo'.toLowercase()`).toBe('hello')
+    expectOutput(`'HELLO'.toLowercase()`).toBe('hello')
+
+    expectError('123.toLowercase()')
+  })
 })
 
 describe('dictionaries can be used', () => {

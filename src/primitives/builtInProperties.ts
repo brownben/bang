@@ -138,6 +138,18 @@ export class BuiltInPropertyVisitor
     return {
       length: new PrimitiveNumber(primitive.value.length),
 
+      toUppercase: new PrimitiveFunction({
+        name: 'toUppercase',
+        arity: 0,
+        call: () => new PrimitiveString(primitive.value.toUpperCase()),
+      }),
+
+      toLowercase: new PrimitiveFunction({
+        name: 'toLowercase',
+        arity: 0,
+        call: () => new PrimitiveString(primitive.value.toLowerCase()),
+      }),
+
       toBoolean: new PrimitiveFunction({
         name: 'toBoolean',
         arity: 0,
