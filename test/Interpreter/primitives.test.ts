@@ -155,6 +155,19 @@ describe('string built-in functions', () => {
     expectOutput(`'hello'.includes('helloo')`).toBe(false)
     expectOutput(`'hello hello'.includes(1)`).toBe(false)
   })
+
+  it('should get chars from string by index', () => {
+    expectOutput(`'hello'[0]`).toBe('h')
+    expectOutput(`'hello'[2]`).toBe('l')
+    expectOutput(`'hello'[-1]`).toBe('o')
+    expectOutput(`'hello'[-2]`).toBe('l')
+    expectError('"hello"[false]')
+    expectError('"hello"[70]')
+  })
+
+  it('should not set chars from string by index', () => {
+    expectError(`'hello'[0] = 'error'`)
+  })
 })
 
 describe('immutible primitive functions', () => {

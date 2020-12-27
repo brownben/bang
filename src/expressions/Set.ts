@@ -57,7 +57,7 @@ export class ExprSet extends Expr {
   ): Primitive {
     const index = this.getListLookupKey(enviroment)
 
-    if (index === undefined || !object.keyExists(index))
+    if (index === undefined || !object.indexExists(index))
       throw new BangError(`Index specified doesn't exist on the list`)
 
     object.set(index, value)

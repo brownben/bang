@@ -43,7 +43,7 @@ export class ExprGet extends Expr {
     else throw new BangError('Only Strings Can Be Used to Index Dictionaries')
   }
 
-  getListLookupKey(enviroment: Enviroment): number | undefined {
+  getNumberLookupKey(enviroment: Enviroment): number | undefined {
     if (typeof this.lookup === 'string') return undefined
 
     const expressionEvaluated: Primitive = this.lookup.evaluate(enviroment)
@@ -62,8 +62,14 @@ export class ExprGet extends Expr {
     }
 
     if (instance instanceof PrimitiveList) {
-      const listLookup = this.getListLookupKey(enviroment)
-      if (listLookup !== undefined && instance.keyExists(listLookup))
+      const listLookup = this.getNumberLookupKey(enviroment)
+      if (listLookup !== undefined && instance.indexExists(listLookup))
+        return instance.getValueAtIndex(listLookup)
+    }
+
+    if (instance instanceof PrimitiveString) {
+      const listLookup = this.getNumberLookupKey(enviroment)
+      if (listLookup !== undefined && instance.indexExists(listLookup))
         return instance.getValueAtIndex(listLookup)
     }
 

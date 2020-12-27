@@ -36,9 +36,9 @@ export class PrimitiveList extends Primitive {
     return true
   }
 
-  keyExists(key: number): boolean {
-    if (key >= 0 && key < this.list.length) return true
-    else if (key < 0 && key >= -this.list.length) return true
+  indexExists(index: number): boolean {
+    if (index >= 0 && index < this.list.length) return true
+    else if (index < 0 && index >= -this.list.length) return true
     else return false
   }
   getValueAtIndex(index: number): Primitive {

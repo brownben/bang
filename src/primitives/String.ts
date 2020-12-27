@@ -24,6 +24,16 @@ export class PrimitiveString extends Primitive {
     return true
   }
 
+  indexExists(index: number): boolean {
+    if (index >= 0 && index < this.value.length) return true
+    else if (index < 0 && index >= -this.value.length) return true
+    else return false
+  }
+  getValueAtIndex(index: number): PrimitiveString {
+    if (index >= 0) return new PrimitiveString(this.value[index])
+    else return new PrimitiveString(this.value[this.value.length + index])
+  }
+
   plus(value: Primitive): PrimitiveString {
     if (value instanceof PrimitiveString)
       return new PrimitiveString(this.getValue() + value.getValue())
