@@ -113,6 +113,10 @@ describe('string operations can be calculated', () => {
 })
 
 describe('equalities can be calculated', () => {
+  it('should be equal for 0 and -0', () => {
+    expectOutput('0 == -0').toBe(true)
+  })
+
   it('should be equal for the same literal', () => {
     expectOutput('5 == 5').toBe(true)
     expectOutput('`tree` == `tree`').toBe(true)
