@@ -505,4 +505,24 @@ describe('list should work', () => {
     expectOutput('[5,1,2,3,4].copy()').toEqual([5, 1, 2, 3, 4])
     expectOutput('[1,2,3].freeze().copy()').toEqual([1, 2, 3])
   })
+
+  it('should get values by index', () => {
+    expectOutput('[1,2,3][0]').toBe(1)
+    expectOutput('[1,2,3][1]').toBe(2)
+    expectOutput('[1,2,3][2]').toBe(3)
+    expectError('[1,2,3][4]')
+  })
+
+  it('should get values by negative index', () => {
+    expectOutput('[1,2,3][-3]').toBe(1)
+    expectOutput('[1,2,3][-2]').toBe(2)
+    expectOutput('[1,2,3][-1]').toBe(3)
+    expectError('[1,2,3][-4]')
+  })
+
+  it('should get values by other types', () => {
+    expectError('[1,2,3]["hello"]')
+    expectError('[1,2,3][null]')
+    expectError('[1,2,3][true]')
+  })
 })
