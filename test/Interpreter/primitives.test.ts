@@ -525,4 +525,38 @@ describe('list should work', () => {
     expectError('[1,2,3][null]')
     expectError('[1,2,3][true]')
   })
+
+  it('should assign values in a list', () => {
+    expectOutput(`
+let a = [1,2,3]
+a[0] = "hello"
+a`).toEqual(['hello', 2, 3])
+    expectOutput(`
+let a = [1,2,3]
+a[1] = "hello"
+a`).toEqual([1, 'hello', 3])
+    expectOutput(`
+let a = [1,2,3]
+a[-1] = "hello"
+a`).toEqual([1, 2, 'hello'])
+    expectError(`
+let a = [1,2,3]
+a[4] = "hello"
+a`)
+    expectError(`
+let a = [1,2,3]
+a["hello"] = "hello"
+a`)
+    expectError(`
+let a = [1,2,3]
+a.hello = "hello"
+a`)
+  })
+
+  it('should not assign values in an immutable list', () => {
+    expectError(`
+let a = [1,2,3].freeze()
+a[0] = "hello"
+a`)
+  })
 })

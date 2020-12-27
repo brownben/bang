@@ -41,10 +41,18 @@ export class PrimitiveList extends Primitive {
     else if (key < 0 && key >= -this.list.length) return true
     else return false
   }
-
   getValueAtIndex(index: number): Primitive {
     if (index >= 0) return this.list[index]
     else return this.list[this.list.length + index]
+  }
+  set(key: number, value: Primitive) {
+    if (this.immutable)
+      throw new BangError('Array is Immutable, Value cannot be Set')
+
+    if (key >= 0) this.list[key] = value
+    else this.list[this.list.length + key] = value
+
+    return value
   }
 
   equals(value: Primitive): PrimitiveBoolean {
