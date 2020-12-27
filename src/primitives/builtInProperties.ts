@@ -355,6 +355,21 @@ export class BuiltInPropertyVisitor
         call: () => new PrimitiveList({ values: primitive.list }),
       }),
 
+      get: new PrimitiveFunction({
+        name: 'get',
+        arity: 1,
+        call: (argument: Primitive[]) => {
+          const [key] = argument
+
+          if (
+            key instanceof PrimitiveNumber &&
+            primitive.indexExists(key.getValue())
+          )
+            return primitive.getValueAtIndex(key.getValue())
+          else return new PrimitiveNull()
+        },
+      }),
+
       toString: new PrimitiveFunction({
         name: 'toString',
         arity: 0,

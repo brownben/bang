@@ -572,4 +572,9 @@ let a = [1,2,3].freeze()
 a[0] = "hello"
 a`)
   })
+
+  it('should ave get method', () => {
+    expectOutput('[1,2,3].get(1)').toBe(2)
+    expectOutput('[1,2,3].get(5)').toBe(null)
+  })
 })
