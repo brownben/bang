@@ -227,12 +227,12 @@ export class BuiltInPropertyVisitor
         name: 'includes',
         arity: 1,
         call: (argument: Primitive[]) => {
-          const [value] = argument
+          const [givenValue] = argument
 
           return new PrimitiveBoolean(
             primitive.list
-              .map((value) => value.getValue())
-              .includes(value.getValue())
+              .map((value) => value.equals(givenValue).getValue())
+              .some(Boolean)
           )
         },
       }),
@@ -338,10 +338,11 @@ export class BuiltInPropertyVisitor
         name: 'indexOf',
         arity: 1,
         call: (argument: Primitive[]) => {
-          const [value] = argument
+          const [givenValue] = argument
 
-          const listValues = primitive.list.map((value) => value.getValue())
-          const result = listValues.indexOf(value.getValue())
+          const result = primitive.list.findIndex((value) =>
+            value.equals(givenValue).getValue()
+          )
 
           if (result < 0) return new PrimitiveNull()
           else return new PrimitiveNumber(result)
