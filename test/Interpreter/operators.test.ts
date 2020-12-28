@@ -293,7 +293,6 @@ a`).toBe('hello world')
 let a = true
 a += false
 a`)
-
     expectError(`
 let a = null
 a += 3
@@ -305,16 +304,15 @@ a`)
 let a = true
 a += 'hello'
 a`)
-
     expectError(`
 let a = 'hello'
 a /= 3
 a`)
-
     expectError(`
 let a = null
 a *= 3
 a`)
+    expectError('12 += 3')
   })
 })
 

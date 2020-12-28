@@ -85,6 +85,7 @@ export const blankTokens = [
   TokenType.NEW_LINE,
   TokenType.BLOCK_START,
   TokenType.BLOCK_END,
+  TokenType.EOF,
 ]
 
 export const blockStart = [TokenType.NEW_LINE, TokenType.BLOCK_START]

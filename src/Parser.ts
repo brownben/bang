@@ -51,7 +51,11 @@ class BaseParser {
   source: string = ''
 
   getTokenAt(position: number): Token {
-    return this.tokens?.[position] ?? this.tokens[this.tokens.length - 1]
+    return this.tokens?.[position]
+  }
+
+  getTokenTypeAt(position: number): TokenType {
+    return this.getTokenAt(position).type
   }
 
   getToken(): Token {
@@ -64,10 +68,6 @@ class BaseParser {
 
   getPreviousToken(): Token {
     return this.tokens[this.current - 1]
-  }
-
-  getPreviousTokenType(): TokenType {
-    return this.getPreviousToken().type
   }
 
   isAtEnd(): boolean {
@@ -138,6 +138,15 @@ class BaseParser {
   skipNewLineIfBlockFollows() {
     if (this.nextTokensAreType(...blockStart)) this.advance()
   }
+
+  onlyBlankTokensRemaining() {
+    let position = this.current
+    while (position < this.tokens.length) {
+      if (!blankTokens.includes(this.getTokenTypeAt(position))) return false
+      position += 1
+    }
+    return true
+  }
 }
 
 class Parser extends BaseParser {
@@ -148,20 +157,13 @@ class Parser extends BaseParser {
   }
 
   parse(): Stmt[] {
-    const statements: (Stmt | null)[] = []
-    while (!this.isAtEnd()) statements.push(this.declaration())
-    return statements.filter((stmt) => !!stmt) as Stmt[]
-  }
-
-  synchronize() {
-    this.advance()
-
-    while (!this.isAtEnd()) {
-      if (blankTokens.includes(this.getPreviousTokenType())) return
-      if (synchronizeTokens.includes(this.getTokenType())) return
-
-      this.advance()
+    const statements: Stmt[] = []
+    while (!this.onlyBlankTokensRemaining()) {
+      if (this.getTokenType() === TokenType.NEW_LINE) this.advance()
+      else statements.push(this.statement())
     }
+
+    return statements
   }
 
   getCommaSeparatedValues({
@@ -174,39 +176,31 @@ class Parser extends BaseParser {
     if (this.getTokenType() !== closingBracket) {
       do {
         if (this.getTokenType() === closingBracket) break
+        if (this.getTokenType() === TokenType.COMMA)
+          throw this.error(this.getToken(), 'Unexpected Extra Comma')
         processArguments()
       } while (this.tokenMatches(TokenType.COMMA))
     }
   }
 
-  declaration(): Stmt | null {
-    try {
-      if (this.tokenMatches(...variableDeclarationTokens))
-        return this.variableDeclaration(this.getPreviousToken())
-      else return this.statement()
-    } catch (error) {
-      if (error instanceof BangError) throw error
-
-      this.synchronize()
-      return null
-    }
-  }
-
   statement(): Stmt {
-    if (this.tokenMatches(TokenType.IF)) return this.ifStatement()
-    if (this.tokenMatches(TokenType.WHILE)) return this.whileStatement()
-    if (this.tokenMatches(TokenType.RETURN)) return this.returnStatement()
-    if (this.tokenMatches(TokenType.BLOCK_START))
+    if (this.tokenMatches(...variableDeclarationTokens))
+      return this.variableDeclaration(this.getPreviousToken())
+    else if (this.tokenMatches(TokenType.BLOCK_START))
       return new StmtBlock(this.block())
-
-    return this.expressionStatement()
+    else if (this.tokenMatches(TokenType.IF)) return this.ifStatement()
+    else if (this.tokenMatches(TokenType.WHILE)) return this.whileStatement()
+    else if (this.tokenMatches(TokenType.RETURN)) return this.returnStatement()
+    else return this.expressionStatement()
   }
 
   block(): Stmt[] {
     const statements: (Stmt | null)[] = []
 
-    while (!this.tokenIsType(TokenType.BLOCK_END) && !this.isAtEnd())
-      statements.push(this.declaration())
+    while (!this.tokenIsType(TokenType.BLOCK_END) && !this.isAtEnd()) {
+      if (this.getTokenType() === TokenType.NEW_LINE) this.advance()
+      else statements.push(this.statement())
+    }
 
     this.advance()
     return statements.filter(Boolean) as Stmt[]
@@ -300,9 +294,8 @@ class Parser extends BaseParser {
     if (expr instanceof ExprVariable) {
       const name = expr.name
       return new ExprAssign(name, value)
-    } else if (expr instanceof ExprGet) {
+    } else if (expr instanceof ExprGet)
       return new ExprSet(expr.object, expr.lookup, value)
-    }
 
     throw this.error(equals, 'Invalid Assignment Target')
   }
@@ -317,9 +310,8 @@ class Parser extends BaseParser {
     if (expr instanceof ExprVariable) {
       const name = expr.name
       return new ExprAssign(name, value)
-    } else if (expr instanceof ExprGet) {
+    } else if (expr instanceof ExprGet)
       return new ExprSet(expr.object, expr.lookup, value)
-    }
 
     throw this.error(equals, 'Invalid Assignment Target')
   }
@@ -564,9 +556,7 @@ class Parser extends BaseParser {
     this.getCommaSeparatedValues({
       closingBracket: TokenType.RIGHT_SQUARE,
       processArguments: () => {
-        if (this.getTokenType() === TokenType.COMMA)
-          values.push(new ExprLiteral('null', this.getToken(), null))
-        else values.push(this.expression())
+        values.push(this.expression())
       },
     })
 

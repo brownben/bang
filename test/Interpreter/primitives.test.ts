@@ -193,11 +193,11 @@ describe('dictionaries can be used', () => {
   it('should create dictionaries with identifier keys', () => {
     expectOutput(`{hello:'world'}`).toEqual({ hello: 'world' })
     expectOutput(`
-    {
-      hello:'world',
-      does: 'this work',
-      well: 77,
-    }`).toEqual({ hello: 'world', does: 'this work', well: 77 })
+{
+  hello:'world',
+  does: 'this work',
+  well: 77,
+}`).toEqual({ hello: 'world', does: 'this work', well: 77 })
     expectOutput(`{bang: 'is an awesome', language:true}`).toEqual({
       bang: 'is an awesome',
       language: true,
@@ -212,11 +212,11 @@ describe('dictionaries can be used', () => {
       well: 77,
     })
     expectOutput(`
-    {
-      'hello':'world',
-      does: 'this work',
-      "well": 77
-    }`).toEqual({ hello: 'world', does: 'this work', well: 77 })
+{
+  'hello':'world',
+  does: 'this work',
+  "well": 77
+}`).toEqual({ hello: 'world', does: 'this work', well: 77 })
     expectOutput(`{'bang': 'is an awesome', 'language':true}`).toEqual({
       bang: 'is an awesome',
       language: true,
@@ -359,6 +359,10 @@ a.key`).toBe(11)
       false,
     ])
   })
+
+  it('should error on missing colon', () => {
+    expectError('{"hello"}')
+  })
 })
 
 describe('list should work', () => {
@@ -371,7 +375,7 @@ describe('list should work', () => {
   })
 
   it('should cope with a list with consecutive commas', () => {
-    expectOutput('[,,]').toEqual([null, null])
+    expectError('[,,]')
   })
 
   it('should match equality between lists', () => {
@@ -573,8 +577,13 @@ a[0] = "hello"
 a`)
   })
 
-  it('should ave get method', () => {
+  it('should have a get method', () => {
     expectOutput('[1,2,3].get(1)').toBe(2)
     expectOutput('[1,2,3].get(5)').toBe(null)
+  })
+
+  it('should error if end bracket is missing', () => {
+    expectError('[1,2,3')
+    expectError('[1,2,')
   })
 })

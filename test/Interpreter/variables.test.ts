@@ -145,7 +145,8 @@ describe('variables are block scoped', () => {
   })
 
   it('should access variable in higher scope', () => {
-    expectOutput(`let a  = 5
+    expectOutput(`
+let a  = 5
   a`).toBe(5)
   })
 
@@ -181,6 +182,10 @@ b`)
   print(a)`)
     expect(console.log).toHaveBeenLastCalledWith(3)
   })
+
+  it('should not assign to a literal', () => {
+    expectError('1 = 2')
+  })
 })
 
 describe('_ is empty variable', () => {
@@ -204,5 +209,9 @@ _`).toBe(null)
 
   it('should be able to be accessed without declaration', () => {
     expectOutput(`_`).toBe(null)
+  })
+
+  it('should error if no new line after variable declaration', () => {
+    expectError('let a = 1 let')
   })
 })

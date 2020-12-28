@@ -45,18 +45,22 @@ else a = 2`).toHaveValue('a', 1)
   })
 
   it('should associate else stament to nearest if statement', () => {
-    expectEnviroment(`let a = 0
+    expectEnviroment(`
+let b = 0
+if (false) b = 1
+if (true) b = 2
+else b = 3`).toHaveValue('b', 2)
+    expectEnviroment(`
+let c = 0
+if (true)
+  c = 1
+  if (false) c = 4
+else c = 3`).toHaveValue('c', 1)
+    expectEnviroment(`
+let a = 0
 if (true) a = 1
 if (false) a = 2
 else a = 3`).toHaveValue('a', 3)
-    expectEnviroment(`let a = 0
-if (false) a = 1
-if (true) a = 2
-else a = 3`).toHaveValue('a', 2)
-    expectEnviroment(`let a = 0
-if (true) a = 1
-  if (false) a = 4
-else a = 3`).toHaveValue('a', 1)
   })
 
   it('should handle else if', () => {
@@ -83,7 +87,7 @@ let a = 5
 while (a > 0)
   print(a)
   a = a - 1
-`)
+    `)
     expect(console.log).toHaveBeenCalledTimes(5)
     expect(console.log).toHaveBeenLastCalledWith(1)
     expect(console.log).toHaveBeenCalledWith(5)
