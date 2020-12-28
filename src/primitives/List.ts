@@ -41,9 +41,23 @@ export class PrimitiveList extends Primitive {
     else if (index < 0 && index >= -this.list.length) return true
     else return false
   }
+  getActualIndex(index: number) {
+    if (index < -this.list.length) return 0
+    else if (index > this.list.length) return this.list.length
+
+    if (index < 0) return this.list.length + index
+    else return index
+  }
   getValueAtIndex(index: number): Primitive {
-    if (index >= 0) return this.list[index]
-    else return this.list[this.list.length + index]
+    return this.list[this.getActualIndex(index)]
+  }
+  getSlice(start: number | null, end: number | null) {
+    let actualStart = this.getActualIndex(start ?? 0)
+    let actualEnd = this.getActualIndex(end ?? this.list.length)
+
+    return new PrimitiveList({
+      values: this.list.slice(actualStart, actualEnd),
+    })
   }
   set(key: number, value: Primitive) {
     if (this.immutable)

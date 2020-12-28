@@ -31,6 +31,7 @@ import {
   ExprLiteral,
   ExprLogical,
   ExprSet,
+  ExprSlice,
   ExprUnary,
   ExprVariable,
 } from './expressions'
@@ -435,7 +436,20 @@ class Parser extends BaseParser {
   }
 
   getPropertyExpression(expr: Expr): ExprGet {
-    const identifier = this.expression()
+    const afterColon = (beforeColon: Expr | null) => {
+      if (!this.tokenIsType(TokenType.RIGHT_SQUARE))
+        return new ExprSlice(beforeColon, this.expression())
+      else return new ExprSlice(beforeColon, null)
+    }
+
+    let identifier = null
+    if (this.tokenMatches(TokenType.COLON)) identifier = afterColon(identifier)
+    else {
+      identifier = this.expression()
+      if (this.tokenMatches(TokenType.COLON))
+        identifier = afterColon(identifier)
+    }
+
     this.assertTokenIs(
       TokenType.RIGHT_SQUARE,
       'Expected "]" after identifier expression'

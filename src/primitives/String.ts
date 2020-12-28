@@ -29,9 +29,21 @@ export class PrimitiveString extends Primitive {
     else if (index < 0 && index >= -this.value.length) return true
     else return false
   }
+  getActualIndex(index: number) {
+    if (index < -this.value.length) return 0
+    else if (index > this.value.length) return this.value.length
+
+    if (index < 0) return this.value.length + index
+    else return index
+  }
   getValueAtIndex(index: number): PrimitiveString {
-    if (index >= 0) return new PrimitiveString(this.value[index])
-    else return new PrimitiveString(this.value[this.value.length + index])
+    return new PrimitiveString(this.value[this.getActualIndex(index)])
+  }
+  getSlice(start: number | null, end: number | null) {
+    let actualStart = this.getActualIndex(start ?? 0)
+    let actualEnd = this.getActualIndex(end ?? this.value.length)
+
+    return new PrimitiveString(this.value.substring(actualStart, actualEnd))
   }
 
   plus(value: Primitive): PrimitiveString {

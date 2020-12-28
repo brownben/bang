@@ -4,12 +4,14 @@ import {
   Primitive,
   PrimitiveDictionary,
   PrimitiveList,
+  PrimitiveNull,
   PrimitiveNumber,
   PrimitiveString,
 } from '../primitives'
 import { BuiltInPropertyVisitor } from '../primitives/builtInProperties'
 import { Enviroment } from '../Enviroment'
 import BangError from '../BangError'
+import { ExprSlice } from './Slice'
 
 export class ExprGet extends Expr {
   lookup: string | Expr
@@ -52,8 +54,26 @@ export class ExprGet extends Expr {
     else return undefined
   }
 
+  getSliceLookup(
+    lookup: ExprSlice,
+    instance: Primitive,
+    enviroment: Enviroment
+  ): Primitive {
+    type SliceArray = (PrimitiveNumber | PrimitiveNull)[]
+    let [start, end] = lookup.evaluate(enviroment).list as SliceArray
+
+    if (instance instanceof PrimitiveList)
+      return instance.getSlice(start.getValue(), end.getValue())
+    else if (instance instanceof PrimitiveString)
+      return instance.getSlice(start.getValue(), end.getValue())
+    else throw new BangError('Can only use slice on Strings and Lists')
+  }
+
   evaluate(enviroment: Enviroment) {
     const instance: Primitive = this.object.evaluate(enviroment)
+
+    if (this.lookup instanceof ExprSlice)
+      return this.getSliceLookup(this.lookup, instance, enviroment)
 
     if (instance instanceof PrimitiveDictionary) {
       const dictionaryLookup = this.getDictionaryLookupKey(enviroment)

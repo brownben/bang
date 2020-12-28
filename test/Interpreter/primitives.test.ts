@@ -168,6 +168,42 @@ describe('string built-in functions', () => {
   it('should not set chars from string by index', () => {
     expectError(`'hello'[0] = 'error'`)
   })
+
+  it('should get slice of strings', () => {
+    expectOutput(`'hello'[:1]`).toBe('h')
+    expectOutput(`'hello'[:2]`).toBe('he')
+    expectOutput(`'hello'[:4]`).toBe('hell')
+    expectOutput(`'hello'[1:]`).toBe('ello')
+    expectOutput(`'hello'[2:]`).toBe('llo')
+    expectOutput(`'hello'[4:]`).toBe('o')
+    expectOutput(`'hello'[0:1]`).toBe('h')
+    expectOutput(`'hello'[0:2]`).toBe('he')
+    expectOutput(`'hello'[0:4]`).toBe('hell')
+    expectOutput(`'hello'[0:-1]`).toBe('hell')
+    expectOutput(`'hello'[-3:-1]`).toBe('ll')
+    expectOutput(`'hello'[-9:-7]`).toBe('')
+    expectOutput(`'hello'[0:0]`).toBe('')
+    expectOutput(`'hello'[1:1]`).toBe('')
+    expectOutput(`'hello'[7:9]`).toBe('')
+    expectOutput(`'hello'[:]`).toBe('hello')
+    expectError(`'hello'[]`)
+  })
+
+  it('should not slice numbers', () => {
+    expectError(`122[:1]`)
+    expectError(`122[:2]`)
+    expectError(`122[:4]`)
+    expectError(`122[1:]`)
+  })
+
+  it('should only let slice values be numbers', () => {
+    expectError(`'hello'[false:1]`)
+    expectError(`'hello'[22:null]`)
+  })
+
+  it('should error on assignment to slice', () => {
+    expectError(`'hello'[1:] = 'i'`)
+  })
 })
 
 describe('immutible primitive functions', () => {
@@ -585,5 +621,30 @@ a`)
   it('should error if end bracket is missing', () => {
     expectError('[1,2,3')
     expectError('[1,2,')
+  })
+
+  it('should get slice of lists', () => {
+    expectOutput(`[1,2,3,4,5][:1]`).toEqual([1])
+    expectOutput(`[1,2,3,4,5][:2]`).toEqual([1, 2])
+    expectOutput(`[1,2,3,4,5][:4]`).toEqual([1, 2, 3, 4])
+    expectOutput(`[1,2,3,4,5][1:]`).toEqual([2, 3, 4, 5])
+    expectOutput(`[1,2,3,4,5][2:]`).toEqual([3, 4, 5])
+    expectOutput(`[1,2,3,4,5][4:]`).toEqual([5])
+    expectOutput(`[1,2,3,4,5][0:1]`).toEqual([1])
+    expectOutput(`[1,2,3,4,5][0:2]`).toEqual([1, 2])
+    expectOutput(`[1,2,3,4,5][0:4]`).toEqual([1, 2, 3, 4])
+    expectOutput(`[1,2,3,4,5][0:-1]`).toEqual([1, 2, 3, 4])
+    expectOutput(`[1,2,3,4,5][-3:-1]`).toEqual([3, 4])
+    expectOutput(`[1,2,3,4,5][-9:-7]`).toEqual([])
+    expectOutput(`[1,2,3,4,5][0:0]`).toEqual([])
+    expectOutput(`[1,2,3,4,5][1:1]`).toEqual([])
+    expectOutput(`[1,2,3,4,5][7:9]`).toEqual([])
+    expectOutput(`[1,2,3,4,5][4:-5]`).toEqual([])
+    expectOutput(`[1,2,3,4,5][:]`).toEqual([1, 2, 3, 4, 5])
+    expectError(`[1,2,3,4,5][]`)
+  })
+
+  it('should error on assignment to slice', () => {
+    expectError(`[1,2,3,4,5][1:] = [1,1,1,1]`)
   })
 })
