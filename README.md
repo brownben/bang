@@ -2,7 +2,7 @@
 
 # Bang
 
-My attempt at creating my own interpreted programming language.
+My Attempt at Creating My Own Interpreted Programming Language in TypeScript.
 
 Based on and Inspired by [Crafting Interpreters](https://craftinginterpreters.com/)
 
@@ -24,6 +24,10 @@ npm run build
 # execute a .bang file
 node ./dist/index.js <file to execute>
 ```
+
+## Docs
+
+Documentation and a guide to the language can be found [here.](./docs.md)
 
 ## License
 
