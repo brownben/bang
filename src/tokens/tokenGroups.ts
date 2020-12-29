@@ -97,10 +97,8 @@ export const newLineTokens = [
 ]
 
 export const synchronizeTokens = [
-  TokenType.CLASS,
   TokenType.LET,
   TokenType.CONST,
-  TokenType.FOR,
   TokenType.IF,
   TokenType.WHILE,
   TokenType.RETURN,

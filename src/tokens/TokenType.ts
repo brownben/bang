@@ -49,13 +49,9 @@ export enum TokenType {
   IF = 'if',
   ELSE = 'else',
   WHILE = 'while',
-  FOR = 'for',
   LET = 'let',
   CONST = 'const',
   RETURN = 'return',
-  CLASS = 'class',
-  SUPER = 'super',
-  THIS = 'this',
 
   // Blocks
   BLOCK_START = 'BLOCK START',
@@ -71,14 +67,10 @@ export const keywordTokens = {
   if: TokenType.IF,
   else: TokenType.ELSE,
   while: TokenType.WHILE,
-  for: TokenType.FOR,
   null: TokenType.NULL,
   true: TokenType.TRUE,
   false: TokenType.FALSE,
   let: TokenType.LET,
   const: TokenType.CONST,
   return: TokenType.RETURN,
-  class: TokenType.CLASS,
-  super: TokenType.SUPER,
-  this: TokenType.THIS,
 } as { [key: string]: TokenType }
