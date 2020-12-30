@@ -24,14 +24,10 @@ export class PrimitiveNull extends Primitive {
   }
 
   equals(value: Primitive): PrimitiveBoolean {
-    return new PrimitiveBoolean(
-      this.value === value.value && this.type === value.type
-    )
+    return new PrimitiveBoolean(this.type === value.type)
   }
   notEquals(value: Primitive): PrimitiveBoolean {
-    return new PrimitiveBoolean(
-      this.value !== value.value || this.type !== value.type
-    )
+    return new PrimitiveBoolean(this.type !== value.type)
   }
 
   builtInProperties(

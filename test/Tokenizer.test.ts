@@ -113,16 +113,12 @@ describe('identifies tokens', () => {
     expectTokens(`if`, [{ type: TokenType.IF }])
     expectTokens(`else`, [{ type: TokenType.ELSE }])
     expectTokens(`while`, [{ type: TokenType.WHILE }])
-    expectTokens(`for`, [{ type: TokenType.FOR }])
     expectTokens(`null`, [{ type: TokenType.NULL }])
     expectTokens(`true`, [{ type: TokenType.TRUE }])
     expectTokens(`false`, [{ type: TokenType.FALSE }])
     expectTokens(`let`, [{ type: TokenType.LET }])
     expectTokens(`const`, [{ type: TokenType.CONST }])
     expectTokens(`return`, [{ type: TokenType.RETURN }])
-    expectTokens(`class`, [{ type: TokenType.CLASS }])
-    expectTokens(`super`, [{ type: TokenType.SUPER }])
-    expectTokens(`this`, [{ type: TokenType.THIS }])
   })
 
   it('should identify identifiers', () => {
