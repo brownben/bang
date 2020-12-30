@@ -2,7 +2,16 @@
   "name": "bang",
   "author": "brownben",
   "version": "0.1.0",
+  "description": "My Attempt at Creating an Interpreted Language in TypeScript",
+  "keywords": [
+    "language",
+    "typescript"
+  ],
   "license": "MIT",
+  "repository": "github:brownben/bang",
+  "bin": {
+    "bang": "./cli.js"
+  },
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
@@ -21,13 +30,12 @@
     "build": "tsdx build -- --transpileOnly"
   },
   "dependencies": {
-    "chalk": "^4.1.0",
-    "commander": "^6.2.1",
-    "prettier": "^2.2.1"
+    "cac": "^6.7.1"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.11.0",
     "@typescript-eslint/parser": "^4.11.0",
+    "prettier": "^2.2.1",
     "tsdx": "^0.14.1",
     "tslib": "^2.0.3",
     "typescript": "^4.1.3"

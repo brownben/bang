@@ -1,15 +1,16 @@
-import { getAbstractSyntaxTree } from '../../src/Parser'
-import { interpret, interpretFinalEnviroment } from '../../src/Interpreter'
+import { getTokens, getAbstractSyntaxTree, execute } from '../../src/index'
+import { interpretFinalEnviroment } from '../../src/Interpreter'
 
-export const expectOutput = (source: string) => {
-  const code = source
-  const output = interpret(getAbstractSyntaxTree(code))
+const expectOutput = (source: string) => {
+  const output = execute(source)
+
   return expect(output?.[output.length - 1]?.getValue() ?? null)
 }
 
-export const expectEnviroment = (source: string) => {
-  const code = source
-  const enviroment = interpretFinalEnviroment(getAbstractSyntaxTree(code))
+const expectEnviroment = (source: string) => {
+  const tokens = getTokens(source)
+  const abstractSyntaxTree = getAbstractSyntaxTree(tokens, source)
+  const enviroment = interpretFinalEnviroment(abstractSyntaxTree)
 
   return {
     toHaveValue: (name: string, value: any) =>
@@ -21,9 +22,8 @@ export const expectEnviroment = (source: string) => {
   }
 }
 
-export const expectError = (source: string) => {
-  const code = source
-  expect(() => interpret(getAbstractSyntaxTree(code))).toThrow()
+const expectError = (source: string) => {
+  expect(() => execute(source)).toThrow()
 }
 
-export const execute = (code: string) => interpret(getAbstractSyntaxTree(code))
+export { execute, expectOutput, expectEnviroment, expectError }

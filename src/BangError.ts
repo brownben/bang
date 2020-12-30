@@ -11,10 +11,5 @@ export default class BangError {
 
   output(): void {
     console.log(`Error: ${this.message}`)
-    if (this.source && this.line !== 0) {
-      console.log(`   ${this.line - 1} | ${this.source[this.line - 2]}`)
-      console.log(`   ${this.line} | ${this.source[this.line - 1]}`)
-      console.log(`   ${this.line + 1} | ${this.source[this.line]}`)
-    }
   }
 }

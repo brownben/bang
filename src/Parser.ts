@@ -7,7 +7,6 @@ import {
   blockStart,
   comparisonTokens,
   equalityTokens,
-  getTokens,
   indiceTokens,
   multiplicationTokens,
   synchronizeTokens,
@@ -148,24 +147,6 @@ class BaseParser {
     }
     return true
   }
-}
-
-class Parser extends BaseParser {
-  constructor(tokens: Token[], source: string) {
-    super()
-    this.tokens = tokens
-    this.source = source
-  }
-
-  parse(): Stmt[] {
-    const statements: Stmt[] = []
-    while (!this.onlyBlankTokensRemaining()) {
-      if (this.getTokenType() === TokenType.NEW_LINE) this.advance()
-      else statements.push(this.statement())
-    }
-
-    return statements
-  }
 
   getCommaSeparatedValues({
     closingBracket,
@@ -181,6 +162,32 @@ class Parser extends BaseParser {
           throw this.error(this.getToken(), 'Unexpected Extra Comma')
         processArguments()
       } while (this.tokenMatches(TokenType.COMMA))
+    }
+  }
+}
+
+class Parser extends BaseParser {
+  constructor(tokens: Token[], source: string) {
+    super()
+    this.tokens = tokens
+    this.source = source
+  }
+
+  parse(): Stmt[] {
+    const statements: Stmt[] = []
+    while (!this.onlyBlankTokensRemaining()) {
+      if (this.getTokenType() === TokenType.NEW_LINE) this.advance()
+      else statements.push(this.getStatement())
+    }
+
+    return statements
+  }
+
+  getStatement(): Stmt {
+    try {
+      return this.statement()
+    } catch {
+      throw this.error(this.getToken(), 'Problem Whilst Parsing Code')
     }
   }
 
@@ -579,5 +586,5 @@ class Parser extends BaseParser {
   }
 }
 
-export const getAbstractSyntaxTree = (source: string) =>
-  new Parser(getTokens(source), source).parse()
+export const getAbstractSyntaxTree = (tokens: Token[], source: string) =>
+  new Parser(tokens, source).parse()

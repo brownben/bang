@@ -6,18 +6,14 @@ import BangError from './BangError'
 
 export class Interpreter {
   private enviroment: Enviroment
-  private statements: Stmt[]
   readonly globals: Enviroment = defineBuiltInFunctions()
 
-  constructor(statements: Stmt[]) {
+  constructor() {
     this.enviroment = this.globals
-    this.statements = statements
   }
 
-  run(): StmtResult[] {
-    return this.statements.flatMap((statement) =>
-      this.executeStatement(statement)
-    )
+  run(statements: Stmt[]): StmtResult[] {
+    return statements.flatMap((statement) => this.executeStatement(statement))
   }
 
   executeStatement(statement: Stmt) {
@@ -36,10 +32,10 @@ export class Interpreter {
 }
 
 export const interpret = (statements: Stmt[]) =>
-  new Interpreter(statements).run()
+  new Interpreter().run(statements)
 
 export const interpretFinalEnviroment = (statements: Stmt[]): Enviroment => {
-  const interpreter = new Interpreter(statements)
-  interpreter.run()
+  const interpreter = new Interpreter()
+  interpreter.run(statements)
   return interpreter.getEnviroment()
 }

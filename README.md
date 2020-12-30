@@ -21,8 +21,11 @@ npm run lint
 # build
 npm run build
 
-# execute a .bang file
-node ./dist/index.js <file to execute>
+# open a simple REPL
+node cli
+
+# run a bang program
+node cli run <file>
 ```
 
 ## Docs

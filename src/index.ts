@@ -1,25 +1,14 @@
+import { getTokens } from './tokens'
 import { getAbstractSyntaxTree } from './Parser'
-import { interpret } from './Interpreter'
+import { interpret, Interpreter } from './Interpreter'
 import BangError from './BangError'
-import { program } from 'commander'
-import chalk from 'chalk'
-const fs = require('fs').promises
 
-program
-  .name('bang')
-  .version(require('../package.json').version)
-  .arguments('<file>')
-  .parse(process.argv)
+export const execute = (source: string, interpreter?: Interpreter) => {
+  const tokens = getTokens(source)
+  const abstractSyntaxTree = getAbstractSyntaxTree(tokens, source)
 
-const file = program.args[0]
+  if (interpreter) return interpreter.run(abstractSyntaxTree)
+  else return interpret(abstractSyntaxTree)
+}
 
-fs.readFile(file, { encoding: 'utf8' })
-  .then((fileContents: string) => {
-    const abstractSyntaxTree = getAbstractSyntaxTree(fileContents)
-
-    interpret(abstractSyntaxTree)
-  })
-  .catch((error: any) => {
-    if (error instanceof BangError) error.output()
-    else console.log(chalk.red.bold('Error: Problem Reading File'))
-  })
+export { getTokens, getAbstractSyntaxTree, interpret, Interpreter, BangError }
