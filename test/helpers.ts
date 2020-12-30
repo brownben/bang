@@ -1,5 +1,5 @@
-import { getTokens, getAbstractSyntaxTree, execute } from '../../src/index'
-import { interpretFinalEnviroment } from '../../src/Interpreter'
+import { getTokens, getAbstractSyntaxTree, execute } from '../src/index'
+import { interpretFinalEnviroment } from '../src/Interpreter'
 
 const expectOutput = (source: string) => {
   const output = execute(source)
