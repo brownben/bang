@@ -79,6 +79,7 @@ it('should have join method', () => {
 it('should have map function', () => {
   expectOutput('[1,2,3].map((a)=> a * 2)').toEqual([2, 4, 6])
   expectOutput('[1,2,3].map((a)=> a + 2)').toEqual([3, 4, 5])
+  expectOutput('[1,2,3].map((a, i)=> a * i)').toEqual([0, 2, 6])
   expectError('[1,2,3].map(7)')
 })
 
@@ -86,7 +87,15 @@ it('should have filter function', () => {
   expectOutput('[1,2,3].filter((a)=> a >= 0)').toEqual([1, 2, 3])
   expectOutput('[1,2,3].filter((a)=> a >= 2)').toEqual([2, 3])
   expectOutput('[1,2,3].filter((a)=> a >= 7)').toEqual([])
+  expectOutput('[1,2,3].filter((a, i) => a == i + 1)').toEqual([1, 2, 3])
   expectError('[1,2,3].filter(7)')
+})
+
+it('should have reduce function', () => {
+  expectOutput('[1,2,3].reduce((a,b) => a+b, 0)').toBe(6)
+  expectOutput('[1,2,3,5,-2].reduce((a,b) => a*b,1)').toBe(-60)
+  expectOutput('[].reduce(() => 1, 7)').toBe(7)
+  expectError('[1,2,3].reduce(5,5)')
 })
 
 it('should have foreach function', () => {
@@ -244,4 +253,28 @@ it('should get slice of lists', () => {
 
 it('should error on assignment to slice', () => {
   expectError(`[1,2,3,4,5][1:] = [1,1,1,1]`)
+})
+
+it('should have min function', () => {
+  expectOutput('[1,2,3].min()').toBe(1)
+  expectOutput('[1,2,3,-2].min()').toBe(-2)
+  expectError('[].min()')
+  expectError('[false, null].min()')
+  expectError('["1", 1].min()')
+})
+
+it('should have max function', () => {
+  expectOutput('[1,2,3].max()').toBe(3)
+  expectOutput('[1,2,3,5,-2].max()').toBe(5)
+  expectError('[].max()')
+  expectError('[false, null].max()')
+  expectError('["1", 1].max()')
+})
+
+it('should have sum function', () => {
+  expectOutput('[1,2,3].sum()').toBe(6)
+  expectOutput('[1,2,3,5,-2].sum()').toBe(9)
+  expectOutput('[].sum()').toBe(0)
+  expectError('[false, null].sum()')
+  expectError('["1", 1].sum()')
 })

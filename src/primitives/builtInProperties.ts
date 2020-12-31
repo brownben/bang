@@ -165,7 +165,9 @@ export class BuiltInPropertyVisitor
             throw new BangError('Transform must be a Function')
 
           return new PrimitiveList({
-            values: primitive.list.map((value) => callFunction(func, [value])),
+            values: primitive.list.map((value, index) =>
+              callFunction(func, [value, new PrimitiveNumber(index)])
+            ),
           })
         },
       }),
@@ -179,10 +181,30 @@ export class BuiltInPropertyVisitor
             throw new BangError('Predicate must be a Function')
 
           return new PrimitiveList({
-            values: primitive.list.filter((value) =>
-              callFunction(func, [value]).isTruthy()
+            values: primitive.list.filter((value, index) =>
+              callFunction(func, [value, new PrimitiveNumber(index)]).isTruthy()
             ),
           })
+        },
+      }),
+
+      reduce: new PrimitiveFunction({
+        name: 'reduce',
+        arity: 2,
+        call: (argument: Primitive[]) => {
+          const [func, startValue] = argument
+          if (!(func instanceof PrimitiveFunction))
+            throw new BangError('Transform must be a Function')
+
+          return primitive.list.reduce(
+            (accumulator, value, index) =>
+              callFunction(func, [
+                accumulator,
+                value,
+                new PrimitiveNumber(index),
+              ]),
+            startValue
+          )
         },
       }),
 
@@ -194,7 +216,9 @@ export class BuiltInPropertyVisitor
           if (!(func instanceof PrimitiveFunction))
             throw new BangError('Transform must be a Function')
 
-          primitive.list.map((value) => callFunction(func, [value]))
+          primitive.list.map((value, index) =>
+            callFunction(func, [value, new PrimitiveNumber(index)])
+          )
           return new PrimitiveNull()
         },
       }),
@@ -367,6 +391,77 @@ export class BuiltInPropertyVisitor
           )
             return primitive.getValueAtIndex(key.getValue())
           else return new PrimitiveNull()
+        },
+      }),
+
+      min: new PrimitiveFunction({
+        name: 'min',
+        arity: 0,
+        call: () => {
+          const allNumbers = primitive.list
+            .map((item) => item instanceof PrimitiveNumber)
+            .every(Boolean)
+
+          if (!allNumbers)
+            throw new BangError(
+              'Expected all elements of the list to be numbers'
+            )
+
+          const listAsNumbers = primitive.list.map((item) =>
+            item.getValue()
+          ) as number[]
+
+          if (listAsNumbers.length <= 0)
+            throw new BangError('Expected at oleast one element in the list')
+
+          return new PrimitiveNumber(Math.min(...listAsNumbers))
+        },
+      }),
+
+      max: new PrimitiveFunction({
+        name: 'max',
+        arity: 0,
+        call: () => {
+          const allNumbers = primitive.list
+            .map((item) => item instanceof PrimitiveNumber)
+            .every(Boolean)
+
+          if (!allNumbers)
+            throw new BangError(
+              'Expected all elements of the list to be numbers'
+            )
+
+          const listAsNumbers = primitive.list.map((item) =>
+            item.getValue()
+          ) as number[]
+
+          if (listAsNumbers.length <= 0)
+            throw new BangError('Expected at oleast one element in the list')
+
+          return new PrimitiveNumber(Math.max(...listAsNumbers))
+        },
+      }),
+
+      sum: new PrimitiveFunction({
+        name: 'sum',
+        arity: 0,
+        call: () => {
+          const allNumbers = primitive.list
+            .map((item) => item instanceof PrimitiveNumber)
+            .every(Boolean)
+
+          if (!allNumbers)
+            throw new BangError(
+              'Expected all elements of the list to be numbers'
+            )
+
+          const listAsNumbers = primitive.list.map((item) =>
+            item.getValue()
+          ) as number[]
+
+          return new PrimitiveNumber(
+            listAsNumbers.reduce((total, value) => total + value, 0)
+          )
         },
       }),
 

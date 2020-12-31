@@ -629,20 +629,26 @@ It errors if the list is immutable.
 **map(transform)**
 
 - Transform a list, using the specified functions
-- Takes 1 parameter, a function accepting the element of the list
+- Takes 1 parameter, a function accepting up to 2 paramters, the first being the current element of the list and the seconds it's index
 - Returns a new list, made of the list with each element being transformed by the
 
 **filter(predicate)**
 
 - Remove items from a list not matching the specified condition
 - It removes all items which the predicate function when applied on the list item, is falsy
-- Takes 1 parameter, a function accepting each element of the list
+- Takes 1 parameter, a function accepting up to 2 paramters, the first being the current element of the list and the seconds it's index
 - Returns a new list, with the falsy elements removed
+
+**reduce(transform)**
+
+- Transform a list into a single value
+- Takes 2 parameters, a function accepting up to 3 paramters (the currentValue created (accumulator), the current value and the current index), and a startingValue
+- Returns the value calculated from the list
 
 **forEach(function)**
 
 - Run a function over each element of the list
-- Takes 1 parameter, a function accepting each element of the list
+- Takes 1 parameter, a function accepting up to 2 paramters, the first being the current element of the list and the seconds it's index
 - Returns `null`
 
 **every()**
@@ -726,6 +732,27 @@ It errors if the list is immutable.
 - Make a shallow copy of the list
 - Takes 0 parameters
 - Returns a new copy of the list
+
+**min()**
+
+- Get the minimum value of the list
+- Expects to be called on a non-empty list made up up only of numbers
+- Takes 0 parameters
+- Returns the minimum value
+
+**max()**
+
+- Get the maximum value of the list
+- Expects to be called on a non-empty list made up up only of numbers
+- Takes 0 parameters
+- Returns the maximum value
+
+**sum()**
+
+- Get the sum of the values in the list
+- Expects the list to be made up up only of numbers
+- Takes 0 parameters
+- Returns the sum
 
 **get(index)**
 
