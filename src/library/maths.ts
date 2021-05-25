@@ -1,4 +1,3 @@
-import { BangError } from '..'
 import {
   PrimitiveNumber,
   PrimitiveDictionary,
@@ -6,6 +5,7 @@ import {
   Primitive,
   PrimitiveNull,
 } from '../primitives'
+import BangError from '../BangError'
 
 const runMathsFunction = (
   argument: Primitive[],
