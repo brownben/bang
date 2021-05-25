@@ -29,7 +29,8 @@ const callFunction = (func: PrimitiveFunction, argument: Primitive[]) => {
 }
 
 export class BuiltInPropertyVisitor
-  implements VisitPrimitives<Record<string, Primitive>> {
+  implements VisitPrimitives<Record<string, Primitive>>
+{
   visitBoolean(primitive: PrimitiveBoolean) {
     return {
       toBoolean: new PrimitiveFunction({
