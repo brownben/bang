@@ -782,7 +782,7 @@ Variables are referenced through an identifier, an identifier starts with a lett
 The `const` keyword creates a variable which cannot be reassigned, composite structures like dictionaries and lists can be modified if they are immutable.
 The `let` keyword creates a variable which cannot be reassigned.
 
-Keywords that cannot be used as variable identifiers are: `and, or, if, else, while, null, true, false, let, const, return`
+Keywords that cannot be used as variable identifiers are: `and, or, if, else, while, null, true, false, let, const, return, import, as, from`
 
 The identifier `_` is a placeholder, it always has the value of null, and does not need to be defined. It cannot take any other value, and if assigned to it will just be ignored.
 
@@ -808,6 +808,25 @@ a // 10
 
 const b = 8
 b = 4 // error variable is a constant
+
+```
+
+Lists and dictionaries can be destructured, into independant variables.
+
+```
+let { apples, banannas } = {
+  'apples': 7,
+  'bannanas': 5,
+  carrots: 4
+}
+apples // 7
+bannanas // 5
+carrots // error - not defined
+
+const [a, b, c] = [2, 5, 7]
+a // 2
+b // 6
+c // 7
 ```
 
 # Control Flow

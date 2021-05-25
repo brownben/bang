@@ -37,6 +37,7 @@ import {
 import {
   Stmt,
   StmtBlock,
+  StmtDestructuring,
   StmtExpression,
   StmtIf,
   StmtReturn,
@@ -95,7 +96,7 @@ class BaseParser {
   }
 
   assertTokenIs(type: TokenType | TokenType[], message: string) {
-    if (typeof type === 'object') {
+    if (Array.isArray(type)) {
       if (this.tokenIsType(...type)) return this.advance()
     } else if (this.tokenIsType(type)) return this.advance()
 
@@ -186,8 +187,9 @@ class Parser extends BaseParser {
   getStatement(): Stmt {
     try {
       return this.statement()
-    } catch {
-      throw this.error(this.getToken(), 'Problem Whilst Parsing Code')
+    } catch (error) {
+      if (error instanceof BangError) throw error
+      else throw this.error(this.getToken(), 'Problem Whilst Parsing Code')
     }
   }
 
@@ -217,6 +219,15 @@ class Parser extends BaseParser {
 
   variableDeclaration(initializerType: Token): Stmt {
     const constant = initializerType.type === TokenType.CONST
+
+    if (this.tokenIsType(TokenType.IDENTIFIER))
+      return this.namedVariableDeclaration(constant)
+    else if (this.tokenIsType(TokenType.LEFT_BRACE, TokenType.LEFT_SQUARE))
+      return this.destructuringVariableDeclaration(constant)
+    else throw this.error(initializerType, `Expected variable name.`)
+  }
+
+  namedVariableDeclaration(constant: boolean): Stmt {
     const name = this.assertTokenIs(
       TokenType.IDENTIFIER,
       'Expect variable name.'
@@ -232,6 +243,43 @@ class Parser extends BaseParser {
       )
 
     return new StmtVariable(name, constant, initializer)
+  }
+
+  destructuringVariableDeclaration(constant: boolean): Stmt {
+    const bracket = this.advance()
+    const type = bracket.type === TokenType.LEFT_BRACE ? 'dictionary' : 'list'
+    const names: Token[] = []
+
+    this.getCommaSeparatedValues({
+      closingBracket: bracket.type,
+      processArguments: () => {
+        names.push(
+          this.assertTokenIs(TokenType.IDENTIFIER, 'Expect variable name.')
+        )
+      },
+    })
+    this.assertTokenIs(
+      [TokenType.RIGHT_BRACE, TokenType.RIGHT_SQUARE],
+      'Expect closing bracket.'
+    )
+    this.assertTokenIs(TokenType.EQUAL, 'Expect an initial value')
+    const expression = this.expression()
+
+    this.assertTokenIs(
+      newLineTokens,
+      'Expect a new line after variable declaration.'
+    )
+
+    const nameWithoutBlank = names.filter((name) => name.value !== '_')
+    if (nameWithoutBlank.length !== new Set(nameWithoutBlank).size)
+      throw this.error(bracket, 'Duplicate variable definition')
+
+    return new StmtDestructuring({
+      names,
+      constant,
+      expression,
+      type,
+    })
   }
 
   ifStatement(): Stmt {

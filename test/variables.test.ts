@@ -215,3 +215,46 @@ _`).toBe(null)
     expectError('let a = 1 let')
   })
 })
+
+describe('desturcturing should work', () => {
+  it('should destructure dictionary', () => {
+    expectEnviroment(`let { a, b } = { a: 1, b: "World" }`).toHaveValue('a', 1)
+    expectEnviroment(`let { a, b } = { a: 1, b: "World" }`).toHaveValue(
+      'b',
+      'World'
+    )
+    expectEnviroment(`let { a } = { a: 1, b: "World" }`).toHaveValue('a', 1)
+    expectError(`let { a } = { a: 1, b: "World" } \n b`)
+  })
+
+  it('should destructure dictionary with missing key', () => {
+    expectEnviroment(`let { a, b } = { b: 1 }`).toHaveValue('a', null)
+    expectEnviroment(`let { c } = { b: "World" }`).toHaveValue('c', null)
+    expectEnviroment(`let { c } = { }`).toHaveValue('c', null)
+  })
+
+  it('should destructure list', () => {
+    expectEnviroment(`let [a, b] = [ 1, "World"]`).toHaveValue('a', 1)
+    expectEnviroment(`let [a, b] = [ 1, "World"]`).toHaveValue('b', 'World')
+    expectEnviroment(`let [ a ] = [ 1, "World" ]`).toHaveValue('a', 1)
+    expectError(`let [ a ] = [ 1, "World" ] \n b`)
+  })
+
+  it('should destructure list with missing values', () => {
+    expectEnviroment(`let [a, b] = []`).toHaveValue('a', null)
+    expectEnviroment(`let [a, b] = []`).toHaveValue('b', null)
+    expectEnviroment(`let [ a, b, c ] = [ 1, "World" ]`).toHaveValue('c', null)
+  })
+
+  it('should not destructure list into dictionary', () => {
+    expectError(`let { a, b } = [ 1, "World" ]`)
+  })
+
+  it('should not destructure dictionary into list', () => {
+    expectError(`let [ a, b ] = { a: 1, b: "World" }`)
+  })
+
+  it('should not allow repetition of variable name in destructuring', () => {
+    expectError(`let [ a, b ] = { a: 1, b: "World" }`)
+  })
+})

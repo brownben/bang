@@ -1,5 +1,6 @@
 export { Stmt, StmtResult } from './Stmt'
 export { StmtBlock } from './Block'
+export { StmtDestructuring } from './Destructuring'
 export { StmtExpression } from './Expression'
 export { StmtIf } from './If'
 export { StmtReturn } from './Return'

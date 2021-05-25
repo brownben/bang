@@ -68,6 +68,10 @@ export class PrimitiveDictionary extends Primitive {
     )
   }
 
+  getValueForKey(key: string): Primitive | undefined {
+    return this.dictionary[key]
+  }
+
   isTruthy(): boolean {
     return true
   }
