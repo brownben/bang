@@ -1,7 +1,6 @@
 import { Primitive } from './Primitive'
 import { PrimitiveBoolean } from './Boolean'
 import { BuiltInPropertyVisitor } from './builtInProperties'
-import { Callable } from './Callable'
 
 interface PrimitiveFunctionConstructor {
   name?: string
@@ -9,7 +8,7 @@ interface PrimitiveFunctionConstructor {
   call: (argument: Primitive[]) => Primitive
 }
 
-export class PrimitiveFunction extends Primitive implements Callable {
+export class PrimitiveFunction extends Primitive {
   readonly token: undefined = undefined
   readonly value: string = ''
   readonly type = 'function'
