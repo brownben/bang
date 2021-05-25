@@ -854,7 +854,7 @@ while (<condition expresssion>)
   <keep doing this>
 ```
 
-# Global Built-in Functions
+# Global Built-in Functions/ Modules
 
 ## print(value)
 
@@ -865,6 +865,35 @@ Returns null.
 
 Get the type of the value passed.
 Returns a string representing the type of the value passed.
+
+## maths
+
+maths is a dictionary with the following functions/ values:
+
+- **pi** constant number
+- **e** constant number
+- **ceil(number)** Get the integer above
+- **floor(number)** Get the integer below
+- **abs(number)** Get the absolute (non-negative) value
+- **sqrt(number)** Get the square root
+- **cbrt(number)** Get the cuberoot
+- **sin(number)** Sin
+- **cos(number)** Cos
+- **tan(number)** Tan
+- **arcSin(number)** Inverse Sin
+- **arcCos(number)** Inverse Cos
+- **arcTan(number)** Inverse Tan
+- **sinh(number)** Hyperbolic Sin
+- **cosh(number)** Hyperbolic Cos
+- **tanh(number)** Hyperbolic Tan
+- **arcSinh(number)** Inverse Hyperbolic Sin
+- **arcCosh(number)** Inverse Hyperbolic Cos
+- **arcTanh(number)** Inverse Hyperbolic Tan
+- **exp(number)** e^number
+- **log(number)** log 10
+- **ln(number)** natural log
+- **sign(number)** The sign of the number (-, 0, +)
+- **round(number)** Round to nearest integer
 
 # Operators
 

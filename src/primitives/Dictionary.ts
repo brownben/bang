@@ -13,22 +13,33 @@ const dictionariesHaveEqualValues = (
     .every(Boolean)
 
 interface PrimitiveDictionaryConstructor {
-  token: Token
+  token?: Token
   keys: string[]
   values: Primitive[]
+  keyValues?: Record<string, Primitive>
+  immutable?: boolean
 }
 
 export class PrimitiveDictionary extends Primitive {
-  token: Token
+  token?: Token
   value = ''
   type = 'dictionary'
-  immutable: boolean = false
+  immutable: boolean
 
   dictionary: Record<string, Primitive> = {}
 
-  constructor({ token, keys, values }: PrimitiveDictionaryConstructor) {
+  constructor({
+    token,
+    keys,
+    values,
+    keyValues,
+    immutable = false,
+  }: PrimitiveDictionaryConstructor) {
     super()
     this.token = token
+
+    if (keyValues) this.dictionary = keyValues
+    this.immutable = immutable
 
     keys.forEach((key, index) => {
       this.dictionary[key] = values[index]
