@@ -4,6 +4,7 @@ import {
   assumeNewLineTokens,
   oneCharacterTokens,
   twoCharacterTokens,
+  threeCharacterTokens,
   unacceptableLineStartCharacters,
 } from './tokenGroups'
 import BangError from '../BangError'
@@ -47,6 +48,13 @@ class BaseTokeniser {
     const current = this.getCurrentCharacter()
     this.currentPosition += 1
     return current
+  }
+
+  getTwoCharacters(): string {
+    return this.source.slice(this.currentPosition, this.currentPosition + 2)
+  }
+  getThreeCharacters(): string {
+    return this.source.slice(this.currentPosition, this.currentPosition + 3)
   }
 
   goToNextLine() {
@@ -192,9 +200,12 @@ export class Tokenizer extends BaseTokeniser {
     if (this.currentPositionInLine === 0) this.changeBlockLevel()
 
     const char = this.getCurrentCharacter()
-    const twoChar = char + this.getNextCharacter()
+    const twoChar = this.getTwoCharacters()
+    const threeChar = this.getThreeCharacters()
 
-    if (twoCharacterTokens?.[twoChar])
+    if (threeCharacterTokens?.[threeChar])
+      this.addToken(threeCharacterTokens?.[threeChar], threeChar)
+    else if (twoCharacterTokens?.[twoChar])
       this.addToken(twoCharacterTokens?.[twoChar], twoChar)
     else if (twoChar === '//') this.goToNextLine()
     else if (oneCharacterTokens?.[char])
@@ -209,7 +220,10 @@ export class Tokenizer extends BaseTokeniser {
     if (['{', '(', '['].includes(char)) this.expressionLevel += 1
     else if (['}', ')', ']'].includes(char)) this.expressionLevel -= 1
 
-    if (Object.keys(twoCharacterTokens).includes(twoChar)) {
+    if (threeChar in threeCharacterTokens) {
+      this.currentPositionInLine += 3
+      this.currentPosition += 3
+    } else if (twoChar in twoCharacterTokens) {
       this.currentPositionInLine += 2
       this.currentPosition += 2
     } else if (char !== '\n' && twoChar !== '//') {

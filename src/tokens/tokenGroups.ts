@@ -55,6 +55,10 @@ export const twoCharacterTokens: { [key: string]: TokenType } = {
   '=>': TokenType.FAT_ARROW,
 }
 
+export const threeCharacterTokens: { [key: string]: TokenType } = {
+  '...': TokenType.SPREAD,
+}
+
 export const unacceptableLineStartCharacters = [
   ')',
   '}',

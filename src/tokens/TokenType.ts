@@ -11,6 +11,7 @@ export enum TokenType {
   COLON = ':',
   SEMICOLON = ';',
   FAT_ARROW = '=>',
+  SPREAD = '...',
 
   // Operators
   PLUS = '+',
