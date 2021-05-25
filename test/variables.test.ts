@@ -227,6 +227,25 @@ describe('desturcturing should work', () => {
     expectError(`let { a } = { a: 1, b: "World" } \n b`)
   })
 
+  it('should be able rename dictionary destructuring', () => {
+    expectEnviroment(`let { a:c, b } = { a: 1, b: "World" }`).toHaveValue(
+      'c',
+      1
+    )
+    expectEnviroment(`let { a, b:c } = { a: 1, b: "World" }`).toHaveValue(
+      'c',
+      'World'
+    )
+    expectEnviroment(`let { a:b, b:c } = { a: 1, b: "World" }`).toHaveValue(
+      'c',
+      'World'
+    )
+    expectEnviroment(`let { a:b, b:c } = { a: 1, b: "World" }`).toHaveValue(
+      'b',
+      1
+    )
+  })
+
   it('should destructure dictionary with missing key', () => {
     expectEnviroment(`let { a, b } = { b: 1 }`).toHaveValue('a', null)
     expectEnviroment(`let { c } = { b: "World" }`).toHaveValue('c', null)
@@ -248,6 +267,11 @@ describe('desturcturing should work', () => {
 
   it('should not destructure list into dictionary', () => {
     expectError(`let { a, b } = [ 1, "World" ]`)
+  })
+
+  it('should error if same name defined multiple times', () => {
+    expectError(`let [a, a] = [ 1, "World" ]`)
+    expectError(`let { a, b: a } = { a: 1, b: "World" }`)
   })
 
   it('should not destructure dictionary into list', () => {

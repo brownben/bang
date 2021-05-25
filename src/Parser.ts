@@ -248,18 +248,39 @@ class Parser extends BaseParser {
   destructuringVariableDeclaration(constant: boolean): Stmt {
     const bracket = this.advance()
     const type = bracket.type === TokenType.LEFT_BRACE ? 'dictionary' : 'list'
-    const names: Token[] = []
+    const names: (Token | { actual: string; renamed: string })[] = []
 
-    this.getCommaSeparatedValues({
-      closingBracket: bracket.type,
-      processArguments: () => {
-        names.push(
-          this.assertTokenIs(TokenType.IDENTIFIER, 'Expect variable name.')
-        )
-      },
-    })
+    if (bracket.type === TokenType.LEFT_SQUARE)
+      this.getCommaSeparatedValues({
+        closingBracket: TokenType.RIGHT_SQUARE,
+        processArguments: () => {
+          names.push(
+            this.assertTokenIs(TokenType.IDENTIFIER, 'Expect variable name.')
+          )
+        },
+      })
+    else
+      this.getCommaSeparatedValues({
+        closingBracket: TokenType.RIGHT_PAREN,
+        processArguments: () => {
+          let identifier = this.assertTokenIs(
+            TokenType.IDENTIFIER,
+            'Expected Identifier'
+          )
+          if (this.tokenMatches(TokenType.COLON))
+            names.push({
+              actual: identifier.value,
+              renamed: this.assertTokenIs(
+                TokenType.IDENTIFIER,
+                'Expected identifier to rename to'
+              ).value,
+            })
+          else names.push(identifier)
+        },
+      })
+
     this.assertTokenIs(
-      [TokenType.RIGHT_BRACE, TokenType.RIGHT_SQUARE],
+      [TokenType.RIGHT_SQUARE, TokenType.RIGHT_BRACE],
       'Expect closing bracket.'
     )
     this.assertTokenIs(TokenType.EQUAL, 'Expect an initial value')
@@ -269,10 +290,6 @@ class Parser extends BaseParser {
       newLineTokens,
       'Expect a new line after variable declaration.'
     )
-
-    const nameWithoutBlank = names.filter((name) => name.value !== '_')
-    if (nameWithoutBlank.length !== new Set(nameWithoutBlank).size)
-      throw this.error(bracket, 'Duplicate variable definition')
 
     return new StmtDestructuring({
       names,

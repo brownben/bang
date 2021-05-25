@@ -827,6 +827,16 @@ const [a, b, c] = [2, 5, 7]
 a // 2
 b // 6
 c // 7
+
+// you can also rename dictionary entries
+let { apples: red, banannas: yellow, carrots: orange } = {
+  'apples': 7,
+  'bannanas': 5,
+  carrots: 4
+}
+red // 7
+yellow // 5
+orange // 4
 ```
 
 # Control Flow
