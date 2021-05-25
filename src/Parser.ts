@@ -199,6 +199,7 @@ class Parser extends BaseParser {
     else if (this.tokenMatches(TokenType.IF)) return this.ifStatement()
     else if (this.tokenMatches(TokenType.WHILE)) return this.whileStatement()
     else if (this.tokenMatches(TokenType.RETURN)) return this.returnStatement()
+    else if (this.tokenMatches(TokenType.IMPORT)) return this.importStatement()
     else return this.expressionStatement()
   }
 
@@ -272,6 +273,24 @@ class Parser extends BaseParser {
     this.assertTokenIs(newLineTokens, 'Expect a new line after return.')
 
     return new StmtReturn(keyword, value)
+  }
+
+  importStatement(): Stmt {
+    const name = this.assertTokenIs(TokenType.IDENTIFIER, 'Expect import name.')
+
+    let newName: Token | undefined = undefined
+    if (this.tokenMatches(TokenType.AS))
+      newName = this.assertTokenIs(
+        TokenType.IDENTIFIER,
+        'Expect identifier name.'
+      )
+
+    this.assertTokenIs(
+      newLineTokens,
+      'Expect a new line after import statement'
+    )
+
+    return new StmtVariable(newName ?? name, true, name)
   }
 
   expressionStatement(): StmtExpression {

@@ -856,17 +856,39 @@ while (<condition expresssion>)
 
 # Global Built-in Functions/ Modules
 
-## print(value)
+## Global Scope
+
+The following functions are always added to the global scope. They can be imported (see syntax below) to give them a different name
+
+### print(value)
 
 Takes one value and prints its value to the console.
 Returns null.
 
-## type(value)
+### type(value)
 
 Get the type of the value passed.
 Returns a string representing the type of the value passed.
 
-## maths
+## Imported
+
+The following functions/ modules can be imported for use.
+
+The syntax for importing is as follows:
+
+```
+import <module_name>
+import <module_name> as <new_identifier>
+
+
+/* example */
+import maths
+import maths as math
+
+import print as log
+```
+
+### maths
 
 maths is a dictionary with the following functions/ values:
 
