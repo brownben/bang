@@ -3,12 +3,14 @@ import { print } from './print'
 import { type } from './type'
 import { maths } from './maths'
 import { unique } from './unique'
+import { regex } from './regex'
 
 export const builtInFunctions = {
   print,
   type,
   maths,
   unique,
+  regex,
 }
 
 export const isBuiltinIdentfier = (

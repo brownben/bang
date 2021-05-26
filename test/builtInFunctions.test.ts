@@ -6,6 +6,9 @@ const expectOutputWithMaths = (string: string) =>
 const expectOutputWithUnique = (string: string) =>
   expectOutput('import unique \n' + string)
 
+const expectOutputWithRegex = (string: string) =>
+  expectOutput('import regex \n' + string)
+
 describe('print functions', () => {
   const originalConsoleLog = console.log
 
@@ -219,5 +222,38 @@ describe('unique', () => {
     expectOutputWithUnique('!unique()').toBe(false)
     expectOutputWithUnique('let a\n if(unique) a = 7\n a == 7').toBe(true)
     expectOutputWithUnique('unique() || false').not.toBe(false)
+  })
+})
+
+describe('regex', () => {
+  it('should only be constructed with a string', () => {
+    expectError('import regex\n regex(7)')
+  })
+
+  it('should create regex', () => {
+    expectOutputWithRegex(`regex('[0-9]+').test('123')`).toBe(true)
+    expectOutputWithRegex(`regex('[0-9]+').test('aa')`).toBe(false)
+  })
+
+  it('should create regex with flag', () => {
+    expectOutputWithRegex(`regex('hello').test('HELLO')`).toBe(false)
+    expectOutputWithRegex(`regex('HellO', 'i').test('HELLO')`).toBe(true)
+  })
+
+  it('should accept string for test', () => {
+    expectError(`import regex\n regex('').test(7)`)
+  })
+
+  it('should work with multiple regex', () => {
+    expectOutputWithRegex(`let a = regex('hello')
+let b = regex('5+')
+[a.test('hello world'), a.test('55'), b.test('hello world'), b.test('55')]`).toEqual(
+      [true, false, false, true]
+    )
+  })
+
+  it('should not be equal to another regex', () => {
+    expectOutputWithRegex('regex("a") == regex("b")').toBe(false)
+    expectOutputWithRegex('regex("a") != regex("b")').toBe(true)
   })
 })
