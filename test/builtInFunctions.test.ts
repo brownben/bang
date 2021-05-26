@@ -91,6 +91,10 @@ describe('maths', () => {
     expectOutputWithMaths('maths.e').toBe(Math.E)
   })
 
+  it('should error if non number is passed', () => {
+    expectError(`import maths\n maths.ceil('hello')`)
+  })
+
   it('should have ceil function', () => {
     expectOutputWithMaths('maths.ceil(1)').toBe(1)
     expectOutputWithMaths('maths.ceil(1.01)').toBe(2)

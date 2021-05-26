@@ -282,3 +282,7 @@ describe('desturcturing should work', () => {
     expectError(`let [ a, b ] = { a: 1, b: "World" }`)
   })
 })
+
+it('should not allow declaration to non identifier', () => {
+  expectError('let < = 6')
+})

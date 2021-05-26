@@ -308,3 +308,7 @@ let e = [...b, 1, ...a]`)
     enviroment.toHaveValue('e', [4, 5, 1, 1, 2, 3])
   })
 })
+
+it('should not spread other objects', () => {
+  expectError('[1,2,...4]')
+})
