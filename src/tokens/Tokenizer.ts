@@ -58,7 +58,7 @@ class BaseTokeniser {
   }
 
   goToNextLine() {
-    while (this.getNextCharacter() !== '\n' && !this.isEnd())
+    while (this.getCurrentCharacter() !== '\n' && !this.isEnd())
       this.currentPosition += 1
   }
 

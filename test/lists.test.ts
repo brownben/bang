@@ -1,4 +1,4 @@
-import { expectOutput, expectError } from './helpers'
+import { expectOutput, expectError, expectEnviroment } from './helpers'
 
 it('should parse empty list', () => {
   expectOutput('[]').toEqual([])
@@ -277,4 +277,34 @@ it('should have sum function', () => {
   expectOutput('[].sum()').toBe(0)
   expectError('[false, null].sum()')
   expectError('["1", 1].sum()')
+})
+
+describe('spread', () => {
+  it('should combine 2 lists', () => {
+    const enviroment = expectEnviroment(`
+let a = [1, 2, 3]
+let b = [...a]
+let c = [0, ...a]
+let d = [...a, 4]
+let e = [0, ...a, 4]`)
+    enviroment.toHaveValue('a', [1, 2, 3])
+    enviroment.toHaveValue('b', [1, 2, 3])
+    enviroment.toHaveValue('c', [0, 1, 2, 3])
+    enviroment.toHaveValue('d', [1, 2, 3, 4])
+    enviroment.toHaveValue('e', [0, 1, 2, 3, 4])
+  })
+
+  it('should combine multiple lists', () => {
+    const enviroment = expectEnviroment(`
+let a = [1, 2, 3]
+let b = [4,5]
+let c = [...a, ...b]
+let d = [...b, ...a]
+let e = [...b, 1, ...a]`)
+    enviroment.toHaveValue('a', [1, 2, 3])
+    enviroment.toHaveValue('b', [4, 5])
+    enviroment.toHaveValue('c', [1, 2, 3, 4, 5])
+    enviroment.toHaveValue('d', [4, 5, 1, 2, 3])
+    enviroment.toHaveValue('e', [4, 5, 1, 1, 2, 3])
+  })
 })

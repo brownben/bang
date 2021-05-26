@@ -207,4 +207,49 @@ describe('copes with edge cases', () => {
       tokeniserResultError(character, 'Unidentified Character')
     )
   })
+
+  it('should identify spread', () => {
+    expectTokens(`[1,2,...[1,2]]`, [
+      { type: TokenType.LEFT_SQUARE },
+      { type: TokenType.NUMBER, value: '1' },
+      { type: TokenType.COMMA },
+      { type: TokenType.NUMBER, value: '2' },
+      { type: TokenType.COMMA },
+      { type: TokenType.SPREAD },
+      { type: TokenType.LEFT_SQUARE },
+      { type: TokenType.NUMBER, value: '1' },
+      { type: TokenType.COMMA },
+      { type: TokenType.NUMBER, value: '2' },
+      { type: TokenType.RIGHT_SQUARE },
+      { type: TokenType.RIGHT_SQUARE },
+    ])
+
+    expectTokens(
+      `let a = [1, 2, 3]
+let b = [...a]
+// let c = [0, ...a]
+// let d = [...a, 4]
+// let e = [0, ...a, 4]`,
+      [
+        { type: TokenType.LET },
+        { type: TokenType.IDENTIFIER, value: 'a' },
+        { type: TokenType.EQUAL },
+        { type: TokenType.LEFT_SQUARE },
+        { type: TokenType.NUMBER, value: '1' },
+        { type: TokenType.COMMA },
+        { type: TokenType.NUMBER, value: '2' },
+        { type: TokenType.COMMA },
+        { type: TokenType.NUMBER, value: '3' },
+        { type: TokenType.RIGHT_SQUARE },
+        { type: TokenType.NEW_LINE },
+        { line: 2, type: TokenType.LET },
+        { line: 2, type: TokenType.IDENTIFIER, value: 'b' },
+        { line: 2, type: TokenType.EQUAL },
+        { line: 2, type: TokenType.LEFT_SQUARE },
+        { line: 2, type: TokenType.SPREAD },
+        { line: 2, type: TokenType.IDENTIFIER, value: 'a' },
+        { line: 2, type: TokenType.RIGHT_SQUARE },
+      ]
+    )
+  })
 })

@@ -31,6 +31,7 @@ import {
   ExprLogical,
   ExprSet,
   ExprSlice,
+  ExprSpread,
   ExprUnary,
   ExprVariable,
 } from './expressions'
@@ -497,6 +498,10 @@ class Parser extends BaseParser {
       const operator: Token = this.getPreviousToken()
       const right: Expr = this.unary()
       return new ExprUnary(operator, right)
+    } else if (this.tokenMatches(TokenType.SPREAD)) {
+      const operator: Token = this.getPreviousToken()
+      const right: Expr = this.unary()
+      return new ExprSpread(operator, right)
     }
 
     return this.call()
