@@ -37,11 +37,15 @@ export class ExprCall extends Expr {
     }
 
     if (!(callee instanceof PrimitiveFunction))
-      throw new BangError('Can only call functions and classes.')
+      throw new BangError('Can only call functions.')
 
-    if (argument.length !== callee.arity)
+    if (!callee.spread && argument.length !== callee.arity)
       throw new BangError(
         `Expected ${callee.arity} arguments but got ${argument.length}`
+      )
+    else if (callee.spread && argument.length <= callee.arity)
+      throw new BangError(
+        `Expected at least ${callee.arity} arguments but got ${argument.length}`
       )
 
     return callFunction(callee, argument)

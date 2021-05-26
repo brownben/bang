@@ -5,6 +5,7 @@ import { BuiltInPropertyVisitor } from './builtInProperties'
 interface PrimitiveFunctionConstructor {
   name?: string
   arity: number
+  spread: boolean
   call: (argument: Primitive[]) => Primitive
 }
 
@@ -16,13 +17,16 @@ export class PrimitiveFunction extends Primitive {
 
   name?: string
   arity: number
+  spread: boolean = false
+
   call: (argument: Primitive[]) => Primitive
 
-  constructor({ name, arity, call }: PrimitiveFunctionConstructor) {
+  constructor({ name, arity, call, spread }: PrimitiveFunctionConstructor) {
     super()
     this.name = name
     this.arity = arity
     this.call = call
+    this.spread = spread
   }
 
   getValue(): string {

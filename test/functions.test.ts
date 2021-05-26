@@ -262,7 +262,7 @@ it('should execute immediately invoked functions', () => {
   expectOutput(`((a) => type(a))('hello')`).toBe('string')
 })
 
-it('should work with spread arguments', () => {
+it('should work with spread parameters', () => {
   expectOutput(`let a = (a, b, c) => a + b + c
 a(...[1,3,4])`).toBe(8)
   expectOutput(`let a = (a, b, c) => a + b + c
@@ -271,6 +271,27 @@ a(...[1,3], 4)`).toBe(8)
 a(5,...[1, 7])`).toBe(13)
   expectError(`let a = (a, b, c) => a + b + c
 a(5,...[1, 7,2])`)
+})
+
+it('should work with spread arguments', () => {
+  expectOutput(`let a = (a, ...b) => b
+a(1,3,4)`).toEqual([3, 4])
+  expectError(`let a = (...a, b, c) => a`)
+  expectOutput(`let a = (...a) => a
+a(1,4,5)`).toEqual([1, 4, 5])
+})
+
+it('should have minimum of positional arguments with spread', () => {
+  expectError(`let a = (a,c, ...b) => b
+a(1,3)`)
+})
+
+it('should only have 1 spread in function definition', () => {
+  expectError(`let a = (a,...c, ...b) => b`)
+})
+
+it('should only have spread as last argument', () => {
+  expectError(`let a = (a,...c, b) => b`)
 })
 
 describe('with print output', () => {

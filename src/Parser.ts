@@ -84,6 +84,9 @@ class BaseParser {
   error(token: Token, message: string) {
     throw new BangError(message, this.source, token.line)
   }
+  errorHere(message: string) {
+    throw new BangError(message, this.source, this.getToken().line)
+  }
 
   tokenIsType(...type: TokenType[]): boolean {
     if (this.isAtEnd()) return false
@@ -101,7 +104,7 @@ class BaseParser {
       if (this.tokenIsType(...type)) return this.advance()
     } else if (this.tokenIsType(type)) return this.advance()
 
-    throw this.error(this.getToken(), message)
+    throw this.errorHere(message)
   }
 
   nextTokensAreType(...tokens: TokenType[]): boolean {
@@ -150,21 +153,23 @@ class BaseParser {
     return true
   }
 
-  getCommaSeparatedValues({
+  getCommaSeparatedValues<ReturnValue>({
     closingBracket,
     processArguments,
   }: {
     closingBracket: TokenType
-    processArguments: () => void
-  }) {
+    processArguments: (list: ReturnValue[]) => ReturnValue
+  }): ReturnValue[] {
+    const list: ReturnValue[] = []
     if (this.getTokenType() !== closingBracket) {
       do {
         if (this.getTokenType() === closingBracket) break
         if (this.getTokenType() === TokenType.COMMA)
-          throw this.error(this.getToken(), 'Unexpected Extra Comma')
-        processArguments()
+          throw this.errorHere('Unexpected Extra Comma')
+        list.push(processArguments(list))
       } while (this.tokenMatches(TokenType.COMMA))
     }
+    return list
   }
 }
 
@@ -190,7 +195,7 @@ class Parser extends BaseParser {
       return this.statement()
     } catch (error) {
       if (error instanceof BangError) throw error
-      else throw this.error(this.getToken(), 'Problem Whilst Parsing Code')
+      else throw this.errorHere('Problem Whilst Parsing Code')
     }
   }
 
@@ -249,19 +254,20 @@ class Parser extends BaseParser {
   destructuringVariableDeclaration(constant: boolean): Stmt {
     const bracket = this.advance()
     const type = bracket.type === TokenType.LEFT_BRACE ? 'dictionary' : 'list'
-    const names: (Token | { actual: string; renamed: string })[] = []
+    let names: (Token | { actual: string; renamed: string })[] = []
 
     if (bracket.type === TokenType.LEFT_SQUARE)
-      this.getCommaSeparatedValues({
+      names = this.getCommaSeparatedValues({
         closingBracket: TokenType.RIGHT_SQUARE,
         processArguments: () => {
-          names.push(
-            this.assertTokenIs(TokenType.IDENTIFIER, 'Expect variable name.')
+          return this.assertTokenIs(
+            TokenType.IDENTIFIER,
+            'Expect variable name.'
           )
         },
       })
     else
-      this.getCommaSeparatedValues({
+      names = this.getCommaSeparatedValues({
         closingBracket: TokenType.RIGHT_PAREN,
         processArguments: () => {
           let identifier = this.assertTokenIs(
@@ -269,14 +275,14 @@ class Parser extends BaseParser {
             'Expected Identifier'
           )
           if (this.tokenMatches(TokenType.COLON))
-            names.push({
+            return {
               actual: identifier.value,
               renamed: this.assertTokenIs(
                 TokenType.IDENTIFIER,
                 'Expected identifier to rename to'
               ).value,
-            })
-          else names.push(identifier)
+            }
+          else return identifier
         },
       })
 
@@ -554,15 +560,13 @@ class Parser extends BaseParser {
   }
 
   finishCall(callee: Expr) {
-    const parameters: Expr[] = []
-
-    this.getCommaSeparatedValues({
+    const parameters: Expr[] = this.getCommaSeparatedValues({
       closingBracket: TokenType.RIGHT_PAREN,
-      processArguments: () => {
+      processArguments: (parameters) => {
         if (parameters.length >= 255)
-          this.error(this.getToken(), "Can't have more than 255 arguments.")
+          this.errorHere("Can't have more than 255 arguments.")
 
-        parameters.push(this.expression())
+        return this.expression()
       },
     })
 
@@ -587,17 +591,23 @@ class Parser extends BaseParser {
 
     this.advance()
 
-    const parameters: string[] = []
-    this.getCommaSeparatedValues({
-      closingBracket: TokenType.RIGHT_PAREN,
-      processArguments: () => {
-        if (parameters.length >= 255)
-          this.error(this.getToken(), "Can't have more than 255 parameters.")
+    const getIdentifer = () =>
+      this.assertTokenIs(TokenType.IDENTIFIER, 'Expect parameter name.')
 
-        parameters.push(
-          this.assertTokenIs(TokenType.IDENTIFIER, 'Expect parameter name.')
-            .value
-        )
+    let spread = false
+    const parameters: string[] = this.getCommaSeparatedValues({
+      closingBracket: TokenType.RIGHT_PAREN,
+      processArguments: (parameters) => {
+        if (parameters.length >= 255)
+          this.errorHere("Can't have more than 255 parameters.")
+
+        if (this.tokenMatches(TokenType.SPREAD)) {
+          if (spread)
+            throw this.errorHere(`Cannot have multiple spreads in arguments`)
+          spread = true
+          return getIdentifer().value
+        } else if (!spread) return getIdentifer().value
+        else throw this.errorHere(`Spread must be last argument of function`)
       },
     })
 
@@ -606,11 +616,13 @@ class Parser extends BaseParser {
     this.skipNewLineIfBlockFollows()
 
     if (this.tokenMatches(TokenType.BLOCK_START))
-      return new ExprFunction(parameters, this.block())
+      return new ExprFunction(parameters, this.block(), spread)
     else
-      return new ExprFunction(parameters, [
-        new StmtReturn(this.getToken(), this.expression()),
-      ])
+      return new ExprFunction(
+        parameters,
+        [new StmtReturn(this.getToken(), this.expression())],
+        spread
+      )
   }
 
   primary(): Expr {
@@ -640,20 +652,18 @@ class Parser extends BaseParser {
 
   dictionary(): Expr {
     const token = this.getPreviousToken()
-    const keyValues: ([ExprVariable, null] | [Expr, Expr])[] = []
+    const keyValues: ([ExprVariable, null] | [Expr, Expr])[] =
+      this.getCommaSeparatedValues({
+        closingBracket: TokenType.RIGHT_BRACE,
+        processArguments: () => {
+          const identifier = this.expression()
 
-    this.getCommaSeparatedValues({
-      closingBracket: TokenType.RIGHT_BRACE,
-      processArguments: () => {
-        const identifier = this.expression()
-
-        if (this.tokenMatches(TokenType.COLON))
-          keyValues.push([identifier, this.expression()])
-        else if (identifier instanceof ExprVariable)
-          keyValues.push([identifier, null])
-        else throw this.error(this.getToken(), 'Expect Colon After Key')
-      },
-    })
+          if (this.tokenMatches(TokenType.COLON))
+            return [identifier, this.expression()]
+          else if (identifier instanceof ExprVariable) return [identifier, null]
+          else throw this.errorHere('Expect Colon After Key')
+        },
+      })
 
     this.assertTokenIs(TokenType.RIGHT_BRACE, "Expect '}' after dictionary.")
     return new ExprDictionary(token, keyValues)
@@ -661,13 +671,9 @@ class Parser extends BaseParser {
 
   list(): Expr {
     const token = this.getPreviousToken()
-    const values: Expr[] = []
-
-    this.getCommaSeparatedValues({
+    const values: Expr[] = this.getCommaSeparatedValues({
       closingBracket: TokenType.RIGHT_SQUARE,
-      processArguments: () => {
-        values.push(this.expression())
-      },
+      processArguments: () => this.expression(),
     })
 
     this.assertTokenIs(TokenType.RIGHT_SQUARE, "Expect ']' after dictionary.")
