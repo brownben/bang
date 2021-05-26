@@ -405,6 +405,17 @@ Takes parameters and returns a result. If no return value is defined it returns 
 aFunction()
 anotherFunction(1, 2, 3)
 reallyExciting(false, "hello" + 'world', 77 / 11)
+
+// accept any number of parameters and collect them in array
+// (c is an array)
+(a, b, ...c) => <do stuff>
+
+// you can also destructure a dictionary as t a single argument
+let a = ({name, age}) => <use name and age>
+a({name: 'Bob', age: 7})
+
+let b = ({name: firstName, age}) => <use firstName and age>
+a({name: 'Bob', age: 7})
 ```
 
 ### Operators
@@ -602,6 +613,16 @@ It errors if the list is immutable.
 ```
 [1, 2, 3] + 4   // [1, 2, 3, 4]
 [1, 2] + [3, 4] // [1, 2, 3, 4]
+```
+
+**spread (...)**
+
+Expand a list to merge
+
+```
+[1, 2, ...[3, 4]] // [1, 2, 3, 4]
+[1, ...[2, 3], 4] // [1, 2, 3, 4]
+[...[3, 4], 1, 3] // [3, 4, 1, 2]
 ```
 
 ### Built-in Methods + Properties
@@ -811,7 +832,7 @@ b = 4 // error variable is a constant
 
 ```
 
-Lists and dictionaries can be destructured, into independant variables.
+Lists and dictionaries can be destructured, into independant variables. Spread can be used to capture the remaining values in a list.
 
 ```
 let { apples, banannas } = {
@@ -827,6 +848,11 @@ const [a, b, c] = [2, 5, 7]
 a // 2
 b // 6
 c // 7
+
+const [a, b, ...c] = [2, 5, 7, 8]
+a // 2
+b // 6
+c // [7, 8]
 
 // you can also rename dictionary entries
 let { apples: red, banannas: yellow, carrots: orange } = {
