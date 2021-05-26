@@ -5,7 +5,7 @@ import { BuiltInPropertyVisitor } from './builtInProperties'
 interface PrimitiveFunctionConstructor {
   name?: string
   arity: number
-  spread: boolean
+  spread?: boolean
   call: (argument: Primitive[]) => Primitive
 }
 
@@ -26,7 +26,7 @@ export class PrimitiveFunction extends Primitive {
     this.name = name
     this.arity = arity
     this.call = call
-    this.spread = spread
+    if (spread) this.spread = spread
   }
 
   getValue(): string {

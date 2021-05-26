@@ -43,7 +43,7 @@ export class ExprCall extends Expr {
       throw new BangError(
         `Expected ${callee.arity} arguments but got ${argument.length}`
       )
-    else if (callee.spread && argument.length <= callee.arity)
+    else if (callee.spread && argument.length < callee.arity)
       throw new BangError(
         `Expected at least ${callee.arity} arguments but got ${argument.length}`
       )

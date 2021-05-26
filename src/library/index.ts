@@ -2,11 +2,13 @@ import { Enviroment } from '../Enviroment'
 import { print } from './print'
 import { type } from './type'
 import { maths } from './maths'
+import { unique } from './unique'
 
 export const builtInFunctions = {
   print,
   type,
   maths,
+  unique,
 }
 
 export const isBuiltinIdentfier = (

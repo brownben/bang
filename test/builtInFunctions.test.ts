@@ -3,6 +3,9 @@ import { execute, expectError, expectOutput } from './helpers'
 const expectOutputWithMaths = (string: string) =>
   expectOutput('import maths \n' + string)
 
+const expectOutputWithUnique = (string: string) =>
+  expectOutput('import unique \n' + string)
+
 describe('print functions', () => {
   const originalConsoleLog = console.log
 
@@ -198,5 +201,23 @@ describe('import builtins', () => {
   it('should throw if an unknown is imported', () => {
     expectError('import x')
     expectError('import x as y')
+  })
+})
+
+describe('unique', () => {
+  it('should have uniques not equal', () => {
+    expectOutputWithUnique('unique() != unique()').toBe(true)
+    expectOutputWithUnique('unique()').toBeDefined()
+  })
+
+  it('value should be equal to itself', () => {
+    expectOutputWithUnique('let a = unique()\n a == a').toBe(true)
+  })
+
+  it('value should be truthy', () => {
+    expectOutputWithUnique('unique().toBoolean()').toBe(true)
+    expectOutputWithUnique('!unique()').toBe(false)
+    expectOutputWithUnique('let a\n if(unique) a = 7\n a == 7').toBe(true)
+    expectOutputWithUnique('unique() || false').not.toBe(false)
   })
 })

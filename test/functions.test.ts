@@ -283,7 +283,7 @@ a(1,4,5)`).toEqual([1, 4, 5])
 
 it('should have minimum of positional arguments with spread', () => {
   expectError(`let a = (a,c, ...b) => b
-a(1,3)`)
+a(1)`)
 })
 
 it('should only have 1 spread in function definition', () => {

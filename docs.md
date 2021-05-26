@@ -11,6 +11,7 @@ There are 6 primitive types in Bang:
 - Function
 - Dictionary
 - List
+- Unique (Imported, See Global Built-in Functions/ Modules)
 
 ## Strings
 
@@ -971,6 +972,20 @@ maths is a dictionary with the following functions/ values:
 - **ln(number)** natural log
 - **sign(number)** The sign of the number (-, 0, +)
 - **round(number)** Round to nearest integer
+
+### unique
+
+unique is a function which returns a unique value, nothing else is equal to the value created aprt from the value created. It is only equal to itself and cannot be modified. It is truthy
+
+```
+import unique
+
+let a = unique()
+
+a == a
+a != unique()
+unique() != unique()
+```
 
 # Operators
 

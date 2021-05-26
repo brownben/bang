@@ -662,4 +662,14 @@ export class BuiltInPropertyVisitor
       }),
     }
   }
+
+  visitUnique() {
+    return {
+      toBoolean: new PrimitiveFunction({
+        name: 'toBoolean',
+        arity: 0,
+        call: () => new PrimitiveBoolean(true),
+      }),
+    }
+  }
 }
