@@ -1,5 +1,6 @@
 import { Token } from '../tokens'
 import { Expr } from './Expr'
+import { ExprSpread } from './Spread'
 import { Primitive, PrimitiveFunction, ReturnValue } from '../primitives'
 import { Enviroment } from '../Enviroment'
 import BangError from '../BangError'
@@ -27,9 +28,13 @@ export class ExprCall extends Expr {
 
   evaluate(enviroment: Enviroment) {
     const callee: Primitive = this.callee.evaluate(enviroment)
-    const argument: Primitive[] = this.arguments.map((argument) =>
-      argument.evaluate(enviroment)
-    )
+    const argument: Primitive[] = []
+
+    for (const value of this.arguments) {
+      if (value instanceof ExprSpread)
+        value.evaluate(enviroment).list.forEach((value) => argument.push(value))
+      else argument.push(value.evaluate(enviroment))
+    }
 
     if (!(callee instanceof PrimitiveFunction))
       throw new BangError('Can only call functions and classes.')

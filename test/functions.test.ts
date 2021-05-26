@@ -262,6 +262,17 @@ it('should execute immediately invoked functions', () => {
   expectOutput(`((a) => type(a))('hello')`).toBe('string')
 })
 
+it('should work with spread arguments', () => {
+  expectOutput(`let a = (a, b, c) => a + b + c
+a(...[1,3,4])`).toBe(8)
+  expectOutput(`let a = (a, b, c) => a + b + c
+a(...[1,3], 4)`).toBe(8)
+  expectOutput(`let a = (a, b, c) => a + b + c
+a(5,...[1, 7])`).toBe(13)
+  expectError(`let a = (a, b, c) => a + b + c
+a(5,...[1, 7,2])`)
+})
+
 describe('with print output', () => {
   const originalConsoleLog = console.log
 
