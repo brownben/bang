@@ -251,40 +251,57 @@ class Parser extends BaseParser {
     return new StmtVariable(name, constant, initializer)
   }
 
+  destructuringListValues(): [string[], boolean] {
+    const getIdentifer = () =>
+      this.assertTokenIs(TokenType.IDENTIFIER, 'Expect variable name.')
+    let spread = false
+    const values = this.getCommaSeparatedValues({
+      closingBracket: TokenType.RIGHT_SQUARE,
+      processArguments: () => {
+        if (this.tokenMatches(TokenType.SPREAD)) {
+          if (spread) throw this.errorHere(`Cannot have multiple spreads`)
+          spread = true
+          return getIdentifer().value
+        } else if (!spread) return getIdentifer().value
+        else throw this.errorHere(`Spread must be last value`)
+      },
+    })
+
+    return [values, spread]
+  }
+
+  destructuringDictionaryValues() {
+    return this.getCommaSeparatedValues({
+      closingBracket: TokenType.RIGHT_PAREN,
+      processArguments: () => {
+        let identifier = this.assertTokenIs(
+          TokenType.IDENTIFIER,
+          'Expected Identifier'
+        )
+        if (this.tokenMatches(TokenType.COLON))
+          return {
+            actual: identifier.value,
+            renamed: this.assertTokenIs(
+              TokenType.IDENTIFIER,
+              'Expected identifier to rename to'
+            ).value,
+          }
+        else return identifier
+      },
+    })
+  }
+
   destructuringVariableDeclaration(constant: boolean): Stmt {
     const bracket = this.advance()
     const type = bracket.type === TokenType.LEFT_BRACE ? 'dictionary' : 'list'
     let names: (Token | { actual: string; renamed: string })[] = []
+    let spread = false
 
-    if (bracket.type === TokenType.LEFT_SQUARE)
-      names = this.getCommaSeparatedValues({
-        closingBracket: TokenType.RIGHT_SQUARE,
-        processArguments: () => {
-          return this.assertTokenIs(
-            TokenType.IDENTIFIER,
-            'Expect variable name.'
-          )
-        },
-      })
-    else
-      names = this.getCommaSeparatedValues({
-        closingBracket: TokenType.RIGHT_PAREN,
-        processArguments: () => {
-          let identifier = this.assertTokenIs(
-            TokenType.IDENTIFIER,
-            'Expected Identifier'
-          )
-          if (this.tokenMatches(TokenType.COLON))
-            return {
-              actual: identifier.value,
-              renamed: this.assertTokenIs(
-                TokenType.IDENTIFIER,
-                'Expected identifier to rename to'
-              ).value,
-            }
-          else return identifier
-        },
-      })
+    if (bracket.type === TokenType.LEFT_SQUARE) {
+      let [values, s] = this.destructuringListValues()
+      names = values.map((value) => ({ actual: value, renamed: value }))
+      spread = s
+    } else names = this.destructuringDictionaryValues()
 
     this.assertTokenIs(
       [TokenType.RIGHT_SQUARE, TokenType.RIGHT_BRACE],
@@ -303,6 +320,7 @@ class Parser extends BaseParser {
       constant,
       expression,
       type,
+      spread,
     })
   }
 

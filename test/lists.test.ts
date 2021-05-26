@@ -280,6 +280,11 @@ it('should have sum function', () => {
 })
 
 describe('spread', () => {
+  it('should assign remaining elements in a list', () => {
+    expectEnviroment('let [a, ...b] = [1, 2, 3]').toHaveValue('a', 1)
+    expectEnviroment('let [a, ...b] = [1, 2, 3]').toHaveValue('b', [2, 3])
+  })
+
   it('should combine 2 lists', () => {
     const enviroment = expectEnviroment(`
 let a = [1, 2, 3]
