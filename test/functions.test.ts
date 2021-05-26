@@ -294,6 +294,28 @@ it('should only have spread as last argument', () => {
   expectError(`let a = (a,...c, b) => b`)
 })
 
+it('should destructure dictionary argument', () => {
+  expectOutput(`(({ dog, cat }) => dog)({dog: 1})`).toBe(1)
+  expectOutput(`(({ dog, cat }) => cat)({dog: 1})`).toBe(null)
+})
+
+it('should destructure dictionary argument with rename', () => {
+  expectOutput(`(({ dog: fish, cat }) => fish)({dog: 1})`).toBe(1)
+  expectOutput(`(({ dog, cat: frog }) => frog)({dog: 1})`).toBe(null)
+})
+
+it('should not accept any regular parameters when destructure dictionary argument', () => {
+  expectError(`(({ dog, cat }) => dog)(1)`)
+  expectError(`(({ dog, cat }) => cat)()`)
+  expectOutput(`(({ dog, cat }) => cat)({})`).toBe(null)
+})
+
+it('should only destructure dictionary when its the only parameter', () => {
+  expectError('({a},{b}) => a')
+  expectError('({a},b) => a')
+  expectError('(a,{b}) => a')
+})
+
 describe('with print output', () => {
   const originalConsoleLog = console.log
 

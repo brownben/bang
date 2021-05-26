@@ -613,21 +613,30 @@ class Parser extends BaseParser {
       this.assertTokenIs(TokenType.IDENTIFIER, 'Expect parameter name.')
 
     let spread = false
-    const parameters: string[] = this.getCommaSeparatedValues({
-      closingBracket: TokenType.RIGHT_PAREN,
-      processArguments: (parameters) => {
-        if (parameters.length >= 255)
-          this.errorHere("Can't have more than 255 parameters.")
+    let parameters
+    if (this.tokenMatches(TokenType.LEFT_BRACE)) {
+      parameters = this.destructuringDictionaryValues().map((param) => {
+        if (param instanceof Token)
+          return { actual: param.value, renamed: param.value }
+        return param
+      }) as string[] | { actual: string; renamed: string }[]
+      this.assertTokenIs(TokenType.RIGHT_BRACE, "Expect '}' after dictionary.")
+    } else
+      parameters = this.getCommaSeparatedValues<string>({
+        closingBracket: TokenType.RIGHT_PAREN,
+        processArguments: (parameters) => {
+          if (parameters.length >= 255)
+            this.errorHere("Can't have more than 255 parameters.")
 
-        if (this.tokenMatches(TokenType.SPREAD)) {
-          if (spread)
-            throw this.errorHere(`Cannot have multiple spreads in arguments`)
-          spread = true
-          return getIdentifer().value
-        } else if (!spread) return getIdentifer().value
-        else throw this.errorHere(`Spread must be last argument of function`)
-      },
-    })
+          if (this.tokenMatches(TokenType.SPREAD)) {
+            if (spread)
+              throw this.errorHere(`Cannot have multiple spreads in arguments`)
+            spread = true
+            return getIdentifer().value
+          } else if (!spread) return getIdentifer().value
+          else throw this.errorHere(`Spread must be last argument of function`)
+        },
+      })
 
     this.assertTokenIs(TokenType.RIGHT_PAREN, "Expect ')' after parameters.")
     this.assertTokenIs(TokenType.FAT_ARROW, "Expect '=>' after parameters.")

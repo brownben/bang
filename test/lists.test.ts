@@ -285,6 +285,13 @@ describe('spread', () => {
     expectEnviroment('let [a, ...b] = [1, 2, 3]').toHaveValue('b', [2, 3])
   })
 
+  it('should only accept spread as last parameter', () => {
+    expectError('let [...a, b] = [1,2,3]')
+  })
+  it('should only accept one spread', () => {
+    expectError('let [...a, ...b] = [1,2,3]')
+  })
+
   it('should combine 2 lists', () => {
     const enviroment = expectEnviroment(`
 let a = [1, 2, 3]
