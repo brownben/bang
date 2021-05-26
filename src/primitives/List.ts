@@ -6,8 +6,8 @@ import BangError from '../BangError'
 
 const listsHaveEqualValues = (a: Primitive[], b: Primitive[]) =>
   a
-    .map((value, index) => value.getValue() === b?.[index]?.getValue())
-    .every(Boolean)
+    .map((value, index) => b?.[index] && value?.equals(b[index]))
+    .every((value) => value?.getValue())
 
 interface PrimitiveListConstructor {
   token?: Token

@@ -9,8 +9,8 @@ const dictionariesHaveEqualValues = (
   b: Record<string, Primitive>
 ) =>
   Object.entries(a)
-    .map(([key, value]) => b[key]?.getValue() === value.getValue())
-    .every(Boolean)
+    .map(([key, value]) => b[key]?.equals(value))
+    .every((value) => value?.getValue())
 
 interface PrimitiveDictionaryConstructor {
   token?: Token
