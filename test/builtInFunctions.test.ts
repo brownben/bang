@@ -98,6 +98,9 @@ describe('maths', () => {
   it('should have constants', () => {
     expectOutputWithMaths('maths.pi').toEqual(Math.PI)
     expectOutputWithMaths('maths.e').toBe(Math.E)
+    expectOutputWithMaths('maths.infinity').toEqual(Infinity)
+    expectOutputWithMaths('maths.infinity > 10000000000000').toBe(true)
+    expectOutputWithMaths('maths.infinity < 10000000000000').toBe(false)
   })
 
   it('should error if non number is passed', () => {

@@ -27,6 +27,7 @@ export const maths = new PrimitiveDictionary({
   keyValues: {
     pi: new PrimitiveNumber(Math.PI),
     e: new PrimitiveNumber(Math.E),
+    infinity: new PrimitiveNumber(Infinity),
 
     ceil: new PrimitiveFunction({
       name: 'maths.ceil',
