@@ -998,6 +998,13 @@ a != unique()
 unique() != unique()
 ```
 
+### json
+
+functions for converting to and from json, as a dictionary
+
+- **stringify(object, amountOfIndentation)** - convert to a json string, functions are converted to a string, amount of indentation is optional and defaults to 0
+- **parse(string)** - parse a json string into bang primitive
+
 # Operators
 
 ## Equality
