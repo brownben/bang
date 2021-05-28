@@ -2,14 +2,18 @@ import { Stmt, StmtResult } from './statements'
 import { ReturnValue } from './primitives'
 import { Enviroment } from './Enviroment'
 import { defineBuiltInFunctions } from './library'
+import { wrapValue } from './library/wrapper'
 import BangError from './BangError'
 
 export class Interpreter {
   private enviroment: Enviroment
   readonly globals: Enviroment = defineBuiltInFunctions()
 
-  constructor() {
+  constructor(externalValues?: Record<string, unknown>) {
     this.enviroment = this.globals
+
+    for (const key in externalValues)
+      this.enviroment.define(key, true, wrapValue(externalValues[key]))
   }
 
   run(statements: Stmt[]): StmtResult[] {
