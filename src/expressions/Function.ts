@@ -9,7 +9,7 @@ import {
   PrimitiveDictionary,
 } from '../primitives'
 import { Enviroment } from '../Enviroment'
-import { BangError } from '..'
+import BangError from '../BangError'
 
 interface DestructureName {
   actual: string
