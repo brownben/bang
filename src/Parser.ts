@@ -41,6 +41,7 @@ import {
   StmtDestructuring,
   StmtExpression,
   StmtIf,
+  StmtImport,
   StmtReturn,
   StmtVariable,
   StmtWhile,
@@ -207,6 +208,8 @@ class Parser extends BaseParser {
     else if (this.tokenMatches(TokenType.IF)) return this.ifStatement()
     else if (this.tokenMatches(TokenType.WHILE)) return this.whileStatement()
     else if (this.tokenMatches(TokenType.RETURN)) return this.returnStatement()
+    else if (this.tokenMatches(TokenType.FROM))
+      return this.fromImportStatement()
     else if (this.tokenMatches(TokenType.IMPORT)) return this.importStatement()
     else return this.expressionStatement()
   }
@@ -365,6 +368,28 @@ class Parser extends BaseParser {
     return new StmtReturn(keyword, value)
   }
 
+  fromImportStatement(): Stmt {
+    const moduleName = this.assertTokenIs(
+      TokenType.IDENTIFIER,
+      'Expect import name.'
+    )
+
+    this.assertTokenIs(
+      TokenType.IMPORT,
+      'Expect import after module identifier'
+    )
+
+    this.assertTokenIs(TokenType.LEFT_BRACE, 'Expect brace')
+    const imports = this.destructuringDictionaryValues().map((param) => {
+      if (param instanceof Token)
+        return { actual: param.value, renamed: param.value }
+      return param
+    })
+    this.assertTokenIs(TokenType.RIGHT_BRACE, 'Expect brace')
+
+    return new StmtImport(moduleName.value, { destructured: imports })
+  }
+
   importStatement(): Stmt {
     const name = this.assertTokenIs(TokenType.IDENTIFIER, 'Expect import name.')
 
@@ -380,7 +405,7 @@ class Parser extends BaseParser {
       'Expect a new line after import statement'
     )
 
-    return new StmtVariable(newName ?? name, true, name)
+    return new StmtImport(name.value, { as: newName?.value })
   }
 
   expressionStatement(): StmtExpression {

@@ -106,6 +106,8 @@ export const synchronizeTokens = [
   TokenType.IF,
   TokenType.WHILE,
   TokenType.RETURN,
+  TokenType.IMPORT,
+  TokenType.FROM,
 ]
 
 export const assumeNewLineTokens = [
@@ -122,6 +124,8 @@ export const assumeNewLineTokens = [
   TokenType.RETURN,
   TokenType.NEW_LINE,
   TokenType.BLOCK_END,
+  TokenType.IMPORT,
+  TokenType.FROM,
 ]
 
 export const variableDeclarationTokens = [TokenType.CONST, TokenType.LET]

@@ -1,4 +1,5 @@
-import { execute, expectError, expectOutput } from './helpers'
+import { execute, expectEnviroment, expectError, expectOutput } from './helpers'
+import { writeFileSync } from 'fs'
 
 const expectOutputWithMaths = (string: string) =>
   expectOutput('import maths \n' + string)
@@ -11,6 +12,9 @@ const expectOutputWithRegex = (string: string) =>
 
 const expectOutputWithJSON = (string: string) =>
   expectOutput('import json \n' + string)
+
+const expectOutputWithFile = (string: string) =>
+  expectOutput('import file \n' + string)
 
 describe('print functions', () => {
   const originalConsoleLog = console.log
@@ -57,14 +61,6 @@ describe('print functions', () => {
   it('should have correct string representation value', () => {
     execute('print(print)')
     expect(console.log).toHaveBeenLastCalledWith('<function print>')
-  })
-
-  it('should be possible to import print under a different name', () => {
-    execute(`
-import print as consoleLog
-consoleLog(5)
-  `)
-    expect(console.log).toHaveBeenLastCalledWith(5)
   })
 })
 
@@ -211,6 +207,33 @@ describe('import builtins', () => {
     expectError('import x')
     expectError('import x as y')
   })
+
+  it('should destructure imports', () => {
+    expectEnviroment('from json import {stringify}').toHaveValue(
+      'stringify',
+      '<function json.stringify>'
+    )
+
+    expectEnviroment('from json import {stringify:toString}').toHaveValue(
+      'toString',
+      '<function json.stringify>'
+    )
+
+    expectEnviroment('from json import {stringify, unknown}').toHaveValue(
+      'unknown',
+      null
+    )
+    expectEnviroment('from print import { unknown }').toHaveValue(
+      'unknown',
+      null
+    )
+  })
+
+  it('should be possible to import under a different name', () => {
+    expectEnviroment(`
+import print as consoleLog
+consoleLog`).toHaveValue('consoleLog', '<function print>')
+  })
 })
 
 describe('unique', () => {
@@ -316,5 +339,54 @@ describe('json', () => {
     expectOutputWithJSON(`import unique\n json.stringify(unique())`).toBe(
       '"<unique>"'
     )
+  })
+})
+
+describe('file', () => {
+  beforeAll(() => writeFileSync('./testFile.txt', 'test data'))
+  afterAll(() => execute('import file \n file.remove("./testFile.txt")'))
+
+  it('should read files', () => {
+    expectOutputWithFile('file.read("./testFile.txt")').toBe('test data')
+    expectError('import file\n file.read(7)')
+  })
+
+  it('should check for existance of file', () => {
+    expectOutputWithFile('file.exists("./testFile.txt")').toBe(true)
+    expectOutputWithFile('file.exists("./testFileMissing.txt")').toBe(false)
+    expectError('import file\n file.exists(7)')
+  })
+
+  it('should write to files', () => {
+    expectOutputWithFile('file.write("./testFile.txt", "new data")').toBe(null)
+    expectOutputWithFile('file.read("./testFile.txt")').toBe('new data')
+    expectError('import file\n file.write(7,7)')
+    expectError('import file\n file.write("hello", 7)')
+  })
+
+  it('should append to files', () => {
+    expectOutputWithFile('file.append("./testFile.txt", "even more")').toBe(
+      null
+    )
+    expectOutputWithFile('file.read("./testFile.txt")').toBe(
+      'new dataeven more'
+    )
+    expectError('import file\n file.append(7, 7)')
+    expectError('import file\n file.append("hello", 7)')
+  })
+
+  it('should copy files', () => {
+    expectOutputWithFile('file.copy("./testFile.txt", "./testFile2.txt")').toBe(
+      null
+    )
+    expectOutputWithFile('file.exists("./testFile2.txt")').toBe(true)
+    expectError('import file\n file.copy(7, 7)')
+    expectError('import file\n file.copy("hello", 7)')
+  })
+
+  it('should delete files', () => {
+    expectOutputWithFile('file.remove("./testFile2.txt")').toBe(null)
+    expectOutputWithFile('file.exists("./testFile2.txt")').toBe(false)
+    expectError('import file\n file.remove(7)')
   })
 })
