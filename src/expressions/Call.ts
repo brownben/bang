@@ -1,7 +1,12 @@
 import { Token } from '../tokens'
 import { Expr } from './Expr'
 import { ExprSpread } from './Spread'
-import { Primitive, PrimitiveFunction, ReturnValue } from '../primitives'
+import {
+  Primitive,
+  PrimitiveFunction,
+  PrimitiveList,
+  ReturnValue,
+} from '../primitives'
 import { Enviroment } from '../Enviroment'
 import BangError from '../BangError'
 
@@ -31,9 +36,12 @@ export class ExprCall extends Expr {
     const argument: Primitive[] = []
 
     for (const value of this.arguments) {
-      if (value instanceof ExprSpread)
-        value.evaluate(enviroment).list.forEach((value) => argument.push(value))
-      else argument.push(value.evaluate(enviroment))
+      if (value instanceof ExprSpread) {
+        const evaluated = value.evaluate(enviroment)
+        if (evaluated instanceof PrimitiveList)
+          evaluated.list.forEach((value) => argument.push(value))
+        else throw new BangError(`Can only spread lists into parameters`)
+      } else argument.push(value.evaluate(enviroment))
     }
 
     if (!(callee instanceof PrimitiveFunction))

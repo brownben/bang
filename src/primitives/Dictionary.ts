@@ -14,9 +14,7 @@ const dictionariesHaveEqualValues = (
 
 interface PrimitiveDictionaryConstructor {
   token?: Token
-  keys: string[]
-  values: Primitive[]
-  keyValues?: Record<string, Primitive>
+  keyValues: Record<string, Primitive>
   immutable?: boolean
 }
 
@@ -30,20 +28,14 @@ export class PrimitiveDictionary extends Primitive {
 
   constructor({
     token,
-    keys,
-    values,
     keyValues,
     immutable = false,
   }: PrimitiveDictionaryConstructor) {
     super()
     this.token = token
 
-    if (keyValues) this.dictionary = keyValues
+    this.dictionary = keyValues
     this.immutable = immutable
-
-    keys.forEach((key, index) => {
-      this.dictionary[key] = values[index]
-    })
   }
 
   get keys() {

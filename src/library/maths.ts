@@ -22,8 +22,6 @@ const runMathsFunction = (
 }
 
 export const maths = new PrimitiveDictionary({
-  keys: [],
-  values: [],
   immutable: true,
 
   keyValues: {

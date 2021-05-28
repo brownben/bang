@@ -169,3 +169,26 @@ it('should have keys and values properties', () => {
 it('should error on missing colon', () => {
   expectError('{"hello"}')
 })
+
+it('should support expressions in keys', () => {
+  expectOutput('{`a`+`b`:2}').toEqual({ ab: 2 })
+  expectOutput('let a = `hello`\n{a+``:5}').toEqual({ hello: 5 })
+})
+
+it('should support spread of dictioanries', () => {
+  expectOutput(`
+let a = {a:1, b:2}
+{c:3, ...a}`).toEqual({ a: 1, b: 2, c: 3 })
+  expectOutput(`{c:3, ...{a:1, b: 2}}`).toEqual({ a: 1, b: 2, c: 3 })
+  expectOutput(`{...{a:1, b:2}, c: 3}`).toEqual({ a: 1, b: 2, c: 3 })
+  expectOutput(`{b:3, ...{a:1, b: 2}}`).toEqual({ a: 1, b: 2 })
+  expectOutput(`{...{a:1, b:2}, b: 3}`).toEqual({ a: 1, b: 3 })
+})
+
+it('should support spread list into dictioanries', () => {
+  expectError(`{c:3, ...[1,2]}`)
+})
+
+it('should unwrap variables', () => {
+  expectOutput('let a = 2\n {a}').toEqual({ a: 2 })
+})

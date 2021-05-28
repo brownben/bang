@@ -679,13 +679,14 @@ class Parser extends BaseParser {
 
   dictionary(): Expr {
     const token = this.getPreviousToken()
-    const keyValues: ([ExprVariable, null] | [Expr, Expr])[] =
+    const keyValues: ([ExprVariable, null] | [Expr, Expr] | ExprSpread)[] =
       this.getCommaSeparatedValues({
         closingBracket: TokenType.RIGHT_BRACE,
         processArguments: () => {
           const identifier = this.expression()
 
-          if (this.tokenMatches(TokenType.COLON))
+          if (identifier instanceof ExprSpread) return identifier
+          else if (this.tokenMatches(TokenType.COLON))
             return [identifier, this.expression()]
           else if (identifier instanceof ExprVariable) return [identifier, null]
           else throw this.errorHere('Expect Colon After Key')

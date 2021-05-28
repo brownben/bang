@@ -514,6 +514,17 @@ Compares the values of the dictionaries, if all the keys and corresponding value
 { apple: 7, bannanas: 2, pears: 55 } != { apple: 7, bannanas: 2, pears: '55' }
 ```
 
+**spread (...)**
+
+Expand a dictionary to merge
+
+```
+{ c: 3, ...{a: 1, b: 2}} // { a: 1, b: 2, c: 3 }
+{...{a: 1, b: 2}, c: 3} // { a: 1, b: 2, c: 3 }
+{ b:3, ...{a: 1, b: 2}} // { a: 1, b: 2 }
+{...{a: 1, b: 2}, b: 3} // { a: 1, b: 3 }
+```
+
 ### Built-in Methods + Properties
 
 **keys**

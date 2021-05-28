@@ -323,4 +323,5 @@ let e = [...b, 1, ...a]`)
 
 it('should not spread other objects', () => {
   expectError('[1,2,...4]')
+  expectError('[1,2,...{a:2}]')
 })

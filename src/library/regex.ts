@@ -22,8 +22,6 @@ export const regex = new PrimitiveFunction({
     const internalRegex = new RegExp(arg.getValue(), flag)
 
     return new PrimitiveDictionary({
-      keys: [],
-      values: [],
       immutable: true,
 
       keyValues: {

@@ -1,6 +1,6 @@
 import { Token } from '../tokens'
 import { Expr } from './Expr'
-import { PrimitiveList } from '../primitives'
+import { PrimitiveDictionary, PrimitiveList } from '../primitives'
 import { Enviroment } from '../Enviroment'
 import BangError from '../BangError'
 
@@ -14,15 +14,12 @@ export class ExprSpread extends Expr {
     this.right = right
   }
 
-  evaluate(enviroment: Enviroment): PrimitiveList {
+  evaluate(enviroment: Enviroment): PrimitiveList | PrimitiveDictionary {
     const rightEvaluated = this.right.evaluate(enviroment)
 
     if (rightEvaluated instanceof PrimitiveList) return rightEvaluated
-    else
-      throw new BangError(
-        `Can only spread lists`,
-        undefined,
-        this.operator.line
-      )
+    else if (rightEvaluated instanceof PrimitiveDictionary)
+      return rightEvaluated
+    else throw new BangError(`Can only spread lists or dictionaries`)
   }
 }

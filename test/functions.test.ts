@@ -294,6 +294,10 @@ it('should only have spread as last argument', () => {
   expectError(`let a = (a,...c, b) => b`)
 })
 
+it('should not spread dictionary in parameters', () => {
+  expectError('let a = (a,b) => b \n a(1, ...{b:3})')
+})
+
 it('should destructure dictionary argument', () => {
   expectOutput(`(({ dog, cat }) => dog)({dog: 1})`).toBe(1)
   expectOutput(`(({ dog, cat }) => cat)({dog: 1})`).toBe(null)
