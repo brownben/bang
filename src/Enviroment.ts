@@ -14,7 +14,7 @@ export class Enviroment {
   define(name: string, constant: boolean, value: Primitive): void {
     if (name === '_') return
 
-    if (this.existsInCurrentScope(name))
+    if (this.existsInCurrrentScope(name))
       throw new BangError(`Variable Already "${name}" Exists `)
 
     this.values[name] = { value, constant }
@@ -28,19 +28,23 @@ export class Enviroment {
   }
 
   exists(name: string): EnviromentVariable {
-    if (!this.values[name] && this.enclosing !== null)
+    if (!this.existsInCurrrentScope(name) && this.enclosing !== null)
       return this.enclosing.exists(name)
-    else return this.existsInCurrentScope(name)
+    else return this.getFromCurrrentScope(name)
   }
 
-  existsInCurrentScope(name: string): EnviromentVariable {
+  existsInCurrrentScope(name: string): boolean {
+    return Object.prototype.hasOwnProperty.call(this.values, name)
+  }
+
+  getFromCurrrentScope(name: string): EnviromentVariable {
     return this.values[name]
   }
 
   assign(name: string, value: Primitive): void {
     if (name === '_') return
 
-    const valueInCurrentScope = this.existsInCurrentScope(name)
+    const valueInCurrentScope = this.getFromCurrrentScope(name)
     const valueExists = this.exists(name)
 
     if (valueInCurrentScope && !valueInCurrentScope.constant)
