@@ -812,8 +812,8 @@ Variable can store values, they must be declared before they can be used. 2 vari
 
 Variables are referenced through an identifier, an identifier starts with a letter or underscore and then has letters, number or underscores. It would match the regular expression `[_a-zA-Z][_a-zA-Z0-9]*`
 
-The `const` keyword creates a variable which cannot be reassigned, composite structures like dictionaries and lists can be modified if they are immutable.
-The `let` keyword creates a variable which cannot be reassigned.
+The `const` keyword creates a variable which cannot be reassigned, composite structures like dictionaries and lists can be modified if they are mutable.
+The `let` keyword creates a variable which can be reassigned.
 
 Keywords that cannot be used as variable identifiers are: `and, or, if, else, while, null, true, false, let, const, return, import, as, from`
 
