@@ -4,6 +4,7 @@ import { type } from './type'
 import { maths } from './maths'
 import { unique } from './unique'
 import { regex } from './regex'
+import { json } from './json'
 
 export const builtInFunctions = {
   print,
@@ -11,6 +12,7 @@ export const builtInFunctions = {
   maths,
   unique,
   regex,
+  json,
 }
 
 export const isBuiltinIdentfier = (

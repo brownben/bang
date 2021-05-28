@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 const cac = require('cac')
 const repl = require('repl')
 const fs = require('fs').promises

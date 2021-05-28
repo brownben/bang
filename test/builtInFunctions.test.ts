@@ -9,6 +9,9 @@ const expectOutputWithUnique = (string: string) =>
 const expectOutputWithRegex = (string: string) =>
   expectOutput('import regex \n' + string)
 
+const expectOutputWithJSON = (string: string) =>
+  expectOutput('import json \n' + string)
+
 describe('print functions', () => {
   const originalConsoleLog = console.log
 
@@ -255,5 +258,60 @@ let b = regex('5+')
   it('should not be equal to another regex', () => {
     expectOutputWithRegex('regex("a") == regex("b")').toBe(false)
     expectOutputWithRegex('regex("a") != regex("b")').toBe(true)
+  })
+})
+
+describe('json', () => {
+  it('should parse values from string', () => {
+    expectOutputWithJSON('json.parse("2")').toBe(2)
+    expectOutputWithJSON('json.parse(`"2"`)').toBe('2')
+    expectOutputWithJSON('type(json.parse(`"<unique>"`)) == `unique`')
+    expectOutputWithJSON('json.parse("[1,2,3]")').toEqual([1, 2, 3])
+    expectOutputWithJSON('json.parse(`{"a":2}`)').toEqual({ a: 2 })
+    expectOutputWithJSON('json.parse("true")').toBe(true)
+    expectOutputWithJSON('json.parse("null")').toBe(null)
+  })
+
+  it('should parse nested dictionaries', () => {
+    expectOutputWithJSON(
+      `json.parse('{"1": 1, "2": 2, "3": {"4": 4, "5": {"6": 6}}}')`
+    ).toEqual({ '1': 1, '2': 2, '3': { '4': 4, '5': { '6': 6 } } })
+  })
+
+  it('should throw error on invalid json', () => {
+    expectError('import json\n json.parse("{a:4}")')
+  })
+
+  it('should only parse a string', () => {
+    expectError('import json\n json.parse(7)')
+  })
+
+  it('should stringify objects', () => {
+    expectOutputWithJSON(
+      `json.stringify({"1": 1, "2": 2, "3": {"4": 4, "5": {"6": 6}}})`
+    ).toBe('{"1":1,"2":2,"3":{"4":4,"5":{"6":6}}}')
+    expectOutputWithJSON(
+      `json.stringify({"1": 1, "2": 2, "3": {"4": 4, "5": {"6": 6}}}, 2)`
+    ).toBe(`{
+  "1": 1,
+  "2": 2,
+  "3": {
+    "4": 4,
+    "5": {
+      "6": 6
+    }
+  }
+}`)
+  })
+
+  it('should stringify primitives', () => {
+    expectOutputWithJSON(`json.stringify(2)`).toBe('2')
+    expectOutputWithJSON(`json.stringify(true)`).toBe('true')
+    expectOutputWithJSON(`json.stringify(false)`).toBe('false')
+    expectOutputWithJSON(`json.stringify(null)`).toBe('null')
+    expectOutputWithJSON(`json.stringify('hi')`).toBe('"hi"')
+    expectOutputWithJSON(`import unique\n json.stringify(unique())`).toBe(
+      '"<unique>"'
+    )
   })
 })
