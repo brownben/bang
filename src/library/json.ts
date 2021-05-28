@@ -1,31 +1,14 @@
 import {
-  PrimitiveNumber,
+  Primitive,
   PrimitiveDictionary,
   PrimitiveFunction,
-  Primitive,
-  PrimitiveNull,
+  PrimitiveNumber,
   PrimitiveString,
-  PrimitiveUnique,
-  PrimitiveBoolean,
-  PrimitiveList,
 } from '../primitives'
 import BangError from '../BangError'
+import { wrapValue } from './wrapper'
 
 const wrap = (_key: string, value: unknown) => wrapValue(value)
-const wrapValue = (value: unknown): Primitive => {
-  if (value instanceof Primitive) return value
-  else if (value === null) return new PrimitiveNull()
-  else if (value === '<unique>') return new PrimitiveUnique()
-  else if (typeof value === 'string') return new PrimitiveString(value)
-  else if (typeof value === 'number') return new PrimitiveNumber(value)
-  else if (typeof value === 'boolean') return new PrimitiveBoolean(value)
-  else if (Array.isArray(value))
-    return new PrimitiveList({ values: value.map(wrapValue) })
-  else
-    return new PrimitiveDictionary({
-      keyValues: value as Record<string, Primitive>,
-    })
-}
 
 export const json = new PrimitiveDictionary({
   immutable: true,
