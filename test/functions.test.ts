@@ -321,16 +321,8 @@ it('should only destructure dictionary when its the only parameter', () => {
 })
 
 describe('with print output', () => {
-  const originalConsoleLog = console.log
-
-  beforeEach(() => {
-    console.log = jest.fn()
-  })
-  afterEach(() => {
-    console.log = originalConsoleLog
-  })
-
   it('should execute a simple recursive loop', () => {
+    const mock = jest.fn()
     execute(
       `
 let count = (n) =>
@@ -338,15 +330,16 @@ let count = (n) =>
   print(n)
 
 count(3)`,
-      { printFunction: console.log }
+      { printFunction: mock }
     )
-    expect(console.log).toBeCalledTimes(3)
-    expect(console.log).toHaveBeenCalledWith(1)
-    expect(console.log).toHaveBeenCalledWith(2)
-    expect(console.log).toHaveBeenCalledWith(3)
+    expect(mock).toBeCalledTimes(3)
+    expect(mock).toHaveBeenCalledWith(1)
+    expect(mock).toHaveBeenCalledWith(2)
+    expect(mock).toHaveBeenCalledWith(3)
   })
 
   it('functions close over scope', () => {
+    const mock = jest.fn()
     execute(
       `
 let a = "global"
@@ -358,14 +351,15 @@ showA()
   a = "block"
   showA()
 `,
-      { printFunction: console.log }
+      { printFunction: mock }
     )
-    expect(console.log).toHaveBeenCalledTimes(2)
-    expect(console.log).toHaveBeenNthCalledWith(1, 'global')
-    expect(console.log).toHaveBeenLastCalledWith('block')
+    expect(mock).toHaveBeenCalledTimes(2)
+    expect(mock).toHaveBeenNthCalledWith(1, 'global')
+    expect(mock).toHaveBeenLastCalledWith('block')
   })
 
   it('should close scope over functions (with variable declaration)', () => {
+    const mock = jest.fn()
     execute(
       `
 let a = "global"
@@ -376,10 +370,10 @@ let showA = () =>
 showA()
   let a = "block"
   showA()`,
-      { printFunction: console.log }
+      { printFunction: mock }
     )
-    expect(console.log).toHaveBeenCalledTimes(2)
-    expect(console.log).toHaveBeenNthCalledWith(1, 'global')
-    expect(console.log).toHaveBeenLastCalledWith('global')
+    expect(mock).toHaveBeenCalledTimes(2)
+    expect(mock).toHaveBeenNthCalledWith(1, 'global')
+    expect(mock).toHaveBeenLastCalledWith('global')
   })
 })

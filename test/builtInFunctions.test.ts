@@ -1,5 +1,6 @@
 import { execute, expectEnviroment, expectError, expectOutput } from './helpers'
 import { writeFileSync } from 'fs'
+import { Enviroment } from '../src/Enviroment'
 
 const expectOutputWithMaths = (string: string) =>
   expectOutput('import maths \n' + string)
@@ -17,15 +18,6 @@ const expectOutputWithFile = (string: string) =>
   expectOutput('import file \n' + string)
 
 describe('print functions', () => {
-  const originalConsoleLog = console.log
-
-  beforeEach(() => {
-    console.log = jest.fn()
-  })
-  afterEach(() => {
-    console.log = originalConsoleLog
-  })
-
   it('should throw error if no arguments are passed', () => {
     expectError('print(1, 2)')
   })
@@ -35,32 +27,35 @@ describe('print functions', () => {
   })
 
   it('should display literal values', () => {
-    execute('print(5)', { printFunction: console.log })
-    expect(console.log).toHaveBeenLastCalledWith(5)
-    execute('print("hello world")', { printFunction: console.log })
-    expect(console.log).toHaveBeenLastCalledWith('hello world')
-    execute('print(false)', { printFunction: console.log })
-    expect(console.log).toHaveBeenLastCalledWith(false)
-    execute('print(null)', { printFunction: console.log })
-    expect(console.log).toHaveBeenLastCalledWith(null)
+    const mock = jest.fn()
+    execute('print(5)', { printFunction: mock })
+    expect(mock).toHaveBeenLastCalledWith(5)
+    execute('print("hello world")', { printFunction: mock })
+    expect(mock).toHaveBeenLastCalledWith('hello world')
+    execute('print(false)', { printFunction: mock })
+    expect(mock).toHaveBeenLastCalledWith(false)
+    execute('print(null)', { printFunction: mock })
+    expect(mock).toHaveBeenLastCalledWith(null)
   })
 
   it('should display value of expressions', () => {
-    execute('print(5 + 5)', { printFunction: console.log })
-    expect(console.log).toHaveBeenLastCalledWith(10)
-    execute('print(22 / 2)', { printFunction: console.log })
-    expect(console.log).toHaveBeenLastCalledWith(11)
-    execute('print("hello " + "world")', { printFunction: console.log })
-    expect(console.log).toHaveBeenLastCalledWith('hello world')
-    execute('print(false == 5 > 9)', { printFunction: console.log })
-    expect(console.log).toHaveBeenLastCalledWith(true)
-    execute('print(5 * 5 - 9 == 8 * 2)', { printFunction: console.log })
-    expect(console.log).toHaveBeenLastCalledWith(true)
+    const mock = jest.fn()
+    execute('print(5 + 5)', { printFunction: mock })
+    expect(mock).toHaveBeenLastCalledWith(10)
+    execute('print(22 / 2)', { printFunction: mock })
+    expect(mock).toHaveBeenLastCalledWith(11)
+    execute('print("hello " + "world")', { printFunction: mock })
+    expect(mock).toHaveBeenLastCalledWith('hello world')
+    execute('print(false == 5 > 9)', { printFunction: mock })
+    expect(mock).toHaveBeenLastCalledWith(true)
+    execute('print(5 * 5 - 9 == 8 * 2)', { printFunction: mock })
+    expect(mock).toHaveBeenLastCalledWith(true)
   })
 
   it('should have correct string representation value', () => {
-    execute('print(print)', { printFunction: console.log })
-    expect(console.log).toHaveBeenLastCalledWith('<function print>')
+    const mock = jest.fn()
+    execute('print(print)', { printFunction: mock })
+    expect(mock).toHaveBeenLastCalledWith('<function print>')
   })
 })
 
@@ -87,6 +82,10 @@ describe('type function', () => {
     expectOutput('type(false)').toBe('boolean')
     expectOutput('type(null)').toBe('null')
     expectOutput('type(print)').toBe('function')
+  })
+
+  it('should be able to be imported', () => {
+    execute('import type as getTypeOf')
   })
 })
 
@@ -233,6 +232,11 @@ describe('import builtins', () => {
     expectEnviroment(`
 import print as consoleLog
 consoleLog`).toHaveValue('consoleLog', '<function print>')
+  })
+
+  it('should import from block', () => {
+    execute('    import file')
+    expect(new Enviroment().getExternalIO()).toEqual({})
   })
 })
 
@@ -434,5 +438,17 @@ describe('file', () => {
     expectError('import file\n file.list("./testFile.txt")')
     expectError('import file\n file.removeDirectory("./testFile.txt")')
     expectError('import file\n file.createDirectory("./testFile/ad/c.txt")')
+  })
+
+  it('should error filesystem not defined', () => {
+    expectError('import file\n file.read("./testFile/ad/c.txt")', {})
+    expectError('import file\n file.exists("./testFile/ad/c.txt")', {})
+    expectError('import file\n file.append("./testFile/ad/c.txt", "")', {})
+    expectError('import file\n file.write("./testFile/ad/c.txt", "")', {})
+    expectError('import file\n file.remove("./testFile/ad/c.txt")', {})
+    expectError('import file\n file.copy("./testFile/ad/c.txt", "./2")', {})
+    expectError('import file\n file.list("./testFile.txt")', {})
+    expectError('import file\n file.removeDirectory("./testFile.txt")', {})
+    expectError('import file\n file.createDirectory("./testFile/ad/c.txt")', {})
   })
 })

@@ -53,8 +53,8 @@ const executeWithInterpreter = (
   return execute(source, interpreter)
 }
 
-const expectError = (source: string) => {
-  expect(() => executeWithInterpreter(source)).toThrow()
+const expectError = (source: string, externalIO: ExternalIO = external) => {
+  expect(() => executeWithInterpreter(source, externalIO)).toThrow()
 }
 
 export {

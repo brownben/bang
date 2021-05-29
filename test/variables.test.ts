@@ -135,15 +135,6 @@ a = 5`).toBe(5)
 })
 
 describe('variables are block scoped', () => {
-  const originalConsoleLog = console.log
-
-  beforeEach(() => {
-    console.log = jest.fn()
-  })
-  afterEach(() => {
-    console.log = originalConsoleLog
-  })
-
   it('should access variable in higher scope', () => {
     expectOutput(`
 let a  = 5
@@ -166,6 +157,7 @@ b`)
   })
 
   it('should shadow variable if redefining variable in higher scope', () => {
+    const mock = jest.fn()
     expectOutput(`let b = 10
       let b = 6
 b`).toBe(10)
@@ -174,19 +166,20 @@ b`).toBe(10)
       let b = 6
       print(b)
 b`,
-      { printFunction: console.log }
+      { printFunction: mock }
     )
-    expect(console.log).toHaveBeenLastCalledWith(6)
+    expect(mock).toHaveBeenLastCalledWith(6)
   })
 
   it('should cope with setting a variable to a value in higher scope with the same name', () => {
+    const mock = jest.fn()
     execute(
       `let a = 1
   let a = a + 2
   print(a)`,
-      { printFunction: console.log }
+      { printFunction: mock }
     )
-    expect(console.log).toHaveBeenLastCalledWith(3)
+    expect(mock).toHaveBeenLastCalledWith(3)
   })
 
   it('should not assign to a literal', () => {

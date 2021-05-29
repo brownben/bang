@@ -72,16 +72,8 @@ else a = 3`).toHaveValue('a', 2)
 })
 
 describe('while statements execute correctly', () => {
-  const originalConsoleLog = console.log
-
-  beforeEach(() => {
-    console.log = jest.fn()
-  })
-  afterEach(() => {
-    console.log = originalConsoleLog
-  })
-
   it('should loop 5 times', () => {
+    const mock = jest.fn()
     execute(
       `
 let a = 5
@@ -89,17 +81,18 @@ while (a > 0)
   print(a)
   a = a - 1
     `,
-      { printFunction: console.log }
+      { printFunction: mock }
     )
-    expect(console.log).toHaveBeenCalledTimes(5)
-    expect(console.log).toHaveBeenLastCalledWith(1)
-    expect(console.log).toHaveBeenCalledWith(5)
-    expect(console.log).toHaveBeenCalledWith(4)
-    expect(console.log).toHaveBeenCalledWith(3)
-    expect(console.log).toHaveBeenCalledWith(2)
+    expect(mock).toHaveBeenCalledTimes(5)
+    expect(mock).toHaveBeenLastCalledWith(1)
+    expect(mock).toHaveBeenCalledWith(5)
+    expect(mock).toHaveBeenCalledWith(4)
+    expect(mock).toHaveBeenCalledWith(3)
+    expect(mock).toHaveBeenCalledWith(2)
   })
 
   it('should not run if condition false', () => {
+    const mock = jest.fn()
     execute(
       `
 let a = 5
@@ -107,8 +100,8 @@ while (false)
   print(a)
   a = a - 1
 `,
-      { printFunction: console.log }
+      { printFunction: mock }
     )
-    expect(console.log).not.toHaveBeenCalled()
+    expect(mock).not.toHaveBeenCalled()
   })
 })

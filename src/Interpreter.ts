@@ -8,11 +8,8 @@ import BangError from './BangError'
 export class Interpreter {
   private enviroment: Enviroment
 
-  constructor(
-    externalIO?: ExternalIO,
-    foreignValues?: Record<string, unknown>
-  ) {
-    this.enviroment = defineBuiltInFunctions(externalIO ?? {})
+  constructor(externalIO: ExternalIO, foreignValues?: Record<string, unknown>) {
+    this.enviroment = defineBuiltInFunctions(externalIO)
 
     for (const key in foreignValues)
       this.enviroment.define(key, true, wrapValue(foreignValues[key]))
