@@ -5,6 +5,7 @@ import { maths } from './maths'
 import { unique } from './unique'
 import { regex } from './regex'
 import { json } from './json'
+import { file } from './file'
 
 export const builtInFunctions = {
   print,
@@ -13,6 +14,7 @@ export const builtInFunctions = {
   unique,
   regex,
   json,
+  file,
 }
 
 export const isBuiltinIdentfier = (

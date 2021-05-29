@@ -1005,6 +1005,20 @@ functions for converting to and from json, as a dictionary
 - **stringify(object, amountOfIndentation)** - convert to a json string, functions are converted to a string, amount of indentation is optional and defaults to 0
 - **parse(string)** - parse a json string into bang primitive
 
+### file
+
+functions for interacting with the file system
+
+- **read(path)** - read file at path to a string
+- **exists(path)** - does a file exist at the given path
+- **write(path, contents)** - write contents to file at path
+- **append(path, contents)** - append contents to file at path
+- **remove(path)** - delete file at path
+- **copy(source, destination)** - copy file at source to destination
+- **createDirectory(path)** - create directory at path
+- **removeDirectory(path)** - remove directory at path
+- **list(path)** - returns list of files in directory
+
 # Operators
 
 ## Equality

@@ -343,7 +343,9 @@ describe('json', () => {
 })
 
 describe('file', () => {
-  beforeAll(() => writeFileSync('./testFile.txt', 'test data'))
+  beforeAll(() => {
+    writeFileSync('./testFile.txt', 'test data')
+  })
   afterAll(() => execute('import file \n file.remove("./testFile.txt")'))
 
   it('should read files', () => {
@@ -388,5 +390,49 @@ describe('file', () => {
     expectOutputWithFile('file.remove("./testFile2.txt")').toBe(null)
     expectOutputWithFile('file.exists("./testFile2.txt")').toBe(false)
     expectError('import file\n file.remove(7)')
+  })
+
+  it('should create directpry', () => {
+    expectOutputWithFile('file.createDirectory("./testDir")').toBe(null)
+    expectError('import file\n file.createDirectory(7)')
+  })
+
+  it('should create files in directory', () => {
+    expectOutputWithFile(
+      'file.write("./testDir/testFile.txt", "new data")'
+    ).toBe(null)
+    expectOutputWithFile(
+      'file.write("./testDir/testFile1.txt", "new data")'
+    ).toBe(null)
+  })
+  it('should error removing directory if contents', () => {
+    expectError('import file\n file.removeDirectory("./testFile.txt")')
+  })
+
+  it('should list directory contents', () => {
+    expectOutputWithFile('file.list("./testDir")').toEqual([
+      'testFile.txt',
+      'testFile1.txt',
+    ])
+    expectOutputWithFile('file.remove("./testDir/testFile.txt")').toBe(null)
+    expectOutputWithFile('file.remove("./testDir/testFile1.txt")').toBe(null)
+    expectOutputWithFile('file.list("./testDir")').toEqual([])
+    expectError('import file\n file.list(7)')
+  })
+
+  it('should remove directory', () => {
+    expectOutputWithFile('file.removeDirectory("./testDir")').toBe(null)
+    expectError('import file\n file.removeDirectory(7)')
+  })
+
+  it('should error if file doesnt exist', () => {
+    expectError('import file\n file.read("./testFile/ad/c.txt")')
+    expectError('import file\n file.append("./testFile/ad/c.txt", "")')
+    expectError('import file\n file.write("./testFile/ad/c.txt", "")')
+    expectError('import file\n file.remove("./testFile/ad/c.txt")')
+    expectError('import file\n file.copy("./testFile/ad/c.txt", "./2")')
+    expectError('import file\n file.list("./testFile.txt")')
+    expectError('import file\n file.removeDirectory("./testFile.txt")')
+    expectError('import file\n file.createDirectory("./testFile/ad/c.txt")')
   })
 })
