@@ -1,16 +1,39 @@
+import { Stmt } from '../src/statements'
+import { Enviroment } from '../src/Enviroment'
+import { ExternalIO } from '../src/library'
+import { Interpreter } from '../src/Interpreter'
 import { getTokens, getAbstractSyntaxTree, execute } from '../src/index'
-import { interpretFinalEnviroment } from '../src/Interpreter'
+
+import fs from 'fs'
+
+const external: ExternalIO = {
+  fs,
+  printFunction: console.log,
+}
+
+export const interpretFinalEnviroment = (
+  statements: Stmt[],
+  externalIO: ExternalIO = external
+): Enviroment => {
+  const interpreter = new Interpreter(externalIO)
+  interpreter.run(statements)
+  return interpreter.getEnviroment()
+}
 
 const expectOutput = (source: string) => {
-  const output = execute(source)
+  const interpreter = new Interpreter(external)
+  const output = execute(source, interpreter)
 
   return expect(output?.[output.length - 1]?.getValue() ?? null)
 }
 
-const expectEnviroment = (source: string) => {
+const expectEnviroment = (
+  source: string,
+  externalIO: ExternalIO = external
+) => {
   const tokens = getTokens(source)
   const abstractSyntaxTree = getAbstractSyntaxTree(tokens, source)
-  const enviroment = interpretFinalEnviroment(abstractSyntaxTree)
+  const enviroment = interpretFinalEnviroment(abstractSyntaxTree, externalIO)
 
   return {
     toHaveValue: (name: string, value: any) =>
@@ -22,8 +45,22 @@ const expectEnviroment = (source: string) => {
   }
 }
 
-const expectError = (source: string) => {
-  expect(() => execute(source)).toThrow()
+const executeWithInterpreter = (
+  source: string,
+  externalIO: ExternalIO = external
+) => {
+  const interpreter = new Interpreter(externalIO)
+  return execute(source, interpreter)
 }
 
-export { execute, expectOutput, expectEnviroment, expectError }
+const expectError = (source: string) => {
+  expect(() => executeWithInterpreter(source)).toThrow()
+}
+
+export {
+  executeWithInterpreter as execute,
+  expectOutput,
+  expectEnviroment,
+  expectError,
+  ExternalIO,
+}

@@ -331,12 +331,15 @@ describe('with print output', () => {
   })
 
   it('should execute a simple recursive loop', () => {
-    execute(`
+    execute(
+      `
 let count = (n) =>
   if (n > 1) count(n - 1)
   print(n)
 
-count(3)`)
+count(3)`,
+      { printFunction: console.log }
+    )
     expect(console.log).toBeCalledTimes(3)
     expect(console.log).toHaveBeenCalledWith(1)
     expect(console.log).toHaveBeenCalledWith(2)
@@ -344,7 +347,8 @@ count(3)`)
   })
 
   it('functions close over scope', () => {
-    execute(`
+    execute(
+      `
 let a = "global"
 
 let showA = () =>
@@ -353,14 +357,17 @@ let showA = () =>
 showA()
   a = "block"
   showA()
-`)
+`,
+      { printFunction: console.log }
+    )
     expect(console.log).toHaveBeenCalledTimes(2)
     expect(console.log).toHaveBeenNthCalledWith(1, 'global')
     expect(console.log).toHaveBeenLastCalledWith('block')
   })
 
   it('should close scope over functions (with variable declaration)', () => {
-    execute(`
+    execute(
+      `
 let a = "global"
 
 let showA = () =>
@@ -368,7 +375,9 @@ let showA = () =>
 
 showA()
   let a = "block"
-  showA()`)
+  showA()`,
+      { printFunction: console.log }
+    )
     expect(console.log).toHaveBeenCalledTimes(2)
     expect(console.log).toHaveBeenNthCalledWith(1, 'global')
     expect(console.log).toHaveBeenLastCalledWith('global')

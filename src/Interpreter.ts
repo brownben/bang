@@ -1,19 +1,21 @@
 import { Stmt, StmtResult } from './statements'
 import { ReturnValue } from './primitives'
 import { Enviroment } from './Enviroment'
-import { defineBuiltInFunctions } from './library'
+import { defineBuiltInFunctions, ExternalIO } from './library'
 import { wrapValue } from './library/wrapper'
 import BangError from './BangError'
 
 export class Interpreter {
   private enviroment: Enviroment
-  readonly globals: Enviroment = defineBuiltInFunctions()
 
-  constructor(externalValues?: Record<string, unknown>) {
-    this.enviroment = this.globals
+  constructor(
+    externalIO?: ExternalIO,
+    foreignValues?: Record<string, unknown>
+  ) {
+    this.enviroment = defineBuiltInFunctions(externalIO ?? {})
 
-    for (const key in externalValues)
-      this.enviroment.define(key, true, wrapValue(externalValues[key]))
+    for (const key in foreignValues)
+      this.enviroment.define(key, true, wrapValue(foreignValues[key]))
   }
 
   run(statements: Stmt[]): StmtResult[] {
@@ -33,13 +35,4 @@ export class Interpreter {
   getEnviroment(): Enviroment {
     return this.enviroment
   }
-}
-
-export const interpret = (statements: Stmt[]) =>
-  new Interpreter().run(statements)
-
-export const interpretFinalEnviroment = (statements: Stmt[]): Enviroment => {
-  const interpreter = new Interpreter()
-  interpreter.run(statements)
-  return interpreter.getEnviroment()
 }

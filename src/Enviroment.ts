@@ -1,14 +1,17 @@
 import { Primitive, PrimitiveNull } from './primitives'
+import { ExternalIO } from './library'
 import BangError from './BangError'
 
 type EnviromentVariable = { value: Primitive; constant: boolean }
 
 export class Enviroment {
   private values: Record<string, EnviromentVariable> = {}
-  private enclosing: Enviroment | null = null
+  private enclosing?: Enviroment
+  private externalIO?: ExternalIO
 
-  constructor(enclosing?: Enviroment) {
-    if (enclosing) this.enclosing = enclosing
+  constructor(enclosing?: Enviroment, externalIO?: ExternalIO) {
+    this.enclosing = enclosing
+    this.externalIO = externalIO
   }
 
   define(name: string, constant: boolean, value: Primitive): void {
@@ -28,7 +31,7 @@ export class Enviroment {
   }
 
   exists(name: string): EnviromentVariable {
-    if (!this.existsInCurrrentScope(name) && this.enclosing !== null)
+    if (!this.existsInCurrrentScope(name) && this.enclosing !== undefined)
       return this.enclosing.exists(name)
     else return this.getFromCurrrentScope(name)
   }
@@ -39,6 +42,12 @@ export class Enviroment {
 
   getFromCurrrentScope(name: string): EnviromentVariable {
     return this.values[name]
+  }
+
+  getExternalIO(): ExternalIO {
+    if (this.externalIO) return this.externalIO
+    else if (this.enclosing) return this.enclosing?.getExternalIO()
+    else return {}
   }
 
   assign(name: string, value: Primitive): void {

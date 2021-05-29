@@ -169,17 +169,23 @@ b`)
     expectOutput(`let b = 10
       let b = 6
 b`).toBe(10)
-    execute(`let b = 10
+    execute(
+      `let b = 10
       let b = 6
       print(b)
-b`)
+b`,
+      { printFunction: console.log }
+    )
     expect(console.log).toHaveBeenLastCalledWith(6)
   })
 
   it('should cope with setting a variable to a value in higher scope with the same name', () => {
-    execute(`let a = 1
+    execute(
+      `let a = 1
   let a = a + 2
-  print(a)`)
+  print(a)`,
+      { printFunction: console.log }
+    )
     expect(console.log).toHaveBeenLastCalledWith(3)
   })
 

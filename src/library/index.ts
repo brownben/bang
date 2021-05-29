@@ -1,29 +1,31 @@
 import { Enviroment } from '../Enviroment'
-import { print } from './print'
+import { print, PrintFunction } from './print'
 import { type } from './type'
 import { maths } from './maths'
 import { unique } from './unique'
 import { regex } from './regex'
 import { json } from './json'
-import { file } from './file'
+import { file, FileSystem } from './file'
 
-export const builtInFunctions = {
-  print,
-  type,
-  maths,
-  unique,
-  regex,
-  json,
-  file,
+export interface ExternalIO {
+  printFunction?: PrintFunction
+  fs?: FileSystem
 }
 
-export const isBuiltinIdentfier = (
-  key: string
-): key is keyof typeof builtInFunctions => key in builtInFunctions
+export const getBuiltInFunction = (key: string, externalIO: ExternalIO) => {
+  if (key === 'print') return print(externalIO?.printFunction)
+  else if (key === 'type') return type
+  else if (key === 'maths') return maths
+  else if (key === 'unique') return unique
+  else if (key === 'regex') return regex
+  else if (key === 'json') return json
+  else if (key === 'file') return file(externalIO?.fs)
+  return undefined
+}
 
-export const defineBuiltInFunctions = (): Enviroment => {
-  const enviroment: Enviroment = new Enviroment()
-  enviroment.define('print', true, print)
+export const defineBuiltInFunctions = (externalIO: ExternalIO): Enviroment => {
+  const enviroment: Enviroment = new Enviroment(undefined, externalIO)
+  enviroment.define('print', true, print(externalIO.printFunction))
   enviroment.define('type', true, type)
   return enviroment
 }

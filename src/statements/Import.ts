@@ -1,7 +1,7 @@
 import { Stmt } from './Stmt'
-import { Primitive, PrimitiveDictionary, PrimitiveNull } from '../primitives'
+import { PrimitiveDictionary, PrimitiveNull } from '../primitives'
 import { Enviroment } from '../Enviroment'
-import { builtInFunctions, isBuiltinIdentfier } from '../library'
+import { getBuiltInFunction } from '../library'
 import BangError from '../BangError'
 
 export class StmtImport extends Stmt {
@@ -23,11 +23,12 @@ export class StmtImport extends Stmt {
   }
 
   execute(enviroment: Enviroment): null {
-    let importedModule: Primitive | undefined
+    const importedModule = getBuiltInFunction(
+      this.name,
+      enviroment.getExternalIO()
+    )
 
-    if (isBuiltinIdentfier(this.name))
-      importedModule = builtInFunctions[this.name]
-    else
+    if (!importedModule)
       throw new BangError(
         `Unknown library ${this.name}, only builtin libraries can be imported currently`
       )

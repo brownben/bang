@@ -82,12 +82,15 @@ describe('while statements execute correctly', () => {
   })
 
   it('should loop 5 times', () => {
-    execute(`
+    execute(
+      `
 let a = 5
 while (a > 0)
   print(a)
   a = a - 1
-    `)
+    `,
+      { printFunction: console.log }
+    )
     expect(console.log).toHaveBeenCalledTimes(5)
     expect(console.log).toHaveBeenLastCalledWith(1)
     expect(console.log).toHaveBeenCalledWith(5)
@@ -97,12 +100,15 @@ while (a > 0)
   })
 
   it('should not run if condition false', () => {
-    execute(`
+    execute(
+      `
 let a = 5
 while (false)
   print(a)
   a = a - 1
-`)
+`,
+      { printFunction: console.log }
+    )
     expect(console.log).not.toHaveBeenCalled()
   })
 })
