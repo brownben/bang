@@ -21,12 +21,12 @@ const isIdentifierKey = (
 ): keyValue is [ExprVariable, Expr] =>
   Array.isArray(keyValue) && keyValue[0] instanceof ExprVariable
 
-const getKey = (key: Expr | string, enviroment: Enviroment) => {
+const getKey = (key: Expr | string, enviroment: Enviroment, line: number) => {
   if (typeof key === 'string') return key
 
   const evaluated: Primitive = key.evaluate(enviroment)
   if (evaluated instanceof PrimitiveString) return evaluated.value
-  else throw new BangError('Only Strings Can Be Used as Dictionary Keys')
+  else throw new BangError('Only Strings Can Be Used as Dictionary Keys', line)
 }
 
 export class ExprDictionary extends Expr {
@@ -57,11 +57,12 @@ export class ExprDictionary extends Expr {
         const evaluated = keyValue.evaluate(enviroment)
         if (!(evaluated instanceof PrimitiveDictionary))
           throw new BangError(
-            'Only Dictionaries Can Be Spread Into Dictionaries'
+            'Only Dictionaries Can Be Spread Into Dictionaries',
+            this.token.line
           )
         Object.assign(keyValues, evaluated.dictionary)
       } else {
-        const key = getKey(keyValue[0], enviroment)
+        const key = getKey(keyValue[0], enviroment, this.token.line)
         const value = keyValue[1].evaluate(enviroment)
         keyValues[key] = value
       }

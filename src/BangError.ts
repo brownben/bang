@@ -3,7 +3,7 @@ export default class BangError {
   source: string[]
   line: number
 
-  constructor(message: string, code?: string, line?: number) {
+  constructor(message: string, line?: number, code?: string) {
     this.message = message
     this.source = code?.split('\n') ?? []
     this.line = line ?? 0

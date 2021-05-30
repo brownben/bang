@@ -14,14 +14,16 @@ import BangError from '../BangError'
 import { ExprSlice } from './Slice'
 
 export class ExprGet extends Expr {
+  token: Token
   lookup: string | Expr
   object: Expr
 
-  constructor(lookup: Token | Expr, object: Expr) {
+  constructor(token: Token, object: Expr, expression?: Expr) {
     super()
-    if (lookup instanceof Token) this.lookup = lookup.value
-    else this.lookup = lookup
+    this.token = token
     this.object = object
+    if (expression) this.lookup = expression
+    else this.lookup = token.value
   }
 
   getBuiltinLookupKey(enviroment: Enviroment): string {
@@ -32,7 +34,8 @@ export class ExprGet extends Expr {
       return expressionEvaluated.getValue()
     else
       throw new BangError(
-        'Only Strings Can Be Used to Index Built-in Properties'
+        'Only Strings Can Be Used to Index Built-in Properties',
+        this.token.line
       )
   }
 
@@ -42,7 +45,11 @@ export class ExprGet extends Expr {
     const expressionEvaluated: Primitive = this.lookup.evaluate(enviroment)
     if (expressionEvaluated instanceof PrimitiveString)
       return expressionEvaluated.getValue()
-    else throw new BangError('Only Strings Can Be Used to Index Dictionaries')
+    else
+      throw new BangError(
+        'Only Strings Can Be Used to Index Dictionaries',
+        this.token.line
+      )
   }
 
   getNumberLookupKey(enviroment: Enviroment): number | undefined {
@@ -66,7 +73,11 @@ export class ExprGet extends Expr {
       return instance.getSlice(start.getValue(), end.getValue())
     else if (instance instanceof PrimitiveString)
       return instance.getSlice(start.getValue(), end.getValue())
-    else throw new BangError('Can only use slice on Strings and Lists')
+    else
+      throw new BangError(
+        'Can only use slice on Strings and Lists',
+        this.token.line
+      )
   }
 
   evaluate(enviroment: Enviroment) {
@@ -101,7 +112,8 @@ export class ExprGet extends Expr {
     if (value) return value
 
     throw new BangError(
-      `Property ${this.lookup} doesn't exists on type "${instance.type}"`
+      `Property ${this.lookup} doesn't exists on type "${instance.type}"`,
+      this.token.line
     )
   }
 }

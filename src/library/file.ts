@@ -65,14 +65,14 @@ export const file = (fs: FileSystem = mockFileSystem) =>
           const [filePath] = argument
 
           if (!(filePath instanceof PrimitiveString))
-            throw new BangError('Expected a string')
+            throw new BangError('Expected path to be a string')
 
           try {
             return new PrimitiveString(
               fs.readFileSync(filePath.getValue(), { encoding: 'utf-8' })
             )
           } catch {
-            throw new BangError('Problem Reading File')
+            throw new BangError('Problem reading file')
           }
         },
       }),
@@ -84,7 +84,7 @@ export const file = (fs: FileSystem = mockFileSystem) =>
           const [filePath] = argument
 
           if (!(filePath instanceof PrimitiveString))
-            throw new BangError('Expected a string')
+            throw new BangError('Expected path to be a string')
 
           return new PrimitiveBoolean(fs.existsSync(filePath.getValue()))
         },
@@ -106,7 +106,7 @@ export const file = (fs: FileSystem = mockFileSystem) =>
             fs.writeFileSync(filePath.getValue(), fileContents.getValue())
             return new PrimitiveNull()
           } catch {
-            throw new BangError('Problem Writing to File')
+            throw new BangError('Problem writing to file')
           }
         },
       }),
@@ -127,7 +127,7 @@ export const file = (fs: FileSystem = mockFileSystem) =>
             fs.appendFileSync(filePath.getValue(), fileContents.getValue())
             return new PrimitiveNull()
           } catch {
-            throw new BangError('Problem Appending to File')
+            throw new BangError('Problem appending to file')
           }
         },
       }),
@@ -165,7 +165,7 @@ export const file = (fs: FileSystem = mockFileSystem) =>
             fs.copyFileSync(src.getValue(), dest.getValue())
             return new PrimitiveNull()
           } catch {
-            throw new BangError('Problem Copying File')
+            throw new BangError('Problem copying file')
           }
         },
       }),
@@ -222,7 +222,7 @@ export const file = (fs: FileSystem = mockFileSystem) =>
                 .map((value) => new PrimitiveString(value)),
             })
           } catch {
-            throw new BangError('Problem reading directory')
+            throw new BangError('Problem reading contents directory')
           }
         },
       }),

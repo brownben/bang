@@ -163,7 +163,10 @@ export class BuiltInPropertyVisitor
         call: (argument: Primitive[]) => {
           const [func] = argument
           if (!(func instanceof PrimitiveFunction))
-            throw new BangError('Transform must be a Function')
+            throw new BangError(
+              'Transform must be a function',
+              primitive.token?.line
+            )
 
           return new PrimitiveList({
             values: primitive.list.map((value, index) =>
@@ -179,7 +182,10 @@ export class BuiltInPropertyVisitor
         call: (argument: Primitive[]) => {
           const [func] = argument
           if (!(func instanceof PrimitiveFunction))
-            throw new BangError('Predicate must be a Function')
+            throw new BangError(
+              'Predicate must be a function',
+              primitive.token?.line
+            )
 
           return new PrimitiveList({
             values: primitive.list.filter((value, index) =>
@@ -195,7 +201,10 @@ export class BuiltInPropertyVisitor
         call: (argument: Primitive[]) => {
           const [func, startValue] = argument
           if (!(func instanceof PrimitiveFunction))
-            throw new BangError('Transform must be a Function')
+            throw new BangError(
+              'Transform must be a function',
+              primitive.token?.line
+            )
 
           return primitive.list.reduce(
             (accumulator, value, index) =>
@@ -215,7 +224,10 @@ export class BuiltInPropertyVisitor
         call: (argument: Primitive[]) => {
           const [func] = argument
           if (!(func instanceof PrimitiveFunction))
-            throw new BangError('Transform must be a Function')
+            throw new BangError(
+              'Transform must be a function',
+              primitive.token?.line
+            )
 
           primitive.list.map((value, index) =>
             callFunction(func, [value, new PrimitiveNumber(index)])
@@ -267,7 +279,10 @@ export class BuiltInPropertyVisitor
         arity: 0,
         call: () => {
           if (primitive.immutable)
-            throw new BangError('List is immutable, it cannot be edited')
+            throw new BangError(
+              'List is immutable, it cannot be edited',
+              primitive.token?.line
+            )
 
           return primitive.list.pop() ?? new PrimitiveNull()
         },
@@ -278,7 +293,10 @@ export class BuiltInPropertyVisitor
         arity: 1,
         call: (argument: Primitive[]) => {
           if (primitive.immutable)
-            throw new BangError('List is immutable, it cannot be edited')
+            throw new BangError(
+              'List is immutable, it cannot be edited',
+              primitive.token?.line
+            )
 
           const [value] = argument
           primitive.list.push(value)
@@ -291,7 +309,10 @@ export class BuiltInPropertyVisitor
         arity: 0,
         call: () => {
           if (primitive.immutable)
-            throw new BangError('List is immutable, it cannot be edited')
+            throw new BangError(
+              'List is immutable, it cannot be edited',
+              primitive.token?.line
+            )
 
           return primitive.list.shift() ?? new PrimitiveNull()
         },
@@ -302,7 +323,10 @@ export class BuiltInPropertyVisitor
         arity: 1,
         call: (argument: Primitive[]) => {
           if (primitive.immutable)
-            throw new BangError('List is immutable, it cannot be edited')
+            throw new BangError(
+              'List is immutable, it cannot be edited',
+              primitive.token?.line
+            )
 
           const [value] = argument
           primitive.list.unshift(value)
@@ -317,7 +341,10 @@ export class BuiltInPropertyVisitor
           const [value] = argument
 
           if (!(value instanceof PrimitiveString))
-            throw new BangError('Argument must be a string')
+            throw new BangError(
+              'Argument must be a string',
+              primitive.token?.line
+            )
 
           return new PrimitiveString(
             primitive.list
@@ -333,7 +360,10 @@ export class BuiltInPropertyVisitor
         call: (argument: Primitive[]) => {
           const [func] = argument
           if (!(func instanceof PrimitiveFunction))
-            throw new BangError('Predicate must be a Function')
+            throw new BangError(
+              'Predicate must be a Function',
+              primitive.token?.line
+            )
 
           return (
             primitive.list.find((value) =>
@@ -349,7 +379,10 @@ export class BuiltInPropertyVisitor
         call: (argument: Primitive[]) => {
           const [func] = argument
           if (!(func instanceof PrimitiveFunction))
-            throw new BangError('Predicate must be a Function')
+            throw new BangError(
+              'Predicate must be a Function',
+              primitive.token?.line
+            )
 
           const value = primitive.list.findIndex((value) =>
             callFunction(func, [value]).isTruthy()
@@ -405,7 +438,8 @@ export class BuiltInPropertyVisitor
 
           if (!allNumbers)
             throw new BangError(
-              'Expected all elements of the list to be numbers'
+              'Expected all elements of the list to be numbers',
+              primitive.token?.line
             )
 
           const listAsNumbers = primitive.list.map((item) =>
@@ -413,7 +447,10 @@ export class BuiltInPropertyVisitor
           ) as number[]
 
           if (listAsNumbers.length <= 0)
-            throw new BangError('Expected at oleast one element in the list')
+            throw new BangError(
+              'Expected at least one element in the list',
+              primitive.token?.line
+            )
 
           return new PrimitiveNumber(Math.min(...listAsNumbers))
         },
@@ -429,7 +466,8 @@ export class BuiltInPropertyVisitor
 
           if (!allNumbers)
             throw new BangError(
-              'Expected all elements of the list to be numbers'
+              'Expected all elements of the list to be numbers',
+              primitive.token?.line
             )
 
           const listAsNumbers = primitive.list.map((item) =>
@@ -437,7 +475,10 @@ export class BuiltInPropertyVisitor
           ) as number[]
 
           if (listAsNumbers.length <= 0)
-            throw new BangError('Expected at oleast one element in the list')
+            throw new BangError(
+              'Expected at oleast one element in the list',
+              primitive.token?.line
+            )
 
           return new PrimitiveNumber(Math.max(...listAsNumbers))
         },
@@ -453,7 +494,8 @@ export class BuiltInPropertyVisitor
 
           if (!allNumbers)
             throw new BangError(
-              'Expected all elements of the list to be numbers'
+              'Expected all elements of the list to be numbers',
+              primitive.token?.line
             )
 
           const listAsNumbers = primitive.list.map((item) =>
@@ -554,10 +596,16 @@ export class BuiltInPropertyVisitor
           const [target, newString] = argument
 
           if (!(target instanceof PrimitiveString))
-            throw new BangError('Replace target must be a string')
+            throw new BangError(
+              'Replace target must be a string',
+              primitive.token?.line
+            )
 
           if (!(newString instanceof PrimitiveString))
-            throw new BangError('Replacement must be a string')
+            throw new BangError(
+              'Replacement must be a string',
+              primitive.token?.line
+            )
 
           return new PrimitiveString(
             primitive.value.replace(target.getValue(), newString.getValue())
@@ -572,10 +620,16 @@ export class BuiltInPropertyVisitor
           const [target, newString] = argument
 
           if (!(target instanceof PrimitiveString))
-            throw new BangError('Replace target must be a string')
+            throw new BangError(
+              'Replace target must be a string',
+              primitive.token?.line
+            )
 
           if (!(newString instanceof PrimitiveString))
-            throw new BangError('Replacement must be a string')
+            throw new BangError(
+              'Replacement must be a string',
+              primitive.token?.line
+            )
 
           return new PrimitiveString(
             primitive.value.replace(
@@ -593,7 +647,10 @@ export class BuiltInPropertyVisitor
           const [value] = argument
 
           if (!(value instanceof PrimitiveString))
-            throw new BangError('Split specifier must be a string')
+            throw new BangError(
+              'Split specifier must be a string',
+              primitive.token?.line
+            )
 
           return new PrimitiveList({
             values: primitive.value
@@ -650,7 +707,8 @@ export class BuiltInPropertyVisitor
           if (!Number.isNaN(asNumber)) return new PrimitiveNumber(asNumber)
           else
             throw new BangError(
-              `Can't convert "${primitive.value}" to a number`
+              `Can't convert "${primitive.value}" to a number`,
+              primitive.token?.line
             )
         },
       }),

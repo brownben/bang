@@ -24,7 +24,7 @@ export class Interpreter {
       return statement.execute(this.enviroment)
     } catch (error) {
       if (error instanceof ReturnValue)
-        throw new BangError('No Top Level Return')
+        throw new BangError('Cannot return outside a function')
       else throw error
     }
   }

@@ -204,7 +204,7 @@ describe('copes with edge cases', () => {
     ]
 
     unknownCharacters.map((character) =>
-      tokeniserResultError(character, 'Unidentified Character')
+      tokeniserResultError(character, `Unidentified Character "${character}"`)
     )
   })
 

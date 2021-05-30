@@ -46,7 +46,10 @@ export class PrimitiveDictionary extends Primitive {
   }
   set(key: string, value: Primitive) {
     if (this.immutable)
-      throw new BangError('Dictionary is Immutable, Property cannot be Set')
+      throw new BangError(
+        'Dictionary is Immutable, Property cannot be Set',
+        this.token?.line
+      )
 
     this.dictionary[key] = value
     return value

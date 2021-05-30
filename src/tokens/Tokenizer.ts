@@ -67,7 +67,7 @@ class BaseTokeniser {
   }
 
   constructError(message: string) {
-    return new BangError(message, this.source, this.currentLine)
+    return new BangError(message, this.currentLine, this.source)
   }
 }
 
@@ -215,7 +215,7 @@ export class Tokenizer extends BaseTokeniser {
     else if (isAlpha(char)) this.getIdentifier()
     else if (char === '\n') this.addNewLine()
     else if (!isBlank(char) && !this.isEnd())
-      throw this.constructError(`Unidentified Character`)
+      throw this.constructError(`Unidentified Character "${char}"`)
 
     if (['{', '(', '['].includes(char)) this.expressionLevel += 1
     else if (['}', ')', ']'].includes(char)) this.expressionLevel -= 1

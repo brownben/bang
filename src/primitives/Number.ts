@@ -40,7 +40,8 @@ export class PrimitiveNumber extends Primitive {
       return new PrimitiveBoolean(this.getValue() > value.getValue())
 
     throw new BangError(
-      `No Operation ">" on type "${this.type}" and type "${value.type}`
+      `No Operation ">" on type "${this.type}" and type "${value.type}"`,
+      this.token?.line
     )
   }
   lessThan(value: Primitive): PrimitiveBoolean {
@@ -48,7 +49,8 @@ export class PrimitiveNumber extends Primitive {
       return new PrimitiveBoolean(this.getValue() < value.getValue())
 
     throw new BangError(
-      `No Operation "<" on type "${this.type}" and type "${value.type}`
+      `No Operation "<" on type "${this.type}" and type "${value.type}"`,
+      this.token?.line
     )
   }
   greaterThanOrEqual(value: Primitive): PrimitiveBoolean {
@@ -56,7 +58,8 @@ export class PrimitiveNumber extends Primitive {
       return new PrimitiveBoolean(this.getValue() >= value.getValue())
 
     throw new BangError(
-      `No Operation ">=" on type "${this.type}" and type "${value.type}`
+      `No Operation ">=" on type "${this.type}" and type "${value.type}"`,
+      this.token?.line
     )
   }
   lessThanOrEqual(value: Primitive): PrimitiveBoolean {
@@ -64,7 +67,8 @@ export class PrimitiveNumber extends Primitive {
       return new PrimitiveBoolean(this.getValue() <= value.getValue())
 
     throw new BangError(
-      `No Operation "<=" on type "${this.type}" and type "${value.type}`
+      `No Operation "<=" on type "${this.type}" and type "${value.type}"`,
+      this.token?.line
     )
   }
 
@@ -73,7 +77,8 @@ export class PrimitiveNumber extends Primitive {
       return new PrimitiveNumber(this.getValue() + value.getValue())
 
     throw new BangError(
-      `No Operation "+" on type "${this.type}" and type "${value.type}`
+      `No Operation "+" on type "${this.type}" and type "${value.type}"`,
+      this.token?.line
     )
   }
   minus(value: Primitive): PrimitiveNumber {
@@ -81,7 +86,8 @@ export class PrimitiveNumber extends Primitive {
       return new PrimitiveNumber(this.getValue() - value.getValue())
 
     throw new BangError(
-      `No Operation "-" on type "${this.type}" and type "${value.type}`
+      `No Operation "-" on type "${this.type}" and type "${value.type}"`,
+      this.token?.line
     )
   }
   multiply(value: Primitive): PrimitiveNumber {
@@ -89,7 +95,8 @@ export class PrimitiveNumber extends Primitive {
       return new PrimitiveNumber(this.getValue() * value.getValue())
 
     throw new BangError(
-      `No Operation "*" on type "${this.type}" and type "${value.type}`
+      `No Operation "*" on type "${this.type}" and type "${value.type}"`,
+      this.token?.line
     )
   }
   divide(value: Primitive): PrimitiveNumber {
@@ -99,7 +106,8 @@ export class PrimitiveNumber extends Primitive {
       return new PrimitiveNumber(this.getValue() / value.getValue())
 
     throw new BangError(
-      `No Operation "+" on type "${this.type}" and type "${value.type}`
+      `No Operation "+" on type "${this.type}" and type "${value.type}"`,
+      this.token?.line
     )
   }
   power(value: Primitive): PrimitiveNumber {
@@ -107,7 +115,8 @@ export class PrimitiveNumber extends Primitive {
       return new PrimitiveNumber(this.getValue() ** value.getValue())
 
     throw new BangError(
-      `No Operation "**" on type "${this.type}" and type "${value.type}`
+      `No Operation "**" on type "${this.type}" and type "${value.type}"`,
+      this.token?.line
     )
   }
 

@@ -60,7 +60,7 @@ export class Enviroment {
       this.values[name] = { value, constant: false }
     else if (valueInCurrentScope)
       throw new BangError(
-        `Variable "${name}" is Constant and can't be redefined`
+        `Variable "${name}" is constant and can't be redefined`
       )
     else if (valueExists && this.enclosing) this.enclosing?.assign(name, value)
     else throw new BangError(`Variable "${name}" is not defined`)

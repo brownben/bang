@@ -17,6 +17,7 @@ export class StmtDestructuring extends Stmt {
   constant: boolean = false
   type: 'dictionary' | 'list'
   spread: boolean
+  token: Token
 
   constructor({
     names,
@@ -24,12 +25,14 @@ export class StmtDestructuring extends Stmt {
     expression,
     type,
     spread,
+    token,
   }: {
     names: (Token | DestructuringName)[]
     constant: boolean
     expression: Expr
     type: 'dictionary' | 'list'
     spread: boolean
+    token: Token
   }) {
     super()
 
@@ -43,6 +46,7 @@ export class StmtDestructuring extends Stmt {
     this.expression = expression
     this.type = type
     this.spread = spread
+    this.token = token
   }
 
   execute(enviroment: Enviroment): null {
@@ -71,7 +75,8 @@ export class StmtDestructuring extends Stmt {
         )
     } else
       throw new BangError(
-        `Cannot desturcture type ${expression.type} into type ${this.type}`
+        `Cannot desturcture type "${expression.type}" into type "${this.type}"`,
+        this.token.line
       )
 
     return null

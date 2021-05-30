@@ -68,7 +68,10 @@ export class ExprFunction extends Expr {
         argument.length !== 1 ||
         !(argument[0] instanceof PrimitiveDictionary)
       )
-        throw new BangError(``)
+        throw new BangError(
+          `Cannot transform type "${argument[0].type}" into a dictionary`,
+          argument[0].token?.line
+        )
 
       const dictionary = argument[0] as PrimitiveDictionary
 

@@ -20,7 +20,7 @@ export const json = new PrimitiveDictionary({
       call: (argument: Primitive[]) => {
         const [arg] = argument
         if (!(arg instanceof PrimitiveString))
-          throw new BangError('Expected a string')
+          throw new BangError('Expected input to be a string')
 
         try {
           return wrapValue(JSON.parse(arg.getValue(), wrap))

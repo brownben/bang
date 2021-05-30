@@ -1,3 +1,4 @@
+import { Token } from '../tokens'
 import { Stmt } from './Stmt'
 import { PrimitiveDictionary, PrimitiveNull } from '../primitives'
 import { Enviroment } from '../Enviroment'
@@ -8,18 +9,24 @@ export class StmtImport extends Stmt {
   name: string
   as: string
   destructured?: { actual: string; renamed: string }[]
-
+  token: Token
   constructor(
     moduleName: string,
     {
+      token,
       as,
       destructured,
-    }: { as?: string; destructured?: { actual: string; renamed: string }[] }
+    }: {
+      token: Token
+      as?: string
+      destructured?: { actual: string; renamed: string }[]
+    }
   ) {
     super()
     this.name = moduleName
     this.as = as ?? moduleName
     this.destructured = destructured
+    this.token = token
   }
 
   execute(enviroment: Enviroment): null {
@@ -30,7 +37,8 @@ export class StmtImport extends Stmt {
 
     if (!importedModule)
       throw new BangError(
-        `Unknown library ${this.name}, only builtin libraries can be imported currently`
+        `Unknown library ${this.name}, only builtin libraries can be imported currently`,
+        this.token.line
       )
 
     if (!this.destructured) enviroment.define(this.as, true, importedModule)

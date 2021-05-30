@@ -61,7 +61,10 @@ export class PrimitiveList extends Primitive {
   }
   set(key: number, value: Primitive) {
     if (this.immutable)
-      throw new BangError('Array is Immutable, Value cannot be Set')
+      throw new BangError(
+        'Array is Immutable, Value cannot be Set',
+        this.token?.line
+      )
 
     if (key >= 0) this.list[key] = value
     else this.list[this.list.length + key] = value
@@ -86,7 +89,10 @@ export class PrimitiveList extends Primitive {
 
   plus(value: Primitive): Primitive {
     if (this.immutable)
-      throw new BangError('List is immutable, it cannot be edited')
+      throw new BangError(
+        'List is immutable, it cannot be edited',
+        this.token?.line
+      )
 
     if (value instanceof PrimitiveList) this.list = this.list.concat(value.list)
     else this.list.push(value)

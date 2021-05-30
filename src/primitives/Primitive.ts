@@ -31,57 +31,72 @@ export abstract class Primitive {
 
   greaterThan(value: Primitive): Primitive {
     throw new BangError(
-      `No Operation ">" on type "${this.type}" and type "${value.type}"`
+      `No Operation ">" on type "${this.type}" and type "${value.type}"`,
+      this.token?.line
     )
   }
   lessThan(value: Primitive): Primitive {
     throw new BangError(
-      `No Operation "<" on type "${this.type}" and type "${value.type}"`
+      `No Operation "<" on type "${this.type}" and type "${value.type}"`,
+      this.token?.line
     )
   }
   greaterThanOrEqual(value: Primitive): Primitive {
     throw new BangError(
-      `No Operation ">=" on type "${this.type}" and type "${value.type}"`
+      `No Operation ">=" on type "${this.type}" and type "${value.type}"`,
+      this.token?.line
     )
   }
   lessThanOrEqual(value: Primitive): Primitive {
     throw new BangError(
-      `No Operation "<=" on type "${this.type}" and type "${value.type}"`
+      `No Operation "<=" on type "${this.type}" and type "${value.type}"`,
+      this.token?.line
     )
   }
 
   // unary operations
   not(): Primitive {
-    throw new BangError(`No Operation "!" on type "${this.type}"`)
+    throw new BangError(
+      `No Operation "!" on type "${this.type}"`,
+      this.token?.line
+    )
   }
   negative(): Primitive {
-    throw new BangError(`No Operation "-" on type "${this.type}"`)
+    throw new BangError(
+      `No Operation "-" on type "${this.type}"`,
+      this.token?.line
+    )
   }
 
   // binary operations
   plus(value: Primitive): Primitive {
     throw new BangError(
-      `No Operation "+" on type "${this.type}" and type "${value.type}"`
+      `No Operation "+" on type "${this.type}" and type "${value.type}"`,
+      this.token?.line
     )
   }
   minus(value: Primitive): Primitive {
     throw new BangError(
-      `No Operation "-" on type "${this.type}" and type "${value.type}"`
+      `No Operation "-" on type "${this.type}" and type "${value.type}"`,
+      this.token?.line
     )
   }
   multiply(value: Primitive): Primitive {
     throw new BangError(
-      `No Operation "*" on type "${this.type}" and type "${value.type}"`
+      `No Operation "*" on type "${this.type}" and type "${value.type}"`,
+      this.token?.line
     )
   }
   divide(value: Primitive): Primitive {
     throw new BangError(
-      `No Operation "/" on type "${this.type}" and type "${value.type}"`
+      `No Operation "/" on type "${this.type}" and type "${value.type}"`,
+      this.token?.line
     )
   }
   power(value: Primitive): Primitive {
     throw new BangError(
-      `No Operation "**" on type "${this.type}" and type "${value.type}"`
+      `No Operation "**" on type "${this.type}" and type "${value.type}"`,
+      this.token?.line
     )
   }
 }

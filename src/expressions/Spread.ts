@@ -20,6 +20,10 @@ export class ExprSpread extends Expr {
     if (rightEvaluated instanceof PrimitiveList) return rightEvaluated
     else if (rightEvaluated instanceof PrimitiveDictionary)
       return rightEvaluated
-    else throw new BangError(`Can only spread lists or dictionaries`)
+    else
+      throw new BangError(
+        `Can only spread lists or dictionaries`,
+        this.operator.line
+      )
   }
 }

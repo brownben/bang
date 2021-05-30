@@ -23,7 +23,11 @@ export class ExprList extends Expr {
         const evaluated = value.evaluate(enviroment)
         if (evaluated instanceof PrimitiveList)
           evaluated.list.forEach((value) => values.push(value))
-        else throw new BangError(`Can only spread lists into lists`)
+        else
+          throw new BangError(
+            `Can only spread lists into lists`,
+            this.token.line
+          )
       } else values.push(value.evaluate(enviroment))
     }
 

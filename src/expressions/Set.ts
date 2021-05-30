@@ -1,3 +1,4 @@
+import { Token } from '../tokens'
 import { Expr } from './Expr'
 import {
   Primitive,
@@ -13,13 +14,15 @@ export class ExprSet extends Expr {
   object: Expr
   lookup: string | Expr
   value: Expr
+  token: Token
 
-  constructor(object: Expr, lookup: string | Expr, value: Expr) {
+  constructor(object: Expr, lookup: string | Expr, value: Expr, token: Token) {
     super()
 
     this.object = object
     this.lookup = lookup
     this.value = value
+    this.token = token
   }
 
   getDictionaryLookupKey(enviroment: Enviroment): string {
@@ -28,7 +31,11 @@ export class ExprSet extends Expr {
     const expressionEvaluated: Primitive = this.lookup.evaluate(enviroment)
     if (expressionEvaluated instanceof PrimitiveString)
       return expressionEvaluated.getValue()
-    else throw new BangError('Only Strings Can Be Used to Index Dictionaries')
+    else
+      throw new BangError(
+        'Only Strings Can Be Used to Index Dictionaries',
+        this.token.line
+      )
   }
 
   getListLookupKey(enviroment: Enviroment): number | undefined {
@@ -58,7 +65,10 @@ export class ExprSet extends Expr {
     const index = this.getListLookupKey(enviroment)
 
     if (index === undefined || !object.indexExists(index))
-      throw new BangError(`Index specified doesn't exist on the list`)
+      throw new BangError(
+        `Index specified doesn't exist on the list`,
+        this.token.line
+      )
 
     object.set(index, value)
     return value
@@ -74,7 +84,8 @@ export class ExprSet extends Expr {
       return this.setListValue(enviroment, object, value)
     else
       throw new BangError(
-        'You can only set properties/values on dictionaries and lists'
+        'You can only set properties/values on dictionaries and lists',
+        this.token.line
       )
   }
 }

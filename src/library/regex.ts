@@ -7,6 +7,7 @@ import {
   PrimitiveUnique,
 } from '../primitives'
 import BangError from '../BangError'
+
 export const regex = new PrimitiveFunction({
   name: 'regex',
   arity: 1,
@@ -16,7 +17,7 @@ export const regex = new PrimitiveFunction({
     let flag = ''
 
     if (!(arg instanceof PrimitiveString))
-      throw new BangError('Expected string')
+      throw new BangError('Expected argument to be a string')
     if (extra instanceof PrimitiveString) flag = extra.getValue() as string
 
     const internalRegex = new RegExp(arg.getValue(), flag)
@@ -33,7 +34,7 @@ export const regex = new PrimitiveFunction({
             const [arg] = argument
 
             if (!(arg instanceof PrimitiveString))
-              throw new BangError('Expected string')
+              throw new BangError('Expected argument to be a string')
 
             return new PrimitiveBoolean(internalRegex.test(arg.getValue()))
           },

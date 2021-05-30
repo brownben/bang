@@ -83,10 +83,10 @@ class BaseParser {
   }
 
   error(token: Token, message: string) {
-    throw new BangError(message, this.source, token.line)
+    throw new BangError(message, token.line, this.source)
   }
   errorHere(message: string) {
-    throw new BangError(message, this.source, this.getToken().line)
+    throw new BangError(message, this.getToken().line, this.source)
   }
 
   tokenIsType(...type: TokenType[]): boolean {
@@ -196,7 +196,7 @@ class Parser extends BaseParser {
       return this.statement()
     } catch (error) {
       if (error instanceof BangError) throw error
-      else throw this.errorHere('Problem Whilst Parsing Code')
+      else throw this.errorHere('Unexpected problem whilst parsing code')
     }
   }
 
@@ -233,13 +233,17 @@ class Parser extends BaseParser {
       return this.namedVariableDeclaration(constant)
     else if (this.tokenIsType(TokenType.LEFT_BRACE, TokenType.LEFT_SQUARE))
       return this.destructuringVariableDeclaration(constant)
-    else throw this.error(initializerType, `Expected variable name.`)
+    else
+      throw this.error(
+        initializerType,
+        `Expected variable name after "${initializerType.value}"`
+      )
   }
 
   namedVariableDeclaration(constant: boolean): Stmt {
     const name = this.assertTokenIs(
       TokenType.IDENTIFIER,
-      'Expect variable name.'
+      'Expect variable name'
     )
 
     let initializer: Expr | undefined = undefined
@@ -248,7 +252,7 @@ class Parser extends BaseParser {
     if (!(initializer instanceof ExprFunction))
       this.assertTokenIs(
         newLineTokens,
-        'Expect a new line after variable declaration.'
+        'Expect a new line after variable declaration'
       )
 
     return new StmtVariable(name, constant, initializer)
@@ -256,7 +260,7 @@ class Parser extends BaseParser {
 
   destructuringListValues(): [string[], boolean] {
     const getIdentifer = () =>
-      this.assertTokenIs(TokenType.IDENTIFIER, 'Expect variable name.')
+      this.assertTokenIs(TokenType.IDENTIFIER, 'Expect variable name')
     let spread = false
     const values = this.getCommaSeparatedValues({
       closingBracket: TokenType.RIGHT_SQUARE,
@@ -308,14 +312,17 @@ class Parser extends BaseParser {
 
     this.assertTokenIs(
       [TokenType.RIGHT_SQUARE, TokenType.RIGHT_BRACE],
-      'Expect closing bracket.'
+      'Expect closing bracket'
     )
-    this.assertTokenIs(TokenType.EQUAL, 'Expect an initial value')
+    this.assertTokenIs(
+      TokenType.EQUAL,
+      'Expect an initial value when destructuring'
+    )
     const expression = this.expression()
 
     this.assertTokenIs(
       newLineTokens,
-      'Expect a new line after variable declaration.'
+      'Expect a new line after variable declaration'
     )
 
     return new StmtDestructuring({
@@ -324,13 +331,14 @@ class Parser extends BaseParser {
       expression,
       type,
       spread,
+      token: bracket,
     })
   }
 
   ifStatement(): Stmt {
-    this.assertTokenIs(TokenType.LEFT_PAREN, "Expect '(' after 'if'.")
+    this.assertTokenIs(TokenType.LEFT_PAREN, "Expect '(' after 'if'")
     const condition: Expr = this.expression()
-    this.assertTokenIs(TokenType.RIGHT_PAREN, "Expect ')' after if condition.")
+    this.assertTokenIs(TokenType.RIGHT_PAREN, "Expect ')' after if condition")
 
     this.skipNewLineIfBlockFollows()
 
@@ -346,14 +354,16 @@ class Parser extends BaseParser {
   }
 
   whileStatement() {
-    this.assertTokenIs(TokenType.LEFT_PAREN, "Expect '(' after 'while'.")
+    const token = this.getToken()
+
+    this.assertTokenIs(TokenType.LEFT_PAREN, "Expect '(' after 'while'")
     const condition = this.expression()
-    this.assertTokenIs(TokenType.RIGHT_PAREN, "Expect ')' after condition.")
+    this.assertTokenIs(TokenType.RIGHT_PAREN, "Expect ')' after condition")
 
     this.skipNewLineIfBlockFollows()
     const body = this.statement()
 
-    return new StmtWhile(condition, body)
+    return new StmtWhile(condition, body, token)
   }
 
   returnStatement(): Stmt {
@@ -363,7 +373,7 @@ class Parser extends BaseParser {
     if (!this.tokenIsType(TokenType.NEW_LINE, TokenType.BLOCK_END))
       value = this.expression()
 
-    this.assertTokenIs(newLineTokens, 'Expect a new line after return.')
+    this.assertTokenIs(newLineTokens, 'Expect a new line after return')
 
     return new StmtReturn(keyword, value)
   }
@@ -371,7 +381,7 @@ class Parser extends BaseParser {
   fromImportStatement(): Stmt {
     const moduleName = this.assertTokenIs(
       TokenType.IDENTIFIER,
-      'Expect import name.'
+      'Expect import name'
     )
 
     this.assertTokenIs(
@@ -379,25 +389,31 @@ class Parser extends BaseParser {
       'Expect import after module identifier'
     )
 
-    this.assertTokenIs(TokenType.LEFT_BRACE, 'Expect brace')
+    this.assertTokenIs(TokenType.LEFT_BRACE, 'Expect brace after import')
     const imports = this.destructuringDictionaryValues().map((param) => {
       if (param instanceof Token)
         return { actual: param.value, renamed: param.value }
       return param
     })
-    this.assertTokenIs(TokenType.RIGHT_BRACE, 'Expect brace')
+    this.assertTokenIs(TokenType.RIGHT_BRACE, 'Expect closing brace')
 
-    return new StmtImport(moduleName.value, { destructured: imports })
+    return new StmtImport(moduleName.value, {
+      token: moduleName,
+      destructured: imports,
+    })
   }
 
   importStatement(): Stmt {
-    const name = this.assertTokenIs(TokenType.IDENTIFIER, 'Expect import name.')
+    const name = this.assertTokenIs(
+      TokenType.IDENTIFIER,
+      'Expect import module name'
+    )
 
     let newName: Token | undefined = undefined
     if (this.tokenMatches(TokenType.AS))
       newName = this.assertTokenIs(
         TokenType.IDENTIFIER,
-        'Expect identifier name.'
+        'Expect identifier name'
       )
 
     this.assertTokenIs(
@@ -405,13 +421,13 @@ class Parser extends BaseParser {
       'Expect a new line after import statement'
     )
 
-    return new StmtImport(name.value, { as: newName?.value })
+    return new StmtImport(name.value, { token: name, as: newName?.value })
   }
 
   expressionStatement(): StmtExpression {
     const expr = this.expression()
 
-    this.assertTokenIs(newLineTokens, 'Expect a new line after expression.')
+    this.assertTokenIs(newLineTokens, 'Expect a new line after expression')
     return new StmtExpression(expr)
   }
 
@@ -437,7 +453,7 @@ class Parser extends BaseParser {
       const name = expr.name
       return new ExprAssign(name, value)
     } else if (expr instanceof ExprGet)
-      return new ExprSet(expr.object, expr.lookup, value)
+      return new ExprSet(expr.object, expr.lookup, value, equals)
 
     throw this.error(equals, 'Invalid Assignment Target')
   }
@@ -453,7 +469,7 @@ class Parser extends BaseParser {
       const name = expr.name
       return new ExprAssign(name, value)
     } else if (expr instanceof ExprGet)
-      return new ExprSet(expr.object, expr.lookup, value)
+      return new ExprSet(expr.object, expr.lookup, value, equals)
 
     throw this.error(equals, 'Invalid Assignment Target')
   }
@@ -583,8 +599,8 @@ class Parser extends BaseParser {
   getPropertyExpression(expr: Expr): ExprGet {
     const afterColon = (beforeColon: Expr | null) => {
       if (!this.tokenIsType(TokenType.RIGHT_SQUARE))
-        return new ExprSlice(beforeColon, this.expression())
-      else return new ExprSlice(beforeColon, null)
+        return new ExprSlice(beforeColon, this.expression(), this.getToken())
+      else return new ExprSlice(beforeColon, null, this.getToken())
     }
 
     let identifier = null
@@ -599,7 +615,7 @@ class Parser extends BaseParser {
       TokenType.RIGHT_SQUARE,
       'Expected "]" after identifier expression'
     )
-    return new ExprGet(identifier, expr)
+    return new ExprGet(this.getToken(), expr, identifier)
   }
 
   finishCall(callee: Expr) {
@@ -607,7 +623,7 @@ class Parser extends BaseParser {
       closingBracket: TokenType.RIGHT_PAREN,
       processArguments: (parameters) => {
         if (parameters.length >= 255)
-          this.errorHere("Can't have more than 255 arguments.")
+          this.errorHere("Can't have more than 255 arguments")
 
         return this.expression()
       },
@@ -615,7 +631,7 @@ class Parser extends BaseParser {
 
     const paren = this.assertTokenIs(
       TokenType.RIGHT_PAREN,
-      'Expect ")" after arguments.'
+      'Expect ")" after arguments'
     )
 
     return new ExprCall(callee, paren, parameters)
@@ -635,7 +651,7 @@ class Parser extends BaseParser {
     this.advance()
 
     const getIdentifer = () =>
-      this.assertTokenIs(TokenType.IDENTIFIER, 'Expect parameter name.')
+      this.assertTokenIs(TokenType.IDENTIFIER, 'Expect parameter name')
 
     let spread = false
     let parameters
@@ -645,13 +661,13 @@ class Parser extends BaseParser {
           return { actual: param.value, renamed: param.value }
         return param
       }) as string[] | { actual: string; renamed: string }[]
-      this.assertTokenIs(TokenType.RIGHT_BRACE, "Expect '}' after dictionary.")
+      this.assertTokenIs(TokenType.RIGHT_BRACE, "Expect '}' after dictionary")
     } else
       parameters = this.getCommaSeparatedValues<string>({
         closingBracket: TokenType.RIGHT_PAREN,
         processArguments: (parameters) => {
           if (parameters.length >= 255)
-            this.errorHere("Can't have more than 255 parameters.")
+            this.errorHere("Can't have more than 255 parameters")
 
           if (this.tokenMatches(TokenType.SPREAD)) {
             if (spread)
@@ -663,8 +679,8 @@ class Parser extends BaseParser {
         },
       })
 
-    this.assertTokenIs(TokenType.RIGHT_PAREN, "Expect ')' after parameters.")
-    this.assertTokenIs(TokenType.FAT_ARROW, "Expect '=>' after parameters.")
+    this.assertTokenIs(TokenType.RIGHT_PAREN, "Expect ')' after parameters")
+    this.assertTokenIs(TokenType.FAT_ARROW, "Expect '=>' after parameters")
     this.skipNewLineIfBlockFollows()
 
     if (this.tokenMatches(TokenType.BLOCK_START))
@@ -698,7 +714,7 @@ class Parser extends BaseParser {
 
   grouping(): Expr {
     const expr = this.expression()
-    this.assertTokenIs(TokenType.RIGHT_PAREN, "Expect ')' after expression.")
+    this.assertTokenIs(TokenType.RIGHT_PAREN, "Expect ')' after expression")
     return new ExprGrouping(expr)
   }
 
@@ -718,7 +734,7 @@ class Parser extends BaseParser {
         },
       })
 
-    this.assertTokenIs(TokenType.RIGHT_BRACE, "Expect '}' after dictionary.")
+    this.assertTokenIs(TokenType.RIGHT_BRACE, "Expect '}' after dictionary")
     return new ExprDictionary(token, keyValues)
   }
 
@@ -729,7 +745,7 @@ class Parser extends BaseParser {
       processArguments: () => this.expression(),
     })
 
-    this.assertTokenIs(TokenType.RIGHT_SQUARE, "Expect ']' after dictionary.")
+    this.assertTokenIs(TokenType.RIGHT_SQUARE, "Expect ']' after dictionary")
     return new ExprList(token, values)
   }
 }

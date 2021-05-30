@@ -40,20 +40,26 @@ export class ExprCall extends Expr {
         const evaluated = value.evaluate(enviroment)
         if (evaluated instanceof PrimitiveList)
           evaluated.list.forEach((value) => argument.push(value))
-        else throw new BangError(`Can only spread lists into parameters`)
+        else
+          throw new BangError(
+            `Can only spread lists into parameters`,
+            this.paren.line
+          )
       } else argument.push(value.evaluate(enviroment))
     }
 
     if (!(callee instanceof PrimitiveFunction))
-      throw new BangError('Can only call functions.')
+      throw new BangError('Can only call functions.', this.paren.line)
 
     if (!callee.spread && argument.length !== callee.arity)
       throw new BangError(
-        `Expected ${callee.arity} arguments but got ${argument.length}`
+        `Expected ${callee.arity} arguments but got ${argument.length}`,
+        this.paren.line
       )
     else if (callee.spread && argument.length < callee.arity)
       throw new BangError(
-        `Expected at least ${callee.arity} arguments but got ${argument.length}`
+        `Expected at least ${callee.arity} arguments but got ${argument.length}`,
+        this.paren.line
       )
 
     return callFunction(callee, argument)

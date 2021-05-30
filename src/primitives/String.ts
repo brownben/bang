@@ -51,7 +51,8 @@ export class PrimitiveString extends Primitive {
       return new PrimitiveString(this.getValue() + value.getValue())
 
     throw new BangError(
-      `No Operation "+" on type "${this.type}" and type "${value.type}`
+      `No Operation "+" on type "${this.type}" and type "${value.type}"`,
+      this.token?.line
     )
   }
 
@@ -71,7 +72,8 @@ export class PrimitiveString extends Primitive {
       return new PrimitiveBoolean(this.getValue() > value.getValue())
 
     throw new BangError(
-      `No Operation ">" on type "${this.type}" and type "${value.type}`
+      `No Operation ">" on type "${this.type}" and type "${value.type}"`,
+      this.token?.line
     )
   }
   lessThan(value: Primitive): PrimitiveBoolean {
@@ -79,7 +81,8 @@ export class PrimitiveString extends Primitive {
       return new PrimitiveBoolean(this.getValue() < value.getValue())
 
     throw new BangError(
-      `No Operation "<" on type "${this.type}" and type "${value.type}`
+      `No Operation "<" on type "${this.type}" and type "${value.type}"`,
+      this.token?.line
     )
   }
   greaterThanOrEqual(value: Primitive): PrimitiveBoolean {
@@ -87,7 +90,8 @@ export class PrimitiveString extends Primitive {
       return new PrimitiveBoolean(this.getValue() >= value.getValue())
 
     throw new BangError(
-      `No Operation ">=" on type "${this.type}" and type "${value.type}`
+      `No Operation ">=" on type "${this.type}" and type "${value.type}"`,
+      this.token?.line
     )
   }
   lessThanOrEqual(value: Primitive): PrimitiveBoolean {
@@ -95,7 +99,8 @@ export class PrimitiveString extends Primitive {
       return new PrimitiveBoolean(this.getValue() <= value.getValue())
 
     throw new BangError(
-      `No Operation "<=" on type "${this.type}" and type "${value.type}`
+      `No Operation "<=" on type "${this.type}" and type "${value.type}"`,
+      this.token?.line
     )
   }
 
