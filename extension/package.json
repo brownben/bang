@@ -1,0 +1,44 @@
+{
+  "name": "bang",
+  "displayName": "bang",
+  "description": "My Attempt at Creating an Interpreted Language in TypeScript",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.56.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "bang",
+        "aliases": [
+          "Bang",
+          "bang"
+        ],
+        "extensions": [
+          ".bang"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "bang",
+        "scopeName": "source.bang",
+        "path": "./bang.tmLanguage.json"
+      },
+      {
+        "scopeName": "markdown.bang.codeblock",
+        "path": "./code-block.json",
+        "injectTo": [
+          "text.html.markdown"
+        ],
+        "embeddedLanguages": {
+          "meta.embedded.block.bang": "bang"
+        }
+      }
+    ]
+  }
+}

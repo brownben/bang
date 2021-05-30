@@ -1,0 +1,156 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Bang",
+  "patterns": [
+    {
+      "name": "string.quoted.double.bang",
+      "begin": "\"",
+      "end": "[\"\n]",
+      "patterns": [
+        {
+          "name": "constant.character.escape.bang",
+          "match": "\\\\."
+        }
+      ]
+    },
+    {
+      "name": "string.quoted.single.bang",
+      "begin": "'",
+      "end": "['\n]",
+      "patterns": [
+        {
+          "name": "constant.character.escape.bang",
+          "match": "\\\\."
+        }
+      ]
+    },
+    {
+      "name": "string.quoted.other.bang",
+      "begin": "`",
+      "end": "`",
+      "patterns": [
+        {
+          "name": "constant.character.escape.bang",
+          "match": "\\\\."
+        }
+      ]
+    },
+
+    {
+      "name": "comment.line.double-slash.bang",
+      "begin": "//",
+      "end": "\n"
+    },
+
+    {
+      "match": "\\b((0[0-9][0-9_]*)|([0-9][0-9_]*(\\.[0-9_]*[0-9])?))\\b",
+      "name": "constant.numeric.js"
+    },
+
+    {
+      "name": "keyword.control.bang",
+      "match": "\\b(if|else|while|return|import|as|from)\\b"
+    },
+    {
+      "name": "constant.language.bang",
+      "match": "\\b(null|true|false)\\b"
+    },
+    {
+      "name": "storage.type.var.bang",
+      "match": "\\b(let)\\b"
+    },
+    {
+      "match": "\\b(const)\\s+([_a-zA-Z][_a-zA-Z0-9]*)",
+      "captures": {
+        "1": { "name": "storage.modifier.bang" },
+        "2": { "name": "variable.other.constant.bang" }
+      }
+    },
+    {
+      "match": "\\b(const)\\b",
+      "name": "storage.modifier.bang"
+    },
+
+    {
+      "match": "!|\\*|\\-|\\+|~|==|=|!=|!==|<=|>=|<|>|&&|\\|\\||\\*=|\\/=|%=|\\+=|\\-=|=>|\\.\\.\\.",
+      "name": "keyword.operator.bang"
+    },
+    {
+      "match": "\\b(and|or)\\b",
+      "name": "keyword.operator.word.bang"
+    },
+
+    {
+      "match": "\\.|,|\\:",
+      "name": "punctuation.bang"
+    },
+    {
+      "name": "meta.function.anonomous.bang",
+
+      "comment": "match stuff like: (a, b) =>",
+
+      "match": "\\((.*?)\\)\\s*(=>)\\s*",
+
+      "captures": {
+        "1": { "patterns": [{ "include": "#parameters" }] },
+        "2": { "name": "keyword.operator.function" }
+      }
+    },
+
+    {
+      "name": "meta.function.defintion.bang",
+      "comment": "match stuff like: x = (a, b) =>",
+      "begin": "([_a-zA-Z][_a-zA-Z0-9]*?)\\s*(=)\\s*\\(",
+      "beginCaptures": {
+        "1": { "name": "entity.name.function.js" },
+        "2": { "name": "keyword.operator.js" }
+      },
+      "end": "\\)\\s*(=>)\\s*",
+      "endCaptures": {
+        "1": { "name": "keyword.operator.function" }
+      },
+      "patterns": [{ "include": "#parameters" }]
+    },
+
+    {
+      "match": "([_a-zA-Z][_a-zA-Z0-9]*?)\\(",
+      "captures": {
+        "1": { "name": "entity.name.function.call.bang" }
+      }
+    },
+    {
+      "match": "\\{|\\}",
+      "name": "meta.brace.curly.bang"
+    },
+    {
+      "match": "\\(|\\)",
+      "name": "meta.brace.round.bang"
+    },
+    {
+      "match": "\\[|\\]",
+      "name": "meta.brace.square.bang"
+    }
+  ],
+  "repository": {
+    "parameters": {
+      "patterns": [
+        {
+          "begin": "(?![\\s)])",
+          "end": "(?=[)])",
+          "patterns": [
+            {
+              "match": "([_a-zA-Z][_a-zA-Z0-9]*)",
+              "name": "variable.parameter.function.bang"
+            },
+            {
+              "match": "(,)",
+              "name": "punctuation.parameter.comma.bang"
+            },
+            { "include": "$self" }
+          ]
+        }
+      ]
+    }
+  },
+  "scopeName": "source.bang"
+}

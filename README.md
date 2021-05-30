@@ -26,6 +26,9 @@ node cli
 
 # run a bang program
 node cli run <file>
+
+# to run vscode with the extension
+code --extensionDevelopmentPath="<PATH-TO>/extension"
 ```
 
 ## Docs
