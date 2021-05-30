@@ -1,4 +1,4 @@
-import { expectEnviroment, execute } from './helpers'
+import { expectEnviroment, execute, expectError, expectOutput } from './helpers'
 
 describe('if statements execute properly', () => {
   it('should execute expression when condition is truthy', () => {
@@ -103,5 +103,10 @@ while (false)
       { printFunction: mock }
     )
     expect(mock).not.toHaveBeenCalled()
+  })
+
+  it('should detect infinite loops', () => {
+    expectError('let a = 0\n while (true) a += 1')
+    expectOutput('let a  = 0\n while(a < 1001) a += 1').toBe(null)
   })
 })

@@ -9,6 +9,10 @@ export class Enviroment {
   private enclosing?: Enviroment
   private externalIO?: ExternalIO
 
+  private tracking: boolean = true
+  private changed: boolean = true
+  private accessed: string[] = []
+
   constructor(enclosing?: Enviroment, externalIO?: ExternalIO) {
     this.enclosing = enclosing
     this.externalIO = externalIO
@@ -18,16 +22,18 @@ export class Enviroment {
     if (name === '_') return
 
     if (this.existsInCurrrentScope(name))
-      throw new BangError(`Variable Already "${name}" Exists `)
+      throw new BangError(`Variable "${name}" already exists`)
 
     this.values[name] = { value, constant }
   }
 
   get(name: string): Primitive {
+    if (this.tracking) this.accessed.push(name)
+
     if (name === '_') return new PrimitiveNull()
     else if (this.values[name]) return this.values[name]?.value
     else if (this.enclosing != null) return this.enclosing.get(name)
-    else throw new BangError(`Unknown Variable "${name}"`)
+    else throw new BangError(`Unknown variable "${name}"`)
   }
 
   exists(name: string): EnviromentVariable {
@@ -51,6 +57,8 @@ export class Enviroment {
   }
 
   assign(name: string, value: Primitive): void {
+    if (this.accessed.includes(name)) this.changed = true
+
     if (name === '_') return
 
     const valueInCurrentScope = this.getFromCurrrentScope(name)
@@ -64,5 +72,23 @@ export class Enviroment {
       )
     else if (valueExists && this.enclosing) this.enclosing?.assign(name, value)
     else throw new BangError(`Variable "${name}" is not defined`)
+  }
+
+  track() {
+    this.tracking = true
+    this.changed = false
+    this.accessed = []
+  }
+
+  stopTrack() {
+    this.tracking = false
+  }
+
+  hasTrackedVariablesChanged() {
+    return this.changed
+  }
+
+  resetChanged() {
+    this.changed = false
   }
 }
