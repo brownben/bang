@@ -3,16 +3,17 @@
   "author": "brownben",
   "version": "0.2.0",
   "description": "My Attempt at Creating an Interpreted Language in TypeScript",
+  "license": "MIT",
+  "type": "module",
   "keywords": [
     "language",
     "typescript"
   ],
-  "license": "MIT",
   "repository": "github:brownben/bang",
   "bin": {
     "bang": "./cli.js"
   },
-  "main": "dist/index.js",
+  "main": "dist/bang.esm.js",
   "typings": "dist/index.d.ts",
   "files": [
     "dist",
@@ -27,7 +28,7 @@
     "lint": "tsdx lint src test",
     "test": "tsdx test",
     "type-check": "tsc --noEmit",
-    "build": "tsdx build -- --transpileOnly"
+    "build": "tsdx build --format esm"
   },
   "dependencies": {
     "cac": "^6.7.3"
