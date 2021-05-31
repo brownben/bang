@@ -910,6 +910,7 @@ else <otherwise do this>
 ## While Loops
 
 Execute a body multiple times if the condition is truthy.
+Bang has infinite loop detection to try and stop infinite loops, if the loop executes 1000 times without any of the variables used in the condition changing, an error is thrown
 
 ```
 while (<condition expresssion>) <do this if condition is truthy>
