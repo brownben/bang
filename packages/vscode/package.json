@@ -1,5 +1,5 @@
 {
-  "name": "bang",
+  "name": "@bang!/vscode",
   "displayName": "bang",
   "description": "My Attempt at Creating an Interpreted Language in TypeScript",
   "version": "0.0.1",

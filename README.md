@@ -28,7 +28,7 @@ node cli
 node cli run <file>
 
 # to run vscode with the extension
-code --extensionDevelopmentPath="<PATH-TO>/extension"
+code --extensionDevelopmentPath="<PATH-TO>/packages/vscode"
 ```
 
 ## Docs
