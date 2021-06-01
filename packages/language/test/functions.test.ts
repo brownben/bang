@@ -320,28 +320,27 @@ it('should only destructure dictionary when its the only parameter', () => {
   expectError('(a,{b}) => a')
 })
 
-describe('with print output', () => {
-  it('should execute a simple recursive loop', () => {
-    const mock = jest.fn()
-    execute(
-      `
+it('should execute a simple recursive loop', () => {
+  const mock = jest.fn()
+  execute(
+    `
 let count = (n) =>
   if (n > 1) count(n - 1)
   print(n)
 
 count(3)`,
-      { printFunction: mock }
-    )
-    expect(mock).toBeCalledTimes(3)
-    expect(mock).toHaveBeenCalledWith(1)
-    expect(mock).toHaveBeenCalledWith(2)
-    expect(mock).toHaveBeenCalledWith(3)
-  })
+    { printFunction: mock }
+  )
+  expect(mock).toBeCalledTimes(3)
+  expect(mock).toHaveBeenCalledWith(1)
+  expect(mock).toHaveBeenCalledWith(2)
+  expect(mock).toHaveBeenCalledWith(3)
+})
 
-  it('functions close over scope', () => {
-    const mock = jest.fn()
-    execute(
-      `
+it('functions close over scope', () => {
+  const mock = jest.fn()
+  execute(
+    `
 let a = "global"
 
 let showA = () =>
@@ -351,17 +350,17 @@ showA()
   a = "block"
   showA()
 `,
-      { printFunction: mock }
-    )
-    expect(mock).toHaveBeenCalledTimes(2)
-    expect(mock).toHaveBeenNthCalledWith(1, 'global')
-    expect(mock).toHaveBeenLastCalledWith('block')
-  })
+    { printFunction: mock }
+  )
+  expect(mock).toHaveBeenCalledTimes(2)
+  expect(mock).toHaveBeenNthCalledWith(1, 'global')
+  expect(mock).toHaveBeenLastCalledWith('block')
+})
 
-  it('should close scope over functions (with variable declaration)', () => {
-    const mock = jest.fn()
-    execute(
-      `
+it('should close scope over functions (with variable declaration)', () => {
+  const mock = jest.fn()
+  execute(
+    `
 let a = "global"
 
 let showA = () =>
@@ -370,10 +369,9 @@ let showA = () =>
 showA()
   let a = "block"
   showA()`,
-      { printFunction: mock }
-    )
-    expect(mock).toHaveBeenCalledTimes(2)
-    expect(mock).toHaveBeenNthCalledWith(1, 'global')
-    expect(mock).toHaveBeenLastCalledWith('global')
-  })
+    { printFunction: mock }
+  )
+  expect(mock).toHaveBeenCalledTimes(2)
+  expect(mock).toHaveBeenNthCalledWith(1, 'global')
+  expect(mock).toHaveBeenLastCalledWith('global')
 })

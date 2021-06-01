@@ -110,7 +110,7 @@ export const synchronizeTokens = [
   TokenType.FROM,
 ]
 
-export const assumeNewLineTokens = [
+export const newLineAllowedAfterTokens = [
   TokenType.RIGHT_PAREN,
   TokenType.RIGHT_BRACE,
   TokenType.RIGHT_SQUARE,

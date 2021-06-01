@@ -1,7 +1,7 @@
 import { Token } from './Token'
 import { TokenType, keywordTokens } from './TokenType'
 import {
-  assumeNewLineTokens,
+  newLineAllowedAfterTokens,
   oneCharacterTokens,
   twoCharacterTokens,
   threeCharacterTokens,
@@ -67,7 +67,7 @@ class BaseTokeniser {
   }
 
   constructError(message: string) {
-    return new BangError(message, this.currentLine, this.source)
+    return new BangError(message, this.currentLine)
   }
 }
 
@@ -149,15 +149,14 @@ export class Tokenizer extends BaseTokeniser {
   }
 
   addNewLine() {
-    const validLineStartCharacter = !unacceptableLineStartCharacters.includes(
-      this.getNextNonWhitespaceCharacter()
-    )
+    const nextCharacter = this.getNextNonWhitespaceCharacter()
+    const lastTokenType = this.getLastToken()?.type
 
-    if (
-      assumeNewLineTokens.includes(this.getLastToken()?.type) &&
-      validLineStartCharacter &&
-      this.expressionLevel <= 0
-    ) {
+    const isValidLineStartCharacter =
+      !unacceptableLineStartCharacters.includes(nextCharacter)
+    const expectingNewLine = newLineAllowedAfterTokens.includes(lastTokenType)
+
+    if (expectingNewLine && isValidLineStartCharacter) {
       this.addToken(TokenType.NEW_LINE, '\n')
       this.currentPositionInLine = 0
     }
@@ -179,6 +178,7 @@ export class Tokenizer extends BaseTokeniser {
 
   changeBlockLevel() {
     let indentationLevel = this.getIndentationLevel()
+
     while (this.blockLevel > indentationLevel) {
       this.blockLevel -= 1
       this.addToken(TokenType.BLOCK_END, '')

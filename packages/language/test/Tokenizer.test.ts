@@ -253,3 +253,33 @@ let b = [...a]
     )
   })
 })
+
+it('should recognise block in function arguments', () => {
+  expectTokens(
+    `it('should multiply numbers', () =>
+  expectOutput('1 * 2').toEqual(2)
+)`,
+    [
+      { line: 1, type: TokenType.IDENTIFIER },
+      { line: 1, type: TokenType.LEFT_PAREN },
+      { line: 1, type: TokenType.STRING },
+      { line: 1, type: TokenType.COMMA },
+      { line: 1, type: TokenType.LEFT_PAREN },
+      { line: 1, type: TokenType.RIGHT_PAREN },
+      { line: 1, type: TokenType.FAT_ARROW },
+      { line: 1, type: TokenType.NEW_LINE },
+      { line: 2, type: TokenType.BLOCK_START },
+      { line: 2, type: TokenType.IDENTIFIER },
+      { line: 2, type: TokenType.LEFT_PAREN },
+      { line: 2, type: TokenType.STRING },
+      { line: 2, type: TokenType.RIGHT_PAREN },
+      { line: 2, type: TokenType.DOT },
+      { line: 2, type: TokenType.IDENTIFIER },
+      { line: 2, type: TokenType.LEFT_PAREN },
+      { line: 2, type: TokenType.NUMBER },
+      { line: 2, type: TokenType.RIGHT_PAREN },
+      { line: 3, type: TokenType.RIGHT_PAREN },
+      { line: 3, type: TokenType.BLOCK_END },
+    ]
+  )
+})
