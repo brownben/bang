@@ -1,7 +1,7 @@
 import cac from 'cac'
 import repl from 'repl'
 import fs, { readFile } from 'fs/promises'
-import { execute, Interpreter, BangError } from './dist/bang.esm.js'
+import { execute, Interpreter, BangError } from '@bang!/language'
 
 const readJSON = async (filePath) =>
   JSON.parse(await readFile(new URL(filePath, import.meta.url)))

@@ -1,0 +1,51 @@
+{
+  "name": "@bang!/language",
+  "version": "0.2.0",
+  "description": "My Attempt at Creating an Interpreted Language in TypeScript",
+  "license": "MIT",
+  "type": "module",
+  "author": "brownben",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brownben/bang.git",
+    "directory": "packages/language"
+  },
+  "keywords": [
+    "language",
+    "typescript"
+  ],
+  "main": "dist/bang.esm.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "engines": {
+    "node": ">=14"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "start": "tsdx watch",
+    "format": "prettier --write ./**/*",
+    "lint": "tsdx lint src test",
+    "test": "tsdx test",
+    "type-check": "tsc --noEmit",
+    "build": "tsdx build --format esm --name bang"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.25.0",
+    "@typescript-eslint/parser": "^4.25.0",
+    "prettier": "^2.3.0",
+    "tsdx": "^0.14.1",
+    "tslib": "^2.2.0",
+    "typescript": "^4.2.4"
+  },
+  "resolutions": {
+    "**/typescript": "^4.2.4",
+    "**/@typescript-eslint/eslint-plugin": "^4.25.0",
+    "**/@typescript-eslint/parser": "^4.25.0",
+    "**/prettier": "^2.3.0"
+  }
+}

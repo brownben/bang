@@ -1,0 +1,41 @@
+{
+  "name": "@bang!/cli",
+  "version": "1.0.0",
+  "description": "A CLI for the Bang Language",
+  "license": "MIT",
+  "author": "brownben",
+  "main": "./cli.js",
+  "type": "module",
+  "bin": {
+    "bang": "./cli.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brownben/bang.git",
+    "directory": "packages/cli"
+  },
+  "keywords": [
+    "language",
+    "typescript"
+  ],
+  "files": [
+    "cli.js"
+  ],
+  "engines": {
+    "node": ">=14"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "cac": "^6.7.3",
+    "@bang!/language": "^0.2.0"
+  },
+  "scripts": {
+    "start": "",
+    "lint": "",
+    "test": "",
+    "type-check": "",
+    "build": ""
+  }
+}
