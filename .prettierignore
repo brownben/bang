@@ -6,3 +6,6 @@ package-lock.json
 **/dist/**
 **/coverage/**
 **/node_modules/**
+
+// Ignore .bang files, at least for now
+**/*.bang

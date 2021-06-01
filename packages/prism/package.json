@@ -1,0 +1,32 @@
+{
+  "name": "@bang!/prism",
+  "version": "1.0.0",
+  "description": "Prism plugin for the Bang language",
+  "license": "MIT",
+  "author": "brownben",
+  "main": "./index.js",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brownben/bang.git",
+    "directory": "packages/prism"
+  },
+  "keywords": [
+    "language",
+    "typescript",
+    "cli"
+  ],
+  "engines": {
+    "node": ">=14"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "start": "",
+    "lint": "",
+    "test": "",
+    "type-check": "",
+    "build": ""
+  }
+}

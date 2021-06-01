@@ -1,8 +1,20 @@
 {
   "name": "@bang!/vscode",
   "displayName": "bang",
-  "description": "My Attempt at Creating an Interpreted Language in TypeScript",
+  "description": "VSCode Extension for the Bang Language",
   "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brownben/bang.git",
+    "directory": "packages/vscode"
+  },
+  "scripts": {
+    "start": "",
+    "lint": "",
+    "test": "",
+    "type-check": "",
+    "build": ""
+  },
   "engines": {
     "vscode": "^1.56.0"
   },
