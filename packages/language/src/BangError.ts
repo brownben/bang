@@ -1,15 +1,10 @@
-export default class BangError {
+export default class BangError extends Error {
   message: string
-  source: string[]
   line: number
 
-  constructor(message: string, line?: number, code?: string) {
+  constructor(message: string, line?: number) {
+    super(message)
     this.message = message
-    this.source = code?.split('\n') ?? []
     this.line = line ?? 0
-  }
-
-  output(): void {
-    console.log(`Error: ${this.message}`)
   }
 }

@@ -1,7 +1,7 @@
 {
   "name": "@bang!/language",
-  "version": "0.2.0",
-  "description": "My Attempt at Creating an Interpreted Language in TypeScript",
+  "version": "0.2.1",
+  "description": "My attempt at creating an interpreted language in TypeScript",
   "license": "MIT",
   "type": "module",
   "author": "brownben",

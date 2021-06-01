@@ -83,10 +83,10 @@ class BaseParser {
   }
 
   error(token: Token, message: string) {
-    throw new BangError(message, token.line, this.source)
+    throw new BangError(message, token.line)
   }
   errorHere(message: string) {
-    throw new BangError(message, this.getToken().line, this.source)
+    throw new BangError(message, this.getToken().line)
   }
 
   tokenIsType(...type: TokenType[]): boolean {
