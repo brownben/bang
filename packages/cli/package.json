@@ -1,13 +1,13 @@
 {
   "name": "@bang!/cli",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A CLI for the Bang Language",
   "license": "MIT",
   "author": "brownben",
   "main": "./cli.js",
   "type": "module",
   "bin": {
-    "bang": "./cli.js"
+    "bang": "index.js"
   },
   "repository": {
     "type": "git",
@@ -16,10 +16,8 @@
   },
   "keywords": [
     "language",
-    "typescript"
-  ],
-  "files": [
-    "cli.js"
+    "typescript",
+    "cli"
   ],
   "engines": {
     "node": ">=14"

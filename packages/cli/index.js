@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import cac from 'cac'
 import repl from 'repl'
 import fs, { readFile } from 'fs/promises'
@@ -30,7 +32,7 @@ const packageJSON = await readJSON('./package.json')
 const cli = cac('bang').version(`v${packageJSON.version}`).help()
 
 cli.command('', 'Open a REPL').action(async () => {
-  console.log(`Bang (v${packageJSON.version})`)
+  console.log(`Bang (v${packageJSON.dependencies['@bang!/language']})`)
   console.log('For more information type ".help"\n')
   repl.start({ prompt: '> ', eval: evaluate })
 })
