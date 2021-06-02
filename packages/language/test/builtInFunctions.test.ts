@@ -1,5 +1,5 @@
 import { execute, expectEnviroment, expectError, expectOutput } from './helpers'
-import { writeFileSync } from 'fs'
+import { writeFileSync, rmSync } from 'fs'
 import { Enviroment } from '../src/Enviroment'
 
 const expectOutputWithMaths = (string: string) =>
@@ -18,196 +18,200 @@ const expectOutputWithFile = (string: string) =>
   expectOutput('import file \n' + string)
 
 describe('print functions', () => {
-  it('should throw error if no arguments are passed', () => {
-    expectError('print(1, 2)')
+  it('should throw error if no arguments are passed', async () => {
+    await expectError('print(1, 2)')
   })
 
-  it('should throw error if 2 arguments are passed', () => {
-    expectError('print()')
+  it('should throw error if 2 arguments are passed', async () => {
+    await expectError('print()')
   })
 
-  it('should display literal values', () => {
+  it('should display literal values', async () => {
     const mock = jest.fn()
-    execute('print(5)', { printFunction: mock })
+    await execute('print(5)', { printFunction: mock })
     expect(mock).toHaveBeenLastCalledWith(5)
-    execute('print("hello world")', { printFunction: mock })
+    await execute('print("hello world")', { printFunction: mock })
     expect(mock).toHaveBeenLastCalledWith('hello world')
-    execute('print(false)', { printFunction: mock })
+    await execute('print(false)', { printFunction: mock })
     expect(mock).toHaveBeenLastCalledWith(false)
-    execute('print(null)', { printFunction: mock })
+    await execute('print(null)', { printFunction: mock })
     expect(mock).toHaveBeenLastCalledWith(null)
   })
 
-  it('should display value of expressions', () => {
+  it('should display value of expressions', async () => {
     const mock = jest.fn()
-    execute('print(5 + 5)', { printFunction: mock })
+    await execute('print(5 + 5)', { printFunction: mock })
     expect(mock).toHaveBeenLastCalledWith(10)
-    execute('print(22 / 2)', { printFunction: mock })
+    await execute('print(22 / 2)', { printFunction: mock })
     expect(mock).toHaveBeenLastCalledWith(11)
-    execute('print("hello " + "world")', { printFunction: mock })
+    await execute('print("hello " + "world")', { printFunction: mock })
     expect(mock).toHaveBeenLastCalledWith('hello world')
-    execute('print(false == 5 > 9)', { printFunction: mock })
+    await execute('print(false == 5 > 9)', { printFunction: mock })
     expect(mock).toHaveBeenLastCalledWith(true)
-    execute('print(5 * 5 - 9 == 8 * 2)', { printFunction: mock })
+    await execute('print(5 * 5 - 9 == 8 * 2)', { printFunction: mock })
     expect(mock).toHaveBeenLastCalledWith(true)
   })
 
-  it('should have correct string representation value', () => {
+  it('should have correct string representation value', async () => {
     const mock = jest.fn()
-    execute('print(print)', { printFunction: mock })
+    await execute('print(print)', { printFunction: mock })
     expect(mock).toHaveBeenLastCalledWith('<function print>')
   })
 })
 
 describe('type function', () => {
-  it('should throw error if no arguments are passed', () => {
-    expectError('type(1, 2)')
+  it('should throw error if no arguments are passed', async () => {
+    await expectError('type(1, 2)')
   })
 
-  it('should throw error if 2 arguments are passed', () => {
-    expectError('type()')
+  it('should throw error if 2 arguments are passed', async () => {
+    await expectError('type()')
   })
 
-  it('should have correct string representation value', () => {
-    expectOutput('type').toBe('<function type>')
+  it('should have correct string representation value', async () => {
+    await expectOutput('type').toBe('<function type>')
   })
 
-  it('should return the correct type of values', () => {
-    expectOutput('type(`a`)').toBe('string')
-    expectOutput('type("hello world")').toBe('string')
-    expectOutput('type(1)').toBe('number')
-    expectOutput('type(0.21)').toBe('number')
-    expectOutput('type(785.26)').toBe('number')
-    expectOutput('type(true)').toBe('boolean')
-    expectOutput('type(false)').toBe('boolean')
-    expectOutput('type(null)').toBe('null')
-    expectOutput('type(print)').toBe('function')
+  it('should return the correct type of values', async () => {
+    await expectOutput('type(`a`)').toBe('string')
+    await expectOutput('type("hello world")').toBe('string')
+    await expectOutput('type(1)').toBe('number')
+    await expectOutput('type(0.21)').toBe('number')
+    await expectOutput('type(785.26)').toBe('number')
+    await expectOutput('type(true)').toBe('boolean')
+    await expectOutput('type(false)').toBe('boolean')
+    await expectOutput('type(null)').toBe('null')
+    await expectOutput('type(print)').toBe('function')
   })
 
-  it('should be able to be imported', () => {
-    execute('import type as getTypeOf')
+  it('should be able to be imported', async () => {
+    await execute('import type as getTypeOf')
   })
 })
 
 describe('maths', () => {
-  it('should have constants', () => {
-    expectOutputWithMaths('maths.pi').toEqual(Math.PI)
-    expectOutputWithMaths('maths.e').toBe(Math.E)
-    expectOutputWithMaths('maths.infinity').toEqual(Infinity)
-    expectOutputWithMaths('maths.infinity > 10000000000000').toBe(true)
-    expectOutputWithMaths('maths.infinity < 10000000000000').toBe(false)
+  it('should have constants', async () => {
+    await expectOutputWithMaths('maths.pi').toEqual(Math.PI)
+    await expectOutputWithMaths('maths.e').toBe(Math.E)
+    await expectOutputWithMaths('maths.infinity').toEqual(Infinity)
+    await expectOutputWithMaths('maths.infinity > 10000000000000').toBe(true)
+    await expectOutputWithMaths('maths.infinity < 10000000000000').toBe(false)
   })
 
-  it('should error if non number is passed', () => {
-    expectError(`import maths\n maths.ceil('hello')`)
+  it('should error if non number is passed', async () => {
+    await expectError(`import maths\n maths.ceil('hello')`)
   })
 
-  it('should have ceil function', () => {
-    expectOutputWithMaths('maths.ceil(1)').toBe(1)
-    expectOutputWithMaths('maths.ceil(1.01)').toBe(2)
-    expectOutputWithMaths('maths.ceil(1.5)').toBe(2)
-    expectOutputWithMaths('maths.ceil(72.3)').toBe(73)
-    expectError('maths.ceil(false)')
+  it('should have ceil function', async () => {
+    await expectOutputWithMaths('maths.ceil(1)').toBe(1)
+    await expectOutputWithMaths('maths.ceil(1.01)').toBe(2)
+    await expectOutputWithMaths('maths.ceil(1.5)').toBe(2)
+    await expectOutputWithMaths('maths.ceil(72.3)').toBe(73)
+    await expectError('maths.ceil(false)')
   })
 
-  it('should have floor function', () => {
-    expectOutputWithMaths('maths.floor(1)').toBe(1)
-    expectOutputWithMaths('maths.floor(1.01)').toBe(1)
-    expectOutputWithMaths('maths.floor(1.5)').toBe(1)
-    expectOutputWithMaths('maths.floor(72.3)').toBe(72)
-    expectOutputWithMaths('maths.floor(72.99)').toBe(72)
+  it('should have floor function', async () => {
+    await expectOutputWithMaths('maths.floor(1)').toBe(1)
+    await expectOutputWithMaths('maths.floor(1.01)').toBe(1)
+    await expectOutputWithMaths('maths.floor(1.5)').toBe(1)
+    await expectOutputWithMaths('maths.floor(72.3)').toBe(72)
+    await expectOutputWithMaths('maths.floor(72.99)').toBe(72)
   })
 
-  it('should have round function', () => {
-    expectOutputWithMaths('maths.round(1)').toBe(1)
-    expectOutputWithMaths('maths.round(1.01)').toBe(1)
-    expectOutputWithMaths('maths.round(1.5)').toBe(2)
-    expectOutputWithMaths('maths.round(2.5)').toBe(3)
-    expectOutputWithMaths('maths.round(72.3)').toBe(72)
-    expectOutputWithMaths('maths.round(72.99)').toBe(73)
+  it('should have round function', async () => {
+    await expectOutputWithMaths('maths.round(1)').toBe(1)
+    await expectOutputWithMaths('maths.round(1.01)').toBe(1)
+    await expectOutputWithMaths('maths.round(1.5)').toBe(2)
+    await expectOutputWithMaths('maths.round(2.5)').toBe(3)
+    await expectOutputWithMaths('maths.round(72.3)').toBe(72)
+    await expectOutputWithMaths('maths.round(72.99)').toBe(73)
   })
 
-  it('should have abs function', () => {
-    expectOutputWithMaths('maths.abs(1)').toBe(1)
-    expectOutputWithMaths('maths.abs(1.01)').toBe(1.01)
-    expectOutputWithMaths('maths.abs(1.5)').toBe(1.5)
-    expectOutputWithMaths('maths.abs(-1)').toBe(1)
-    expectOutputWithMaths('maths.abs(-1.01)').toBe(1.01)
-    expectOutputWithMaths('maths.abs(-1.5)').toBe(1.5)
+  it('should have abs function', async () => {
+    await expectOutputWithMaths('maths.abs(1)').toBe(1)
+    await expectOutputWithMaths('maths.abs(1.01)').toBe(1.01)
+    await expectOutputWithMaths('maths.abs(1.5)').toBe(1.5)
+    await expectOutputWithMaths('maths.abs(-1)').toBe(1)
+    await expectOutputWithMaths('maths.abs(-1.01)').toBe(1.01)
+    await expectOutputWithMaths('maths.abs(-1.5)').toBe(1.5)
   })
 
-  it('should have sqrt/cbrt function', () => {
-    expectOutputWithMaths('maths.sqrt(4)').toBe(2)
-    expectOutputWithMaths('maths.cbrt(8)').toBe(2)
+  it('should have sqrt/cbrt function', async () => {
+    await expectOutputWithMaths('maths.sqrt(4)').toBe(2)
+    await expectOutputWithMaths('maths.cbrt(8)').toBe(2)
   })
 
-  it('should have sin/cos/tan function', () => {
-    expectOutputWithMaths('maths.sin(0)').toBeCloseTo(0)
-    expectOutputWithMaths('maths.cos(0)').toBeCloseTo(1)
-    expectOutputWithMaths('maths.tan(0)').toBeCloseTo(0)
+  it('should have sin/cos/tan function', async () => {
+    await expectOutputWithMaths('maths.sin(0)').toBeCloseTo(0)
+    await expectOutputWithMaths('maths.cos(0)').toBeCloseTo(1)
+    await expectOutputWithMaths('maths.tan(0)').toBeCloseTo(0)
 
-    expectOutputWithMaths('maths.sin(maths.pi/6)').toBeCloseTo(0.5)
-    expectOutputWithMaths('maths.cos(maths.pi/6)').toBeCloseTo(Math.sqrt(3) / 2)
-    expectOutputWithMaths('maths.tan(maths.pi/6)').toBeCloseTo(Math.sqrt(3) / 3)
+    await expectOutputWithMaths('maths.sin(maths.pi/6)').toBeCloseTo(0.5)
+    await expectOutputWithMaths('maths.cos(maths.pi/6)').toBeCloseTo(
+      Math.sqrt(3) / 2
+    )
+    await expectOutputWithMaths('maths.tan(maths.pi/6)').toBeCloseTo(
+      Math.sqrt(3) / 3
+    )
   })
 
-  it('should have arcSin/arcCos/arcTan function', () => {
-    expectOutputWithMaths('maths.arcSin(0)').toBeCloseTo(0)
-    expectOutputWithMaths('maths.arcCos(1)').toBeCloseTo(0)
-    expectOutputWithMaths('maths.arcTan(0)').toBeCloseTo(0)
+  it('should have arcSin/arcCos/arcTan function', async () => {
+    await expectOutputWithMaths('maths.arcSin(0)').toBeCloseTo(0)
+    await expectOutputWithMaths('maths.arcCos(1)').toBeCloseTo(0)
+    await expectOutputWithMaths('maths.arcTan(0)').toBeCloseTo(0)
 
-    expectOutputWithMaths('maths.arcSin(0.5)').toBeCloseTo(Math.PI / 6)
-    expectOutputWithMaths('maths.arcCos(maths.sqrt(3)/2)').toBeCloseTo(
+    await expectOutputWithMaths('maths.arcSin(0.5)').toBeCloseTo(Math.PI / 6)
+    await expectOutputWithMaths('maths.arcCos(maths.sqrt(3)/2)').toBeCloseTo(
       Math.PI / 6
     )
-    expectOutputWithMaths('maths.arcTan(maths.sqrt(3)/3)').toBeCloseTo(
+    await expectOutputWithMaths('maths.arcTan(maths.sqrt(3)/3)').toBeCloseTo(
       Math.PI / 6
     )
 
-    expectOutputWithMaths('maths.arcSin(55)').toBe(null)
-    expectOutputWithMaths('maths.arcCos(55)').toBe(null)
+    await expectOutputWithMaths('maths.arcSin(55)').toBe(null)
+    await expectOutputWithMaths('maths.arcCos(55)').toBe(null)
   })
 
-  it('should have sign function', () => {
-    expectOutputWithMaths('maths.sign(0)').toBe(0)
-    expectOutputWithMaths('maths.sign(-0)').toBe(0)
-    expectOutputWithMaths('maths.sign(44)').toBe(1)
-    expectOutputWithMaths('maths.sign(-7)').toBe(-1)
+  it('should have sign function', async () => {
+    await expectOutputWithMaths('maths.sign(0)').toBe(0)
+    await expectOutputWithMaths('maths.sign(-0)').toBe(0)
+    await expectOutputWithMaths('maths.sign(44)').toBe(1)
+    await expectOutputWithMaths('maths.sign(-7)').toBe(-1)
   })
 
-  it('should have ln function', () => {
-    expectOutputWithMaths('maths.ln(1)').toBe(0)
-    expectOutputWithMaths('maths.ln(maths.e)').toBe(1)
+  it('should have ln function', async () => {
+    await expectOutputWithMaths('maths.ln(1)').toBe(0)
+    await expectOutputWithMaths('maths.ln(maths.e)').toBe(1)
   })
 
-  it('should have log function', () => {
-    expectOutputWithMaths('maths.log(1)').toBe(0)
-    expectOutputWithMaths('maths.log(10)').toBe(1)
-    expectOutputWithMaths('maths.log(100)').toBe(2)
+  it('should have log function', async () => {
+    await expectOutputWithMaths('maths.log(1)').toBe(0)
+    await expectOutputWithMaths('maths.log(10)').toBe(1)
+    await expectOutputWithMaths('maths.log(100)').toBe(2)
   })
 
-  it('should have exp function', () => {
-    expectOutputWithMaths('maths.exp(0)').toBe(1)
-    expectOutputWithMaths('maths.exp(1)').toBe(Math.E)
+  it('should have exp function', async () => {
+    await expectOutputWithMaths('maths.exp(0)').toBe(1)
+    await expectOutputWithMaths('maths.exp(1)').toBe(Math.E)
   })
 
-  it('should have hyperbolic trig functions', () => {
-    expectOutputWithMaths('maths.sinh(0)').toBe(0)
-    expectOutputWithMaths('maths.cosh(0)').toBe(1)
-    expectOutputWithMaths('maths.tanh(0)').toBe(0)
-    expectOutputWithMaths('maths.arcSinh(0)').toBe(0)
-    expectOutputWithMaths('maths.arcCosh(1)').toBe(0)
-    expectOutputWithMaths('maths.arcTanh(0)').toBe(0)
+  it('should have hyperbolic trig functions', async () => {
+    await expectOutputWithMaths('maths.sinh(0)').toBe(0)
+    await expectOutputWithMaths('maths.cosh(0)').toBe(1)
+    await expectOutputWithMaths('maths.tanh(0)').toBe(0)
+    await expectOutputWithMaths('maths.arcSinh(0)').toBe(0)
+    await expectOutputWithMaths('maths.arcCosh(1)').toBe(0)
+    await expectOutputWithMaths('maths.arcTanh(0)').toBe(0)
   })
 })
 
 describe('import builtins', () => {
-  it('should throw if an unknown is imported', () => {
-    expectError('import x')
-    expectError('import x as y')
+  it('should throw if an unknown is imported', async () => {
+    await expectError('import x')
+    await expectError('import x as y')
   })
 
-  it('should destructure imports', () => {
+  it('should destructure imports', async () => {
     expectEnviroment('from json import {stringify}').toHaveValue(
       'stringify',
       '<function json.stringify>'
@@ -228,99 +232,99 @@ describe('import builtins', () => {
     )
   })
 
-  it('should be possible to import under a different name', () => {
+  it('should be possible to import under a different name', async () => {
     expectEnviroment(`
 import print as consoleLog
 consoleLog`).toHaveValue('consoleLog', '<function print>')
   })
 
-  it('should import from block', () => {
-    execute('    import file')
+  it('should import from block', async () => {
+    await execute('    import file')
     expect(new Enviroment().getExternalIO()).toEqual({})
   })
 })
 
 describe('unique', () => {
-  it('should have uniques not equal', () => {
-    expectOutputWithUnique('unique() != unique()').toBe(true)
-    expectOutputWithUnique('unique()').toBeDefined()
+  it('should have uniques not equal', async () => {
+    await expectOutputWithUnique('unique() != unique()').toBe(true)
+    await expectOutputWithUnique('unique()').toBeDefined()
   })
 
-  it('value should be equal to itself', () => {
-    expectOutputWithUnique('let a = unique()\n a == a').toBe(true)
+  it('value should be equal to itself', async () => {
+    await expectOutputWithUnique('let a = unique()\n a == a').toBe(true)
   })
 
-  it('value should be truthy', () => {
-    expectOutputWithUnique('unique().toBoolean()').toBe(true)
-    expectOutputWithUnique('!unique()').toBe(false)
-    expectOutputWithUnique('let a\n if(unique) a = 7\n a == 7').toBe(true)
-    expectOutputWithUnique('unique() || false').not.toBe(false)
+  it('value should be truthy', async () => {
+    await expectOutputWithUnique('unique().toBoolean()').toBe(true)
+    await expectOutputWithUnique('!unique()').toBe(false)
+    await expectOutputWithUnique('let a\n if(unique) a = 7\n a == 7').toBe(true)
+    await expectOutputWithUnique('unique() || false').not.toBe(false)
   })
 })
 
 describe('regex', () => {
-  it('should only be constructed with a string', () => {
-    expectError('import regex\n regex(7)')
+  it('should only be constructed with a string', async () => {
+    await expectError('import regex\n regex(7)')
   })
 
-  it('should create regex', () => {
-    expectOutputWithRegex(`regex('[0-9]+').test('123')`).toBe(true)
-    expectOutputWithRegex(`regex('[0-9]+').test('aa')`).toBe(false)
+  it('should create regex', async () => {
+    await expectOutputWithRegex(`regex('[0-9]+').test('123')`).toBe(true)
+    await expectOutputWithRegex(`regex('[0-9]+').test('aa')`).toBe(false)
   })
 
-  it('should create regex with flag', () => {
-    expectOutputWithRegex(`regex('hello').test('HELLO')`).toBe(false)
-    expectOutputWithRegex(`regex('HellO', 'i').test('HELLO')`).toBe(true)
+  it('should create regex with flag', async () => {
+    await expectOutputWithRegex(`regex('hello').test('HELLO')`).toBe(false)
+    await expectOutputWithRegex(`regex('HellO', 'i').test('HELLO')`).toBe(true)
   })
 
-  it('should accept string for test', () => {
-    expectError(`import regex\n regex('').test(7)`)
+  it('should accept string for test', async () => {
+    await expectError(`import regex\n regex('').test(7)`)
   })
 
-  it('should work with multiple regex', () => {
-    expectOutputWithRegex(`let a = regex('hello')
+  it('should work with multiple regex', async () => {
+    await expectOutputWithRegex(`let a = regex('hello')
 let b = regex('5+')
 [a.test('hello world'), a.test('55'), b.test('hello world'), b.test('55')]`).toEqual(
       [true, false, false, true]
     )
   })
 
-  it('should not be equal to another regex', () => {
-    expectOutputWithRegex('regex("a") == regex("b")').toBe(false)
-    expectOutputWithRegex('regex("a") != regex("b")').toBe(true)
+  it('should not be equal to another regex', async () => {
+    await expectOutputWithRegex('regex("a") == regex("b")').toBe(false)
+    await expectOutputWithRegex('regex("a") != regex("b")').toBe(true)
   })
 })
 
 describe('json', () => {
-  it('should parse values from string', () => {
-    expectOutputWithJSON('json.parse("2")').toBe(2)
-    expectOutputWithJSON('json.parse(`"2"`)').toBe('2')
-    expectOutputWithJSON('type(json.parse(`"<unique>"`)) == `unique`')
-    expectOutputWithJSON('json.parse("[1,2,3]")').toEqual([1, 2, 3])
-    expectOutputWithJSON('json.parse(`{"a":2}`)').toEqual({ a: 2 })
-    expectOutputWithJSON('json.parse("true")').toBe(true)
-    expectOutputWithJSON('json.parse("null")').toBe(null)
+  it('should parse values from string', async () => {
+    await expectOutputWithJSON('json.parse("2")').toBe(2)
+    await expectOutputWithJSON('json.parse(`"2"`)').toBe('2')
+    await expectOutputWithJSON('type(json.parse(`"<unique>"`)) == `unique`')
+    await expectOutputWithJSON('json.parse("[1,2,3]")').toEqual([1, 2, 3])
+    await expectOutputWithJSON('json.parse(`{"a":2}`)').toEqual({ a: 2 })
+    await expectOutputWithJSON('json.parse("true")').toBe(true)
+    await expectOutputWithJSON('json.parse("null")').toBe(null)
   })
 
-  it('should parse nested dictionaries', () => {
-    expectOutputWithJSON(
+  it('should parse nested dictionaries', async () => {
+    await expectOutputWithJSON(
       `json.parse('{"1": 1, "2": 2, "3": {"4": 4, "5": {"6": 6}}}')`
     ).toEqual({ '1': 1, '2': 2, '3': { '4': 4, '5': { '6': 6 } } })
   })
 
-  it('should throw error on invalid json', () => {
-    expectError('import json\n json.parse("{a:4}")')
+  it('should throw error on invalid json', async () => {
+    await expectError('import json\n json.parse("{a:4}")')
   })
 
-  it('should only parse a string', () => {
-    expectError('import json\n json.parse(7)')
+  it('should only parse a string', async () => {
+    await expectError('import json\n json.parse(7)')
   })
 
-  it('should stringify objects', () => {
-    expectOutputWithJSON(
+  it('should stringify objects', async () => {
+    await expectOutputWithJSON(
       `json.stringify({"1": 1, "2": 2, "3": {"4": 4, "5": {"6": 6}}})`
     ).toBe('{"1":1,"2":2,"3":{"4":4,"5":{"6":6}}}')
-    expectOutputWithJSON(
+    await expectOutputWithJSON(
       `json.stringify({"1": 1, "2": 2, "3": {"4": 4, "5": {"6": 6}}}, 2)`
     ).toBe(`{
   "1": 1,
@@ -334,13 +338,13 @@ describe('json', () => {
 }`)
   })
 
-  it('should stringify primitives', () => {
-    expectOutputWithJSON(`json.stringify(2)`).toBe('2')
-    expectOutputWithJSON(`json.stringify(true)`).toBe('true')
-    expectOutputWithJSON(`json.stringify(false)`).toBe('false')
-    expectOutputWithJSON(`json.stringify(null)`).toBe('null')
-    expectOutputWithJSON(`json.stringify('hi')`).toBe('"hi"')
-    expectOutputWithJSON(`import unique\n json.stringify(unique())`).toBe(
+  it('should stringify primitives', async () => {
+    await expectOutputWithJSON(`json.stringify(2)`).toBe('2')
+    await expectOutputWithJSON(`json.stringify(true)`).toBe('true')
+    await expectOutputWithJSON(`json.stringify(false)`).toBe('false')
+    await expectOutputWithJSON(`json.stringify(null)`).toBe('null')
+    await expectOutputWithJSON(`json.stringify('hi')`).toBe('"hi"')
+    await expectOutputWithJSON(`import unique\n json.stringify(unique())`).toBe(
       '"<unique>"'
     )
   })
@@ -350,105 +354,127 @@ describe('file', () => {
   beforeAll(() => {
     writeFileSync('./testFile.txt', 'test data')
   })
-  afterAll(() => execute('import file \n file.remove("./testFile.txt")'))
+  afterAll(() => rmSync('./testFile.txt'))
 
-  it('should read files', () => {
-    expectOutputWithFile('file.read("./testFile.txt")').toBe('test data')
-    expectError('import file\n file.read(7)')
+  it('should read files', async () => {
+    await expectOutputWithFile('file.read("./testFile.txt")').toBe('test data')
+    await expectError('import file\n file.read(7)')
   })
 
-  it('should check for existance of file', () => {
-    expectOutputWithFile('file.exists("./testFile.txt")').toBe(true)
-    expectOutputWithFile('file.exists("./testFileMissing.txt")').toBe(false)
-    expectError('import file\n file.exists(7)')
+  it('should check for existance of file', async () => {
+    await expectOutputWithFile('file.exists("./testFile.txt")').toBe(true)
+    await expectOutputWithFile('file.exists("./testFileMissing.txt")').toBe(
+      false
+    )
+    await expectError('import file\n file.exists(7)')
   })
 
-  it('should write to files', () => {
-    expectOutputWithFile('file.write("./testFile.txt", "new data")').toBe(null)
-    expectOutputWithFile('file.read("./testFile.txt")').toBe('new data')
-    expectError('import file\n file.write(7,7)')
-    expectError('import file\n file.write("hello", 7)')
-  })
-
-  it('should append to files', () => {
-    expectOutputWithFile('file.append("./testFile.txt", "even more")').toBe(
+  it('should write to files', async () => {
+    await expectOutputWithFile('file.write("./testFile.txt", "new data")').toBe(
       null
     )
-    expectOutputWithFile('file.read("./testFile.txt")').toBe(
+    await expectOutputWithFile('file.read("./testFile.txt")').toBe('new data')
+    await expectError('import file\n file.write(7,7)')
+    await expectError('import file\n file.write("hello", 7)')
+  })
+
+  it('should append to files', async () => {
+    await expectOutputWithFile(
+      'file.append("./testFile.txt", "even more")'
+    ).toBe(null)
+    await expectOutputWithFile('file.read("./testFile.txt")').toBe(
       'new dataeven more'
     )
-    expectError('import file\n file.append(7, 7)')
-    expectError('import file\n file.append("hello", 7)')
+    await expectError('import file\n file.append(7, 7)')
+    await expectError('import file\n file.append("hello", 7)')
   })
 
-  it('should copy files', () => {
-    expectOutputWithFile('file.copy("./testFile.txt", "./testFile2.txt")').toBe(
-      null
-    )
-    expectOutputWithFile('file.exists("./testFile2.txt")').toBe(true)
-    expectError('import file\n file.copy(7, 7)')
-    expectError('import file\n file.copy("hello", 7)')
+  it('should copy files', async () => {
+    await expectOutputWithFile(
+      'file.copy("./testFile.txt", "./testFile2.txt")'
+    ).toBe(null)
+    await expectOutputWithFile('file.exists("./testFile2.txt")').toBe(true)
+    await expectError('import file\n file.copy(7, 7)')
+    await expectError('import file\n file.copy("hello", 7)')
   })
 
-  it('should delete files', () => {
-    expectOutputWithFile('file.remove("./testFile2.txt")').toBe(null)
-    expectOutputWithFile('file.exists("./testFile2.txt")').toBe(false)
-    expectError('import file\n file.remove(7)')
+  it('should delete files', async () => {
+    await expectOutputWithFile('file.remove("./testFile2.txt")').toBe(null)
+    await expectOutputWithFile('file.exists("./testFile2.txt")').toBe(false)
+    await expectError('import file\n file.remove(7)')
   })
 
-  it('should create directpry', () => {
-    expectOutputWithFile('file.createDirectory("./testDir")').toBe(null)
-    expectError('import file\n file.createDirectory(7)')
+  it('should create directpry', async () => {
+    await expectOutputWithFile('file.createDirectory("./testDir")').toBe(null)
+    await expectError('import file\n file.createDirectory(7)')
   })
 
-  it('should create files in directory', () => {
-    expectOutputWithFile(
+  it('should create files in directory', async () => {
+    await expectOutputWithFile(
       'file.write("./testDir/testFile.txt", "new data")'
     ).toBe(null)
-    expectOutputWithFile(
+    await expectOutputWithFile(
       'file.write("./testDir/testFile1.txt", "new data")'
     ).toBe(null)
   })
-  it('should error removing directory if contents', () => {
-    expectError('import file\n file.removeDirectory("./testFile.txt")')
+  it('should error removing directory if contents', async () => {
+    await expectError('import file\n file.removeDirectory("./testFile.txt")')
   })
 
-  it('should list directory contents', () => {
-    expectOutputWithFile('file.list("./testDir")').toEqual([
+  it('should list directory contents', async () => {
+    await expectOutputWithFile('file.list("./testDir")').toEqual([
       'testFile.txt',
       'testFile1.txt',
     ])
-    expectOutputWithFile('file.remove("./testDir/testFile.txt")').toBe(null)
-    expectOutputWithFile('file.remove("./testDir/testFile1.txt")').toBe(null)
-    expectOutputWithFile('file.list("./testDir")').toEqual([])
-    expectError('import file\n file.list(7)')
+    await expectOutputWithFile('file.remove("./testDir/testFile.txt")').toBe(
+      null
+    )
+    await expectOutputWithFile('file.remove("./testDir/testFile1.txt")').toBe(
+      null
+    )
+    await expectOutputWithFile('file.list("./testDir")').toEqual([])
+    await expectError('import file\n file.list(7)')
   })
 
-  it('should remove directory', () => {
-    expectOutputWithFile('file.removeDirectory("./testDir")').toBe(null)
-    expectError('import file\n file.removeDirectory(7)')
+  it('should remove directory', async () => {
+    await expectOutputWithFile('file.removeDirectory("./testDir")').toBe(null)
+    await expectError('import file\n file.removeDirectory(7)')
   })
 
-  it('should error if file doesnt exist', () => {
-    expectError('import file\n file.read("./testFile/ad/c.txt")')
-    expectError('import file\n file.append("./testFile/ad/c.txt", "")')
-    expectError('import file\n file.write("./testFile/ad/c.txt", "")')
-    expectError('import file\n file.remove("./testFile/ad/c.txt")')
-    expectError('import file\n file.copy("./testFile/ad/c.txt", "./2")')
-    expectError('import file\n file.list("./testFile.txt")')
-    expectError('import file\n file.removeDirectory("./testFile.txt")')
-    expectError('import file\n file.createDirectory("./testFile/ad/c.txt")')
+  it('should error if file doesnt exist', async () => {
+    await expectError('import file\n file.read("./testFile/ad/c.txt")')
+    await expectError('import file\n file.append("./testFile/ad/c.txt", "")')
+    await expectError('import file\n file.write("./testFile/ad/c.txt", "")')
+    await expectError('import file\n file.remove("./testFile/ad/c.txt")')
+    await expectError('import file\n file.copy("./testFile/ad/c.txt", "./2")')
+    await expectError('import file\n file.list("./testFile.txt")')
+    await expectError('import file\n file.removeDirectory("./testFile.txt")')
+    await expectError(
+      'import file\n file.createDirectory("./testFile/ad/c.txt")'
+    )
   })
 
-  it('should error filesystem not defined', () => {
-    expectError('import file\n file.read("./testFile/ad/c.txt")', {})
-    expectError('import file\n file.exists("./testFile/ad/c.txt")', {})
-    expectError('import file\n file.append("./testFile/ad/c.txt", "")', {})
-    expectError('import file\n file.write("./testFile/ad/c.txt", "")', {})
-    expectError('import file\n file.remove("./testFile/ad/c.txt")', {})
-    expectError('import file\n file.copy("./testFile/ad/c.txt", "./2")', {})
-    expectError('import file\n file.list("./testFile.txt")', {})
-    expectError('import file\n file.removeDirectory("./testFile.txt")', {})
-    expectError('import file\n file.createDirectory("./testFile/ad/c.txt")', {})
+  it('should error filesystem not defined', async () => {
+    await expectError('import file\n file.read("./testFile/ad/c.txt")', {})
+    await expectError('import file\n file.exists("./testFile/ad/c.txt")', {})
+    await expectError(
+      'import file\n file.append("./testFile/ad/c.txt", "")',
+      {}
+    )
+    await expectError('import file\n file.write("./testFile/ad/c.txt", "")', {})
+    await expectError('import file\n file.remove("./testFile/ad/c.txt")', {})
+    await expectError(
+      'import file\n file.copy("./testFile/ad/c.txt", "./2")',
+      {}
+    )
+    await expectError('import file\n file.list("./testFile.txt")', {})
+    await expectError(
+      'import file\n file.removeDirectory("./testFile.txt")',
+      {}
+    )
+    await expectError(
+      'import file\n file.createDirectory("./testFile/ad/c.txt")',
+      {}
+    )
   })
 })

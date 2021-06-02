@@ -1,6 +1,5 @@
 import { Token } from '../tokens'
 import { Expr } from './Expr'
-import { Primitive } from '../primitives'
 import { Enviroment } from '../Enviroment'
 
 export class ExprVariable extends Expr {
@@ -11,7 +10,7 @@ export class ExprVariable extends Expr {
     this.name = name.value
   }
 
-  evaluate(enviroment: Enviroment): Primitive {
+  async evaluate(enviroment: Enviroment) {
     return enviroment.get(this.name)
   }
 }

@@ -26,10 +26,12 @@ export class ExprGet extends Expr {
     else this.lookup = token.value
   }
 
-  getBuiltinLookupKey(enviroment: Enviroment): string {
+  async getBuiltinLookupKey(enviroment: Enviroment): Promise<string> {
     if (typeof this.lookup === 'string') return this.lookup
 
-    const expressionEvaluated: Primitive = this.lookup.evaluate(enviroment)
+    const expressionEvaluated: Primitive = await this.lookup.evaluate(
+      enviroment
+    )
     if (expressionEvaluated instanceof PrimitiveString)
       return expressionEvaluated.getValue()
     else
@@ -39,10 +41,10 @@ export class ExprGet extends Expr {
       )
   }
 
-  getDictionaryLookupKey(enviroment: Enviroment): string {
+  async getDictionaryLookupKey(enviroment: Enviroment): Promise<string> {
     if (typeof this.lookup === 'string') return this.lookup
 
-    const expressionEvaluated: Primitive = this.lookup.evaluate(enviroment)
+    const expressionEvaluated = await this.lookup.evaluate(enviroment)
     if (expressionEvaluated instanceof PrimitiveString)
       return expressionEvaluated.getValue()
     else
@@ -52,22 +54,24 @@ export class ExprGet extends Expr {
       )
   }
 
-  getNumberLookupKey(enviroment: Enviroment): number | undefined {
+  async getNumberLookupKey(
+    enviroment: Enviroment
+  ): Promise<number | undefined> {
     if (typeof this.lookup === 'string') return undefined
 
-    const expressionEvaluated: Primitive = this.lookup.evaluate(enviroment)
+    const expressionEvaluated = await this.lookup.evaluate(enviroment)
     if (expressionEvaluated instanceof PrimitiveNumber)
       return expressionEvaluated.getValue()
     else return undefined
   }
 
-  getSliceLookup(
+  async getSliceLookup(
     lookup: ExprSlice,
     instance: Primitive,
     enviroment: Enviroment
-  ): Primitive {
+  ) {
     type SliceArray = (PrimitiveNumber | PrimitiveNull)[]
-    let [start, end] = lookup.evaluate(enviroment).list as SliceArray
+    let [start, end] = (await lookup.evaluate(enviroment)).list as SliceArray
 
     if (instance instanceof PrimitiveList)
       return instance.getSlice(start.getValue(), end.getValue())
@@ -80,33 +84,33 @@ export class ExprGet extends Expr {
       )
   }
 
-  evaluate(enviroment: Enviroment) {
-    const instance: Primitive = this.object.evaluate(enviroment)
+  async evaluate(enviroment: Enviroment) {
+    const instance = await this.object.evaluate(enviroment)
 
     if (this.lookup instanceof ExprSlice)
       return this.getSliceLookup(this.lookup, instance, enviroment)
 
     if (instance instanceof PrimitiveDictionary) {
-      const dictionaryLookup = this.getDictionaryLookupKey(enviroment)
+      const dictionaryLookup = await this.getDictionaryLookupKey(enviroment)
       if (instance.keyExists(dictionaryLookup))
         return instance.dictionary[dictionaryLookup]
     }
 
     if (instance instanceof PrimitiveList) {
-      const listLookup = this.getNumberLookupKey(enviroment)
+      const listLookup = await this.getNumberLookupKey(enviroment)
       if (listLookup !== undefined && instance.indexExists(listLookup))
         return instance.getValueAtIndex(listLookup)
     }
 
     if (instance instanceof PrimitiveString) {
-      const listLookup = this.getNumberLookupKey(enviroment)
+      const listLookup = await this.getNumberLookupKey(enviroment)
       if (listLookup !== undefined && instance.indexExists(listLookup))
         return instance.getValueAtIndex(listLookup)
     }
 
     const visitor = new BuiltInPropertyVisitor()
     const builtInProperties = instance.builtInProperties(visitor)
-    const lookup = this.getBuiltinLookupKey(enviroment)
+    const lookup = await this.getBuiltinLookupKey(enviroment)
     const value = builtInProperties[lookup]
 
     if (value) return value

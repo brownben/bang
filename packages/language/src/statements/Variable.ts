@@ -16,11 +16,11 @@ export class StmtVariable extends Stmt {
     this.expression = expression
   }
 
-  execute(enviroment: Enviroment): null {
+  async execute(enviroment: Enviroment) {
     let value: Primitive = new PrimitiveNull()
     if (this.expression instanceof ExprFunction)
-      value = this.expression.evaluate(enviroment, this.name)
-    else if (this.expression) value = this.expression.evaluate(enviroment)
+      value = await this.expression.evaluate(enviroment, this.name)
+    else if (this.expression) value = await this.expression.evaluate(enviroment)
 
     enviroment.define(this.name, this.constant, value)
     return null

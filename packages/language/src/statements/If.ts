@@ -14,10 +14,10 @@ export class StmtIf extends Stmt {
     this.elseBranch = elseBranch
   }
 
-  execute(enviroment: Enviroment): null {
-    if (this.condition.evaluate(enviroment).isTruthy())
-      this.thenBranch.execute(enviroment)
-    else if (this.elseBranch) this.elseBranch.execute(enviroment)
+  async execute(enviroment: Enviroment) {
+    const conditionResult = await this.condition.evaluate(enviroment)
+    if (conditionResult.isTruthy()) await this.thenBranch.execute(enviroment)
+    else if (this.elseBranch) await this.elseBranch.execute(enviroment)
 
     return null
   }

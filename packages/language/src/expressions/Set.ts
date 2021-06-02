@@ -25,10 +25,10 @@ export class ExprSet extends Expr {
     this.token = token
   }
 
-  getDictionaryLookupKey(enviroment: Enviroment): string {
+  async getDictionaryLookupKey(enviroment: Enviroment): Promise<string> {
     if (typeof this.lookup === 'string') return this.lookup
 
-    const expressionEvaluated: Primitive = this.lookup.evaluate(enviroment)
+    const expressionEvaluated = await this.lookup.evaluate(enviroment)
     if (expressionEvaluated instanceof PrimitiveString)
       return expressionEvaluated.getValue()
     else
@@ -38,31 +38,31 @@ export class ExprSet extends Expr {
       )
   }
 
-  getListLookupKey(enviroment: Enviroment): number | undefined {
+  async getListLookupKey(enviroment: Enviroment): Promise<number | undefined> {
     if (typeof this.lookup === 'string') return undefined
 
-    const expressionEvaluated: Primitive = this.lookup.evaluate(enviroment)
+    const expressionEvaluated = await this.lookup.evaluate(enviroment)
     if (expressionEvaluated instanceof PrimitiveNumber)
       return expressionEvaluated.getValue()
     else return undefined
   }
 
-  setDictionaryProperty(
+  async setDictionaryProperty(
     enviroment: Enviroment,
     object: PrimitiveDictionary,
     value: Primitive
-  ): Primitive {
-    const name = this.getDictionaryLookupKey(enviroment)
+  ) {
+    const name = await this.getDictionaryLookupKey(enviroment)
     object.set(name, value)
     return value
   }
 
-  setListValue(
+  async setListValue(
     enviroment: Enviroment,
     object: PrimitiveList,
     value: Primitive
-  ): Primitive {
-    const index = this.getListLookupKey(enviroment)
+  ) {
+    const index = await this.getListLookupKey(enviroment)
 
     if (index === undefined || !object.indexExists(index))
       throw new BangError(
@@ -74,9 +74,9 @@ export class ExprSet extends Expr {
     return value
   }
 
-  evaluate(enviroment: Enviroment) {
-    const object = this.object.evaluate(enviroment)
-    const value = this.value.evaluate(enviroment)
+  async evaluate(enviroment: Enviroment) {
+    const object = await this.object.evaluate(enviroment)
+    const value = await this.value.evaluate(enviroment)
 
     if (object instanceof PrimitiveDictionary)
       return this.setDictionaryProperty(enviroment, object, value)

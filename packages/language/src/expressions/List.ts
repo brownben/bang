@@ -15,12 +15,12 @@ export class ExprList extends Expr {
     this.values = values
   }
 
-  evaluate(enviroment: Enviroment): PrimitiveList {
+  async evaluate(enviroment: Enviroment): Promise<PrimitiveList> {
     let values = []
 
     for (const value of this.values) {
       if (value instanceof ExprSpread) {
-        const evaluated = value.evaluate(enviroment)
+        const evaluated = await value.evaluate(enviroment)
         if (evaluated instanceof PrimitiveList)
           evaluated.list.forEach((value) => values.push(value))
         else
@@ -28,7 +28,7 @@ export class ExprList extends Expr {
             `Can only spread lists into lists`,
             this.token.line
           )
-      } else values.push(value.evaluate(enviroment))
+      } else values.push(await value.evaluate(enviroment))
     }
 
     return new PrimitiveList({ token: this.token, values })

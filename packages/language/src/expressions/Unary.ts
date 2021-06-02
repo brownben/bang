@@ -1,6 +1,5 @@
 import { Token, TokenType, UnaryOperator } from '../tokens'
 import { Expr } from './Expr'
-import { Primitive } from '../primitives'
 import { Enviroment } from '../Enviroment'
 
 export class ExprUnary extends Expr {
@@ -13,8 +12,8 @@ export class ExprUnary extends Expr {
     this.right = right
   }
 
-  evaluate(enviroment: Enviroment): Primitive {
-    const rightEvaluated = this.right.evaluate(enviroment)
+  async evaluate(enviroment: Enviroment) {
+    const rightEvaluated = await this.right.evaluate(enviroment)
 
     const getOperator = (operator: UnaryOperator) => {
       switch (operator) {

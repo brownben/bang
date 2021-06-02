@@ -5,5 +5,5 @@ export abstract class Expr {
   abstract evaluate(
     enviroment: Enviroment,
     ...extraArguments: string[]
-  ): Primitive
+  ): Promise<Primitive>
 }

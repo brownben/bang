@@ -19,9 +19,9 @@ export interface VisitPrimitives<T> {
   visitString: (primitive: PrimitiveString) => T
 }
 
-const callFunction = (func: PrimitiveFunction, argument: Primitive[]) => {
+const callFunction = async (func: PrimitiveFunction, argument: Primitive[]) => {
   try {
-    return func.call(argument)
+    return await func.call(argument)
   } catch (error) {
     if (error instanceof ReturnValue) return error.value
     else throw error
@@ -160,7 +160,7 @@ export class BuiltInPropertyVisitor
       map: new PrimitiveFunction({
         name: 'map',
         arity: 1,
-        call: (argument: Primitive[]) => {
+        call: async (argument: Primitive[]) => {
           const [func] = argument
           if (!(func instanceof PrimitiveFunction))
             throw new BangError(
@@ -169,8 +169,10 @@ export class BuiltInPropertyVisitor
             )
 
           return new PrimitiveList({
-            values: primitive.list.map((value, index) =>
-              callFunction(func, [value, new PrimitiveNumber(index)])
+            values: await Promise.all(
+              primitive.list.map((value, index) => {
+                return callFunction(func, [value, new PrimitiveNumber(index)])
+              })
             ),
           })
         },
@@ -179,7 +181,7 @@ export class BuiltInPropertyVisitor
       filter: new PrimitiveFunction({
         name: 'filter',
         arity: 1,
-        call: (argument: Primitive[]) => {
+        call: async (argument: Primitive[]) => {
           const [func] = argument
           if (!(func instanceof PrimitiveFunction))
             throw new BangError(
@@ -187,11 +189,16 @@ export class BuiltInPropertyVisitor
               primitive.token?.line
             )
 
-          return new PrimitiveList({
-            values: primitive.list.filter((value, index) =>
-              callFunction(func, [value, new PrimitiveNumber(index)]).isTruthy()
-            ),
-          })
+          const values = []
+          for (const [index, value] of Object.entries(primitive.list)) {
+            const predicateResult = await callFunction(func, [
+              value,
+              new PrimitiveNumber(index),
+            ])
+            if (predicateResult.isTruthy()) values.push(value)
+          }
+
+          return new PrimitiveList({ values })
         },
       }),
 
@@ -206,15 +213,13 @@ export class BuiltInPropertyVisitor
               primitive.token?.line
             )
 
-          return primitive.list.reduce(
-            (accumulator, value, index) =>
-              callFunction(func, [
-                accumulator,
-                value,
-                new PrimitiveNumber(index),
-              ]),
-            startValue
-          )
+          return primitive.list.reduce(async (accumulator, value, index) => {
+            return callFunction(func, [
+              await accumulator,
+              value,
+              new PrimitiveNumber(index),
+            ])
+          }, Promise.resolve(startValue))
         },
       }),
 
@@ -357,7 +362,7 @@ export class BuiltInPropertyVisitor
       find: new PrimitiveFunction({
         name: 'find',
         arity: 1,
-        call: (argument: Primitive[]) => {
+        call: async (argument: Primitive[]) => {
           const [func] = argument
           if (!(func instanceof PrimitiveFunction))
             throw new BangError(
@@ -365,18 +370,17 @@ export class BuiltInPropertyVisitor
               primitive.token?.line
             )
 
-          return (
-            primitive.list.find((value) =>
-              callFunction(func, [value]).isTruthy()
-            ) ?? new PrimitiveNull()
-          )
+          for (const item of primitive.list)
+            if ((await callFunction(func, [item])).isTruthy()) return item
+
+          return new PrimitiveNull()
         },
       }),
 
       findIndex: new PrimitiveFunction({
         name: 'findIndex',
         arity: 1,
-        call: (argument: Primitive[]) => {
+        call: async (argument: Primitive[]) => {
           const [func] = argument
           if (!(func instanceof PrimitiveFunction))
             throw new BangError(
@@ -384,11 +388,11 @@ export class BuiltInPropertyVisitor
               primitive.token?.line
             )
 
-          const value = primitive.list.findIndex((value) =>
-            callFunction(func, [value]).isTruthy()
-          )
-          if (value < 0) return new PrimitiveNull()
-          else return new PrimitiveNumber(value)
+          for (const [index, item] of Object.entries(primitive.list))
+            if ((await callFunction(func, [item])).isTruthy())
+              return new PrimitiveNumber(index)
+
+          return new PrimitiveNull()
         },
       }),
 

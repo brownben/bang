@@ -9,10 +9,14 @@ export class StmtBlock extends Stmt {
     this.statements = statements
   }
 
-  execute(enviroment: Enviroment): StmtResult[] {
+  async execute(enviroment: Enviroment): Promise<StmtResult[]> {
     const newEnviroment: Enviroment = new Enviroment(enviroment)
-    return this.statements.flatMap((statement) =>
-      statement.execute(newEnviroment)
-    )
+
+    const result = []
+
+    for (const statement of this.statements)
+      result.push(await statement.execute(newEnviroment))
+
+    return result.flat()
   }
 }

@@ -11,20 +11,23 @@ const external: ExternalIO = {
   printFunction: console.log,
 }
 
-export const interpretFinalEnviroment = (
+export const interpretFinalEnviroment = async (
   statements: Stmt[],
   externalIO: ExternalIO = external
-): Enviroment => {
+): Promise<Enviroment> => {
   const interpreter = new Interpreter(externalIO)
-  interpreter.run(statements)
+  await interpreter.run(statements)
   return interpreter.getEnviroment()
 }
 
 const expectOutput = (source: string) => {
   const interpreter = new Interpreter(external)
-  const output = execute(source, interpreter)
 
-  return expect(output?.[output.length - 1]?.getValue() ?? null)
+  return expect(
+    execute(source, interpreter).then(
+      (output) => output?.[output.length - 1]?.getValue() ?? null
+    )
+  ).resolves
 }
 
 const expectEnviroment = (
@@ -37,10 +40,15 @@ const expectEnviroment = (
 
   return {
     toHaveValue: (name: string, value: any) =>
-      expect(enviroment.get(name)?.getValue()).toEqual(value),
+      expect(
+        enviroment.then((enviroment) => enviroment.get(name)?.getValue())
+      ).resolves.toEqual(value),
+
     not: {
       toHaveValue: (name: string) =>
-        expect(enviroment.get(name)?.getValue()).toBe(undefined),
+        expect(
+          enviroment.then((enviroment) => enviroment.get(name)?.getValue())
+        ).resolves.toEqual(undefined),
     },
   }
 }
@@ -53,9 +61,10 @@ const executeWithInterpreter = (
   return execute(source, interpreter)
 }
 
-const expectError = (source: string, externalIO: ExternalIO = external) => {
-  expect(() => executeWithInterpreter(source, externalIO)).toThrow()
-}
+const expectError = (source: string, externalIO: ExternalIO = external) =>
+  expect(
+    async () => await executeWithInterpreter(source, externalIO)
+  ).rejects.toThrow()
 
 export {
   executeWithInterpreter as execute,

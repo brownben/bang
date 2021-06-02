@@ -12,8 +12,8 @@ export class ExprAssign extends Expr {
     this.value = value
   }
 
-  evaluate(enviroment: Enviroment): Primitive {
-    let evaluatedValue: Primitive = this.value.evaluate(enviroment, this.name)
+  async evaluate(enviroment: Enviroment): Promise<Primitive> {
+    let evaluatedValue = await this.value.evaluate(enviroment, this.name)
 
     enviroment.assign(this.name, evaluatedValue)
     return evaluatedValue

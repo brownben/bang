@@ -1,6 +1,5 @@
 import { Token, TokenType, LogicalOperator } from '../tokens'
 import { Expr } from './Expr'
-import { Primitive } from '../primitives'
 import { Enviroment } from '../Enviroment'
 
 export class ExprLogical extends Expr {
@@ -15,9 +14,9 @@ export class ExprLogical extends Expr {
     this.right = right
   }
 
-  evaluate(enviroment: Enviroment): Primitive {
-    const left = this.left.evaluate(enviroment)
-    const right = this.right.evaluate(enviroment)
+  async evaluate(enviroment: Enviroment) {
+    const left = await this.left.evaluate(enviroment)
+    const right = await this.right.evaluate(enviroment)
 
     switch (this.operator.type) {
       case TokenType.OR:

@@ -10,9 +10,9 @@ import {
 import { Enviroment } from '../Enviroment'
 import BangError from '../BangError'
 
-const callFunction = (func: PrimitiveFunction, argument: Primitive[]) => {
+const callFunction = async (func: PrimitiveFunction, argument: Primitive[]) => {
   try {
-    return func.call(argument)
+    return await func.call(argument)
   } catch (error) {
     if (error instanceof ReturnValue) return error.value
     else throw error
@@ -31,13 +31,13 @@ export class ExprCall extends Expr {
     this.arguments = argument
   }
 
-  evaluate(enviroment: Enviroment) {
-    const callee: Primitive = this.callee.evaluate(enviroment)
+  async evaluate(enviroment: Enviroment) {
+    const callee: Primitive = await this.callee.evaluate(enviroment)
     const argument: Primitive[] = []
 
     for (const value of this.arguments) {
       if (value instanceof ExprSpread) {
-        const evaluated = value.evaluate(enviroment)
+        const evaluated = await value.evaluate(enviroment)
         if (evaluated instanceof PrimitiveList)
           evaluated.list.forEach((value) => argument.push(value))
         else
@@ -45,7 +45,7 @@ export class ExprCall extends Expr {
             `Can only spread lists into parameters`,
             this.paren.line
           )
-      } else argument.push(value.evaluate(enviroment))
+      } else argument.push(await value.evaluate(enviroment))
     }
 
     if (!(callee instanceof PrimitiveFunction))
@@ -62,6 +62,6 @@ export class ExprCall extends Expr {
         this.paren.line
       )
 
-    return callFunction(callee, argument)
+    return await callFunction(callee, argument)
   }
 }

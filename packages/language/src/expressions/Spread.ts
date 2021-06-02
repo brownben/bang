@@ -14,8 +14,8 @@ export class ExprSpread extends Expr {
     this.right = right
   }
 
-  evaluate(enviroment: Enviroment): PrimitiveList | PrimitiveDictionary {
-    const rightEvaluated = this.right.evaluate(enviroment)
+  async evaluate(enviroment: Enviroment) {
+    const rightEvaluated = await this.right.evaluate(enviroment)
 
     if (rightEvaluated instanceof PrimitiveList) return rightEvaluated
     else if (rightEvaluated instanceof PrimitiveDictionary)

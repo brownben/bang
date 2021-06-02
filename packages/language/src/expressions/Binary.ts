@@ -15,9 +15,9 @@ export class ExprBinary extends Expr {
     this.right = right
   }
 
-  evaluate(enviroment: Enviroment): Primitive {
-    const leftEvaluated = this.left.evaluate(enviroment)
-    const rightEvaluated = this.right.evaluate(enviroment)
+  async evaluate(enviroment: Enviroment): Promise<Primitive> {
+    const leftEvaluated = await this.left.evaluate(enviroment)
+    const rightEvaluated = await this.right.evaluate(enviroment)
     const operator = getBinaryOperator(this.operator)
 
     return leftEvaluated[operator](rightEvaluated)

@@ -21,10 +21,14 @@ const isIdentifierKey = (
 ): keyValue is [ExprVariable, Expr] =>
   Array.isArray(keyValue) && keyValue[0] instanceof ExprVariable
 
-const getKey = (key: Expr | string, enviroment: Enviroment, line: number) => {
+const getKey = async (
+  key: Expr | string,
+  enviroment: Enviroment,
+  line: number
+) => {
   if (typeof key === 'string') return key
 
-  const evaluated: Primitive = key.evaluate(enviroment)
+  const evaluated: Primitive = await key.evaluate(enviroment)
   if (evaluated instanceof PrimitiveString) return evaluated.value
   else throw new BangError('Only Strings Can Be Used as Dictionary Keys', line)
 }
@@ -49,12 +53,12 @@ export class ExprDictionary extends Expr {
     }
   }
 
-  evaluate(enviroment: Enviroment): PrimitiveDictionary {
+  async evaluate(enviroment: Enviroment): Promise<PrimitiveDictionary> {
     const keyValues: Record<string, Primitive> = {}
 
     for (const keyValue of this.keyValues) {
       if (keyValue instanceof ExprSpread) {
-        const evaluated = keyValue.evaluate(enviroment)
+        const evaluated = await keyValue.evaluate(enviroment)
         if (!(evaluated instanceof PrimitiveDictionary))
           throw new BangError(
             'Only Dictionaries Can Be Spread Into Dictionaries',
@@ -62,8 +66,8 @@ export class ExprDictionary extends Expr {
           )
         Object.assign(keyValues, evaluated.dictionary)
       } else {
-        const key = getKey(keyValue[0], enviroment, this.token.line)
-        const value = keyValue[1].evaluate(enviroment)
+        const key = await getKey(keyValue[0], enviroment, this.token.line)
+        const value = await keyValue[1].evaluate(enviroment)
         keyValues[key] = value
       }
     }

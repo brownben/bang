@@ -15,13 +15,18 @@ export class Interpreter {
       this.enviroment.define(key, true, wrapValue(foreignValues[key]))
   }
 
-  run(statements: Stmt[]): StmtResult[] {
-    return statements.flatMap((statement) => this.executeStatement(statement))
+  async run(statements: Stmt[]): Promise<StmtResult[]> {
+    const result = []
+
+    for (const statement of statements)
+      result.push(await this.executeStatement(statement))
+
+    return result.flat()
   }
 
-  executeStatement(statement: Stmt) {
+  async executeStatement(statement: Stmt) {
     try {
-      return statement.execute(this.enviroment)
+      return await statement.execute(this.enviroment)
     } catch (error) {
       if (error instanceof ReturnValue)
         throw new BangError('Cannot return outside a function')

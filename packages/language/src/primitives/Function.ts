@@ -6,7 +6,7 @@ interface PrimitiveFunctionConstructor {
   name?: string
   arity: number
   spread?: boolean
-  call: (argument: Primitive[]) => Primitive
+  call: (argument: Primitive[]) => Primitive | Promise<Primitive>
 }
 
 export class PrimitiveFunction extends Primitive {
@@ -19,7 +19,7 @@ export class PrimitiveFunction extends Primitive {
   arity: number
   spread: boolean = false
 
-  call: (argument: Primitive[]) => Primitive
+  call: (argument: Primitive[]) => Primitive | Promise<Primitive>
 
   constructor({ name, arity, call, spread }: PrimitiveFunctionConstructor) {
     super()

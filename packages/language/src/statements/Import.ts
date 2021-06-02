@@ -29,7 +29,7 @@ export class StmtImport extends Stmt {
     this.token = token
   }
 
-  execute(enviroment: Enviroment): null {
+  async execute(enviroment: Enviroment) {
     const importedModule = getBuiltInFunction(
       this.name,
       enviroment.getExternalIO()

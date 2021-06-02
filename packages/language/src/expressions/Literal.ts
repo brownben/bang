@@ -1,7 +1,6 @@
 import { Token } from '../tokens'
 import { Expr } from './Expr'
 import {
-  Primitive,
   PrimitiveString,
   PrimitiveNumber,
   PrimitiveBoolean,
@@ -26,7 +25,7 @@ export class ExprLiteral extends Expr {
     this.token = token
   }
 
-  evaluate(): Primitive {
+  async evaluate() {
     switch (this.type) {
       case 'string':
         return new PrimitiveString(this.value, this.token)

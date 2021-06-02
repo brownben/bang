@@ -37,7 +37,10 @@ export class ExprFunction extends Expr {
     else this.arity = 1
   }
 
-  evaluate(enviroment: Enviroment, name?: string): PrimitiveFunction {
+  async evaluate(
+    enviroment: Enviroment,
+    name?: string
+  ): Promise<PrimitiveFunction> {
     const arity = this.arity
     const enviromentCopy = enviroment
 
@@ -81,7 +84,7 @@ export class ExprFunction extends Expr {
       }
     }
 
-    const call = (argument: Primitive[]): Primitive => {
+    const call = async (argument: Primitive[]) => {
       const functionEnviroment = new Enviroment(enviromentCopy)
 
       if (
@@ -101,7 +104,7 @@ export class ExprFunction extends Expr {
         )
 
       const block = new StmtBlock(this.body)
-      block.execute(functionEnviroment)
+      await block.execute(functionEnviroment)
       return new PrimitiveNull()
     }
 

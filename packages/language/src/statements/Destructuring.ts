@@ -2,7 +2,6 @@ import { Token } from '../tokens'
 import { Expr } from '../expressions'
 import { Stmt } from './Stmt'
 import {
-  Primitive,
   PrimitiveDictionary,
   PrimitiveList,
   PrimitiveNull,
@@ -49,8 +48,8 @@ export class StmtDestructuring extends Stmt {
     this.token = token
   }
 
-  execute(enviroment: Enviroment): null {
-    const expression: Primitive = this.expression.evaluate(enviroment)
+  async execute(enviroment: Enviroment): Promise<null> {
+    const expression = await this.expression.evaluate(enviroment)
 
     if (expression instanceof PrimitiveDictionary && this.type === 'dictionary')
       for (const { actual, renamed } of this.names) {

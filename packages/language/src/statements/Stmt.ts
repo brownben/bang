@@ -4,5 +4,5 @@ import { Primitive } from '../primitives'
 export type StmtResult = Primitive | null
 
 export abstract class Stmt {
-  abstract execute(enviroment: Enviroment): StmtResult | StmtResult[]
+  abstract execute(enviroment: Enviroment): Promise<StmtResult | StmtResult[]>
 }

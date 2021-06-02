@@ -14,9 +14,9 @@ export class StmtReturn extends Stmt {
     this.value = value
   }
 
-  execute(enviroment: Enviroment): null {
+  async execute(enviroment: Enviroment): Promise<null> {
     let value: Primitive = new PrimitiveNull()
-    if (this.value !== null) value = this.value.evaluate(enviroment)
+    if (this.value !== null) value = await this.value.evaluate(enviroment)
     throw new ReturnValue(value)
   }
 }

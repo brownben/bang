@@ -11,7 +11,7 @@ const listsHaveEqualValues = (a: Primitive[], b: Primitive[]) =>
 
 interface PrimitiveListConstructor {
   token?: Token
-  values: Primitive[]
+  values: (Primitive | Promise<Primitive>)[]
 }
 
 export class PrimitiveList extends Primitive {
@@ -25,7 +25,7 @@ export class PrimitiveList extends Primitive {
   constructor({ token, values }: PrimitiveListConstructor) {
     super()
     if (token) this.token = token
-    values.forEach((value) => this.list.push(value))
+    values.forEach(async (value) => this.list.push(await value))
   }
 
   getValue(): RawPrimitiveValue[] {

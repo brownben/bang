@@ -10,7 +10,7 @@ export class StmtExpression extends Stmt {
     this.expression = expression
   }
 
-  execute(enviroment: Enviroment): StmtResult {
+  async execute(enviroment: Enviroment): Promise<StmtResult> {
     return this.expression.evaluate(enviroment)
   }
 }

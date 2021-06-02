@@ -16,9 +16,10 @@ export class ExprSlice extends Expr {
     this.token = token
   }
 
-  evaluate(enviroment: Enviroment): PrimitiveList {
-    const start = this.start?.evaluate(enviroment) ?? new PrimitiveNull()
-    const end = this.end?.evaluate(enviroment) ?? new PrimitiveNull()
+  async evaluate(enviroment: Enviroment) {
+    const start =
+      (await this.start?.evaluate(enviroment)) ?? new PrimitiveNull()
+    const end = (await this.end?.evaluate(enviroment)) ?? new PrimitiveNull()
 
     if (!(start instanceof PrimitiveNumber) && !(this.start === null))
       throw new BangError('Slice Start Must Be a Number', this.token.line)
