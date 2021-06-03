@@ -66,8 +66,9 @@ export const file = (fs: FileSystem = mockFileSystem) =>
             return new PrimitiveString(
               await fs.readFile(filePath.getValue(), { encoding: 'utf-8' })
             )
-          } catch {
-            throw new BangError('Problem reading file')
+          } catch (error) {
+            if (error instanceof BangError) throw error
+            else throw new BangError('Problem reading file')
           }
         },
       }),
@@ -87,8 +88,9 @@ export const file = (fs: FileSystem = mockFileSystem) =>
           try {
             await fs.writeFile(filePath.getValue(), fileContents.getValue())
             return new PrimitiveNull()
-          } catch {
-            throw new BangError('Problem writing to file')
+          } catch (error) {
+            if (error instanceof BangError) throw error
+            else throw new BangError('Problem writing to file')
           }
         },
       }),
@@ -108,8 +110,9 @@ export const file = (fs: FileSystem = mockFileSystem) =>
           try {
             await fs.appendFile(filePath.getValue(), fileContents.getValue())
             return new PrimitiveNull()
-          } catch {
-            throw new BangError('Problem appending to file')
+          } catch (error) {
+            if (error instanceof BangError) throw error
+            else throw new BangError('Problem appending to file')
           }
         },
       }),
@@ -126,8 +129,9 @@ export const file = (fs: FileSystem = mockFileSystem) =>
           try {
             await fs.rm(path.getValue())
             return new PrimitiveNull()
-          } catch {
-            throw new BangError('Problem removing file')
+          } catch (error) {
+            if (error instanceof BangError) throw error
+            else throw new BangError('Problem removing file')
           }
         },
       }),
@@ -146,8 +150,9 @@ export const file = (fs: FileSystem = mockFileSystem) =>
           try {
             await fs.copyFile(src.getValue(), dest.getValue())
             return new PrimitiveNull()
-          } catch {
-            throw new BangError('Problem copying file')
+          } catch (error) {
+            if (error instanceof BangError) throw error
+            else throw new BangError('Problem copying file')
           }
         },
       }),
@@ -164,8 +169,9 @@ export const file = (fs: FileSystem = mockFileSystem) =>
           try {
             await fs.mkdir(path.getValue())
             return new PrimitiveNull()
-          } catch {
-            throw new BangError('Problem creating directory')
+          } catch (error) {
+            if (error instanceof BangError) throw error
+            else throw new BangError('Problem creating directory')
           }
         },
       }),
@@ -182,8 +188,9 @@ export const file = (fs: FileSystem = mockFileSystem) =>
           try {
             await fs.rmdir(path.getValue())
             return new PrimitiveNull()
-          } catch {
-            throw new BangError('Problem removing directory')
+          } catch (error) {
+            if (error instanceof BangError) throw error
+            else throw new BangError('Problem removing directory')
           }
         },
       }),
@@ -205,8 +212,9 @@ export const file = (fs: FileSystem = mockFileSystem) =>
                   paths.map((value) => new PrimitiveString(value))
                 ),
             })
-          } catch {
-            throw new BangError('Problem reading contents directory')
+          } catch (error) {
+            if (error instanceof BangError) throw error
+            else throw new BangError('Problem reading contents directory')
           }
         },
       }),
