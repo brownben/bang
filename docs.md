@@ -240,6 +240,15 @@ Subtract 2 numbers, left-associative
 123 - 55 // 68
 ```
 
+**modulo (%)**
+
+Gets the remainer of the division of 2 numbers, left-associative
+
+```
+3 % 2 // 2
+4 % 2 // 0
+```
+
 **unary minus (-)**
 
 Negate a number, right-associative

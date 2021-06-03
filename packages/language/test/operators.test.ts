@@ -28,6 +28,7 @@ describe('mathematical operations can be calculated', () => {
   it('should modulo numbers', async () => {
     await expectOutput(`1 % 2`).toEqual(1)
     await expectOutput('7 % 3').toEqual(1)
+    await expectOutput('-7 % 3').toEqual(2)
     await expectOutput('2000 % 20').toEqual(0)
   })
 

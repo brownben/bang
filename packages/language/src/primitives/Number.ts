@@ -121,7 +121,10 @@ export class PrimitiveNumber extends Primitive {
   }
   modulo(value: Primitive): PrimitiveNumber {
     if (value instanceof PrimitiveNumber)
-      return new PrimitiveNumber(this.getValue() % value.getValue())
+      return new PrimitiveNumber(
+        ((this.getValue() % value.getValue()) + value.getValue()) %
+          value.getValue()
+      )
 
     throw new BangError(
       `No Operation "%" on type "${this.type}" and type "${value.type}"`,
