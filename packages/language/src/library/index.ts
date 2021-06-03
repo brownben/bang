@@ -6,10 +6,12 @@ import { unique } from './unique'
 import { regex } from './regex'
 import { json } from './json'
 import { file, FileSystem } from './file'
+import { fetch } from './fetch'
 
 export interface ExternalIO {
   printFunction?: PrintFunction
   fs?: FileSystem
+  fetch?: typeof globalThis.fetch
 }
 
 export const getBuiltInFunction = (key: string, externalIO: ExternalIO) => {
@@ -20,6 +22,7 @@ export const getBuiltInFunction = (key: string, externalIO: ExternalIO) => {
   else if (key === 'regex') return regex
   else if (key === 'json') return json
   else if (key === 'file') return file(externalIO?.fs)
+  else if (key === 'fetch') return fetch(externalIO?.fetch)
   return undefined
 }
 

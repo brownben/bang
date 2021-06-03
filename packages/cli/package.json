@@ -26,9 +26,10 @@
     "access": "public"
   },
   "dependencies": {
-    "@bang!/language": "0.2.1",
+    "@bang!/language": "0.3.0",
     "cac": "^6.7.3",
-    "chalk": "^4.1.1"
+    "chalk": "^4.1.1",
+    "node-fetch": "^2.6.1"
   },
   "scripts": {
     "start": "",

@@ -6,9 +6,19 @@ import { getTokens, getAbstractSyntaxTree, execute } from '../src/index'
 
 import fs from 'fs/promises'
 
+export const mockFetch = (value: string) =>
+  jest.fn().mockResolvedValue({
+    status: 200,
+    ok: true,
+    headers: {},
+    redirected: false,
+    text: jest.fn().mockResolvedValue(value),
+  })
+
 const external: ExternalIO = {
   fs,
   printFunction: console.log,
+  fetch: mockFetch('"test"'),
 }
 
 export const interpretFinalEnviroment = async (
@@ -20,8 +30,8 @@ export const interpretFinalEnviroment = async (
   return interpreter.getEnviroment()
 }
 
-const expectOutput = (source: string) => {
-  const interpreter = new Interpreter(external)
+const expectOutput = (source: string, externalIO: ExternalIO = external) => {
+  const interpreter = new Interpreter(externalIO)
 
   return expect(
     execute(source, interpreter).then(

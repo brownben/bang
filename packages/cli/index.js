@@ -47,7 +47,7 @@ const evaluate = async (cmd, _context, _filename, callback) => {
   }
 }
 
-const interpreter = new Interpreter({ fs, printFunction: console.log })
+const interpreter = new Interpreter({ fs, printFunction: console.log, fetch })
 const packageJSON = await readJSON('./package.json')
 const cli = cac('bang').version(`v${packageJSON.version}`).help()
 

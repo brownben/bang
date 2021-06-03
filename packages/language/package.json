@@ -1,6 +1,6 @@
 {
   "name": "@bang!/language",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "My attempt at creating an interpreted language in TypeScript",
   "license": "MIT",
   "type": "module",
