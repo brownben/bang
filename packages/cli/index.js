@@ -31,11 +31,6 @@ const outputError = (error, source) => {
   }
 }
 
-const interpreter = new Interpreter({
-  fs,
-  printFunction: console.log,
-})
-
 const evaluate = (cmd, _context, _filename, callback) => {
   try {
     const result = execute(cmd.trim(), interpreter)
@@ -51,6 +46,7 @@ const evaluate = (cmd, _context, _filename, callback) => {
   }
 }
 
+const interpreter = new Interpreter({ fs, printFunction: console.log })
 const packageJSON = await readJSON('./package.json')
 const cli = cac('bang').version(`v${packageJSON.version}`).help()
 
