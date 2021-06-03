@@ -25,6 +25,12 @@ describe('mathematical operations can be calculated', () => {
     await expectOutput('2000 / 20').toEqual(100)
   })
 
+  it('should modulo numbers', async () => {
+    await expectOutput(`1 % 2`).toEqual(1)
+    await expectOutput('7 % 3').toEqual(1)
+    await expectOutput('2000 % 20').toEqual(0)
+  })
+
   it('should add negative numbers', async () => {
     await expectOutput(`-1 + -2`).toEqual(-3)
     await expectOutput('-7 + -3').toEqual(-10)
@@ -60,6 +66,15 @@ describe('mathematical operations can be calculated', () => {
     await expectError(`null - 121`)
     await expectError(`1 - true`)
     await expectError(`false - 121`)
+  })
+
+  it('should not modulo number and any other type', async () => {
+    await expectError(`1 % "2"`)
+    await expectError(`"73" % 121`)
+    await expectError(`1 % null`)
+    await expectError(`null % 121`)
+    await expectError(`1 % true`)
+    await expectError(`false % 121`)
   })
 
   it('should not multiply number and any other type', async () => {

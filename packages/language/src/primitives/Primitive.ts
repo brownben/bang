@@ -99,4 +99,10 @@ export abstract class Primitive {
       this.token?.line
     )
   }
+  modulo(value: Primitive): Primitive {
+    throw new BangError(
+      `No Operation "%" on type "${this.type}" and type "${value.type}"`,
+      this.token?.line
+    )
+  }
 }

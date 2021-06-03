@@ -119,6 +119,15 @@ export class PrimitiveNumber extends Primitive {
       this.token?.line
     )
   }
+  modulo(value: Primitive): PrimitiveNumber {
+    if (value instanceof PrimitiveNumber)
+      return new PrimitiveNumber(this.getValue() % value.getValue())
+
+    throw new BangError(
+      `No Operation "%" on type "${this.type}" and type "${value.type}"`,
+      this.token?.line
+    )
+  }
 
   negative(): PrimitiveNumber {
     return new PrimitiveNumber(-this.getValue())

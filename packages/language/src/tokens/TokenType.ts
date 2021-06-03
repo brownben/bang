@@ -18,6 +18,7 @@ export enum TokenType {
   MINUS = '-',
   STAR = '*',
   SLASH = '/',
+  PERCENT = '%',
   BANG = '!',
   EQUAL = '=',
   STAR_STAR = '**',

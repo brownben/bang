@@ -188,7 +188,6 @@ describe('copes with edge cases', () => {
   it('should throw error on unknown character', () => {
     const unknownCharacters = [
       '£',
-      '%',
       '$',
       '^',
       '&',

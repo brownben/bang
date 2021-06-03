@@ -18,6 +18,7 @@ export type BinaryOperator =
   | TokenType.GREATER
   | TokenType.LESS_EQUAL
   | TokenType.GREATER_EQUAL
+  | TokenType.PERCENT
 export type LogicalOperator = TokenType.AND | TokenType.OR
 export type UnaryOperator = TokenType.MINUS | TokenType.BANG
 
@@ -38,6 +39,7 @@ export const oneCharacterTokens: { [key: string]: TokenType } = {
   '*': TokenType.STAR,
   ',': TokenType.COMMA,
   ':': TokenType.COLON,
+  '%': TokenType.PERCENT,
 }
 
 export const twoCharacterTokens: { [key: string]: TokenType } = {
@@ -143,7 +145,11 @@ export const unaryTokens = [TokenType.BANG, TokenType.MINUS]
 
 export const additionTokens = [TokenType.MINUS, TokenType.PLUS]
 
-export const multiplicationTokens = [TokenType.SLASH, TokenType.STAR]
+export const multiplicationTokens = [
+  TokenType.SLASH,
+  TokenType.STAR,
+  TokenType.PERCENT,
+]
 
 export const indiceTokens = [TokenType.STAR_STAR]
 
@@ -166,6 +172,7 @@ type BinaryOperatorNames =
   | 'greaterThan'
   | 'lessThanOrEqual'
   | 'greaterThanOrEqual'
+  | 'modulo'
 
 export const getBinaryOperator = (
   operator: Token<BinaryOperator>
@@ -182,6 +189,7 @@ export const getBinaryOperator = (
     [TokenType.GREATER]: 'greaterThan',
     [TokenType.LESS_EQUAL]: 'lessThanOrEqual',
     [TokenType.GREATER_EQUAL]: 'greaterThanOrEqual',
+    [TokenType.PERCENT]: 'modulo',
   }
   return mapping[operator.type]
 }
