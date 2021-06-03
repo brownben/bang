@@ -181,20 +181,6 @@ it('should support expressions in keys', async () => {
   await expectOutput('let a = `hello`\n{a+``:5}').toEqual({ hello: 5 })
 })
 
-it('should support spread of dictioanries', async () => {
-  await expectOutput(`
-let a = {a:1, b:2}
-{c:3, ...a}`).toEqual({ a: 1, b: 2, c: 3 })
-  await expectOutput(`{c:3, ...{a:1, b: 2}}`).toEqual({ a: 1, b: 2, c: 3 })
-  await expectOutput(`{...{a:1, b:2}, c: 3}`).toEqual({ a: 1, b: 2, c: 3 })
-  await expectOutput(`{b:3, ...{a:1, b: 2}}`).toEqual({ a: 1, b: 2 })
-  await expectOutput(`{...{a:1, b:2}, b: 3}`).toEqual({ a: 1, b: 3 })
-})
-
-it('should support spread list into dictioanries', async () => {
-  await expectError(`{c:3, ...[1,2]}`)
-})
-
 it('should unwrap variables', async () => {
   await expectOutput('let a = 2\n {a}').toEqual({ a: 2 })
 })

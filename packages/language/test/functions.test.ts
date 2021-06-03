@@ -262,42 +262,6 @@ it('should await execute immediately invoked functions', async () => {
   await expectOutput(`((a) => type(a))('hello')`).toBe('string')
 })
 
-it('should work with spread parameters', async () => {
-  await expectOutput(`let a = (a, b, c) => a + b + c
-a(...[1,3,4])`).toBe(8)
-  await expectOutput(`let a = (a, b, c) => a + b + c
-a(...[1,3], 4)`).toBe(8)
-  await expectOutput(`let a = (a, b, c) => a + b + c
-a(5,...[1, 7])`).toBe(13)
-  await expectError(`let a = (a, b, c) => a + b + c
-a(5,...[1, 7,2])`)
-})
-
-it('should work with spread arguments', async () => {
-  await expectOutput(`let a = (a, ...b) => b
-a(1,3,4)`).toEqual([3, 4])
-  await expectError(`let a = (...a, b, c) => a`)
-  await expectOutput(`let a = (...a) => a
-a(1,4,5)`).toEqual([1, 4, 5])
-})
-
-it('should have minimum of positional arguments with spread', async () => {
-  await expectError(`let a = (a,c, ...b) => b
-a(1)`)
-})
-
-it('should only have 1 spread in function definition', async () => {
-  await expectError(`let a = (a,...c, ...b) => b`)
-})
-
-it('should only have spread as last argument', async () => {
-  await expectError(`let a = (a,...c, b) => b`)
-})
-
-it('should not spread dictionary in parameters', async () => {
-  await expectError('let a = (a,b) => b \n a(1, ...{b:3})')
-})
-
 it('should destructure dictionary argument', async () => {
   await expectOutput(`(({ dog, cat }) => dog)({dog: 1})`).toBe(1)
   await expectOutput(`(({ dog, cat }) => cat)({dog: 1})`).toBe(null)

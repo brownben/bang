@@ -1,4 +1,4 @@
-import { expectOutput, expectError, expectEnviroment } from './helpers'
+import { expectOutput, expectError } from './helpers'
 
 it('should parse empty list', async () => {
   await expectOutput('[]').toEqual([])
@@ -282,51 +282,4 @@ it('should have sum function', async () => {
   await expectOutput('[].sum()').toBe(0)
   await expectError('[false, null].sum()')
   await expectError('["1", 1].sum()')
-})
-
-describe('spread', () => {
-  it('should assign remaining elements in a list', async () => {
-    await expectEnviroment('let [a, ...b] = [1, 2, 3]').toHaveValue('a', 1)
-    await expectEnviroment('let [a, ...b] = [1, 2, 3]').toHaveValue('b', [2, 3])
-  })
-
-  it('should only accept spread as last parameter', async () => {
-    await expectError('let [...a, b] = [1,2,3]')
-  })
-  it('should only accept one spread', async () => {
-    await expectError('let [...a, ...b] = [1,2,3]')
-  })
-
-  it('should combine 2 lists', async () => {
-    const enviroment = await expectEnviroment(`
-let a = [1, 2, 3]
-let b = [...a]
-let c = [0, ...a]
-let d = [...a, 4]
-let e = [0, ...a, 4]`)
-    enviroment.toHaveValue('a', [1, 2, 3])
-    enviroment.toHaveValue('b', [1, 2, 3])
-    enviroment.toHaveValue('c', [0, 1, 2, 3])
-    enviroment.toHaveValue('d', [1, 2, 3, 4])
-    enviroment.toHaveValue('e', [0, 1, 2, 3, 4])
-  })
-
-  it('should combine multiple lists', async () => {
-    const enviroment = await expectEnviroment(`
-let a = [1, 2, 3]
-let b = [4,5]
-let c = [...a, ...b]
-let d = [...b, ...a]
-let e = [...b, 1, ...a]`)
-    enviroment.toHaveValue('a', [1, 2, 3])
-    enviroment.toHaveValue('b', [4, 5])
-    enviroment.toHaveValue('c', [1, 2, 3, 4, 5])
-    enviroment.toHaveValue('d', [4, 5, 1, 2, 3])
-    enviroment.toHaveValue('e', [4, 5, 1, 1, 2, 3])
-  })
-})
-
-it('should not spread other objects', async () => {
-  await expectError('[1,2,...4]')
-  await expectError('[1,2,...{a:2}]')
 })
