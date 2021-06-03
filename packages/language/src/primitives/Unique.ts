@@ -36,10 +36,6 @@ export class PrimitiveUnique extends Primitive {
     )
   }
 
-  not(): PrimitiveBoolean {
-    return new PrimitiveBoolean(false)
-  }
-
   builtInProperties(
     visitor: BuiltInPropertyVisitor
   ): Record<string, Primitive> {

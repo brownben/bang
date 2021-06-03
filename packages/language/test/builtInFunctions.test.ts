@@ -266,7 +266,6 @@ describe('unique', () => {
 
   it('value should be truthy', async () => {
     await expectOutputWithUnique('unique().toBoolean()').toBe(true)
-    await expectOutputWithUnique('!unique()').toBe(false)
     await expectOutputWithUnique('let a\n if(unique) a = 7\n a == 7').toBe(true)
     await expectOutputWithUnique('unique() || false').not.toBe(false)
   })
