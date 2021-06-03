@@ -3,6 +3,7 @@
 import cac from 'cac'
 import repl from 'repl'
 import chalk from 'chalk'
+import fetch from 'node-fetch'
 import fs, { readFile } from 'fs/promises'
 import { execute, Interpreter, BangError } from '@bang!/language'
 
@@ -31,9 +32,9 @@ const outputError = (error, source) => {
   }
 }
 
-const evaluate = (cmd, _context, _filename, callback) => {
+const evaluate = async (cmd, _context, _filename, callback) => {
   try {
-    const result = execute(cmd.trim(), interpreter)
+    const result = await execute(cmd.trim(), interpreter)
     const resultValue = result?.[result.length - 1]?.getValue() ?? null
 
     if (resultValue !== null) callback(null, resultValue)
@@ -61,7 +62,7 @@ cli.command('run <file>', 'Execute a Bang Program').action(async (file) => {
     const fileContents = await readFile(file, { encoding: 'utf8' })
 
     try {
-      execute(fileContents, interpreter)
+      await execute(fileContents, interpreter)
     } catch (error) {
       if (error instanceof BangError) outputError(error, fileContents)
       else throw error
