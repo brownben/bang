@@ -70,7 +70,7 @@ const fetchFunction =
     const headers = options?.getValueForKey('headers')
     const body = options?.getValueForKey('body')
 
-    if (headers != undefined && !(headers instanceof PrimitiveDictionary))
+    if (headers !== undefined && !(headers instanceof PrimitiveDictionary))
       throw new BangError('Expected options.headers to be a dictionary')
 
     let bodyValue
@@ -90,7 +90,7 @@ const fetchFunction =
     }
   }
 
-export const fetch = (fetch: typeof globalThis.fetch) =>
+export const fetch = (fetch?: typeof globalThis.fetch) =>
   new PrimitiveDictionary({
     immutable: true,
 
