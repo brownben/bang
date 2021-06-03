@@ -1011,7 +1011,6 @@ functions for converting to and from json, as a dictionary
 functions for interacting with the file system
 
 - **read(path)** - read file at path to a string
-- **exists(path)** - does a file exist at the given path
 - **write(path, contents)** - write contents to file at path
 - **append(path, contents)** - append contents to file at path
 - **remove(path)** - delete file at path

@@ -4,7 +4,7 @@ import { ExternalIO } from '../src/library'
 import { Interpreter } from '../src/Interpreter'
 import { getTokens, getAbstractSyntaxTree, execute } from '../src/index'
 
-import fs from 'fs'
+import fs from 'fs/promises'
 
 const external: ExternalIO = {
   fs,

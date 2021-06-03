@@ -361,14 +361,6 @@ describe('file', () => {
     await expectError('import file\n file.read(7)')
   })
 
-  it('should check for existance of file', async () => {
-    await expectOutputWithFile('file.exists("./testFile.txt")').toBe(true)
-    await expectOutputWithFile('file.exists("./testFileMissing.txt")').toBe(
-      false
-    )
-    await expectError('import file\n file.exists(7)')
-  })
-
   it('should write to files', async () => {
     await expectOutputWithFile('file.write("./testFile.txt", "new data")').toBe(
       null
@@ -393,14 +385,12 @@ describe('file', () => {
     await expectOutputWithFile(
       'file.copy("./testFile.txt", "./testFile2.txt")'
     ).toBe(null)
-    await expectOutputWithFile('file.exists("./testFile2.txt")').toBe(true)
     await expectError('import file\n file.copy(7, 7)')
     await expectError('import file\n file.copy("hello", 7)')
   })
 
   it('should delete files', async () => {
     await expectOutputWithFile('file.remove("./testFile2.txt")').toBe(null)
-    await expectOutputWithFile('file.exists("./testFile2.txt")').toBe(false)
     await expectError('import file\n file.remove(7)')
   })
 
@@ -456,7 +446,6 @@ describe('file', () => {
 
   it('should error filesystem not defined', async () => {
     await expectError('import file\n file.read("./testFile/ad/c.txt")', {})
-    await expectError('import file\n file.exists("./testFile/ad/c.txt")', {})
     await expectError(
       'import file\n file.append("./testFile/ad/c.txt", "")',
       {}

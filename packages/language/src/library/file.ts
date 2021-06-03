@@ -1,6 +1,5 @@
 import {
   Primitive,
-  PrimitiveBoolean,
   PrimitiveDictionary,
   PrimitiveFunction,
   PrimitiveList,
@@ -10,45 +9,41 @@ import {
 import BangError from '../BangError'
 
 interface MockFileSystem {
-  readFileSync: (path: string, options: { encoding: string }) => string
-  existsSync: (path: string) => boolean
-  writeFileSync: (path: string, contents: string) => void
-  appendFileSync: (path: string, contents: string) => void
-  rmSync: (path: string) => void
-  copyFileSync: (source: string, destination: string) => void
-  mkdirSync: (path: string) => void
-  rmdirSync: (path: string) => void
-  readdirSync: (path: string) => string[]
+  readFile: (path: string, options: { encoding: string }) => Promise<string>
+  writeFile: (path: string, contents: string) => Promise<void>
+  appendFile: (path: string, contents: string) => Promise<void>
+  rm: (path: string) => void
+  copyFile: (source: string, destination: string) => Promise<void>
+  mkdir: (path: string) => Promise<void>
+  rmdir: (path: string) => Promise<void>
+  readdir: (path: string) => Promise<string[]>
 }
 
-export type FileSystem = MockFileSystem | typeof import('fs')
+export type FileSystem = MockFileSystem | typeof import('fs/promises')
 
 const mockFileSystem: FileSystem = {
-  readFileSync: (_path: string, _options: { encoding: string }) => {
+  readFile: (_path: string, _options: { encoding: string }) => {
     throw new BangError('Filesystem is not defined')
   },
-  existsSync: (_path: string) => {
+  writeFile: (_path: string, _contents: string) => {
     throw new BangError('Filesystem is not defined')
   },
-  writeFileSync: (_path: string, _contents: string) => {
+  appendFile: (_path: string, _contents: string) => {
     throw new BangError('Filesystem is not defined')
   },
-  appendFileSync: (_path: string, _contents: string) => {
+  rm: (_path: string) => {
     throw new BangError('Filesystem is not defined')
   },
-  rmSync: (_path: string) => {
+  copyFile: (_source: string, _destination: string) => {
     throw new BangError('Filesystem is not defined')
   },
-  copyFileSync: (_source: string, _destination: string) => {
+  mkdir: (_path: string) => {
     throw new BangError('Filesystem is not defined')
   },
-  mkdirSync: (_path: string) => {
+  rmdir: (_path: string) => {
     throw new BangError('Filesystem is not defined')
   },
-  rmdirSync: (_path: string) => {
-    throw new BangError('Filesystem is not defined')
-  },
-  readdirSync: (_path: string) => {
+  readdir: (_path: string) => {
     throw new BangError('Filesystem is not defined')
   },
 }
@@ -61,7 +56,7 @@ export const file = (fs: FileSystem = mockFileSystem) =>
       read: new PrimitiveFunction({
         name: 'file.read',
         arity: 1,
-        call: (argument: Primitive[]) => {
+        call: async (argument: Primitive[]) => {
           const [filePath] = argument
 
           if (!(filePath instanceof PrimitiveString))
@@ -69,7 +64,7 @@ export const file = (fs: FileSystem = mockFileSystem) =>
 
           try {
             return new PrimitiveString(
-              fs.readFileSync(filePath.getValue(), { encoding: 'utf-8' })
+              await fs.readFile(filePath.getValue(), { encoding: 'utf-8' })
             )
           } catch {
             throw new BangError('Problem reading file')
@@ -77,24 +72,11 @@ export const file = (fs: FileSystem = mockFileSystem) =>
         },
       }),
 
-      exists: new PrimitiveFunction({
-        name: 'file.exists',
-        arity: 1,
-        call: (argument: Primitive[]) => {
-          const [filePath] = argument
-
-          if (!(filePath instanceof PrimitiveString))
-            throw new BangError('Expected path to be a string')
-
-          return new PrimitiveBoolean(fs.existsSync(filePath.getValue()))
-        },
-      }),
-
       write: new PrimitiveFunction({
         name: 'file.write',
         arity: 2,
         spread: true,
-        call: (argument: Primitive[]) => {
+        call: async (argument: Primitive[]) => {
           const [filePath, fileContents] = argument
 
           if (!(filePath instanceof PrimitiveString))
@@ -103,7 +85,7 @@ export const file = (fs: FileSystem = mockFileSystem) =>
             throw new BangError('Expected file contents to be a string')
 
           try {
-            fs.writeFileSync(filePath.getValue(), fileContents.getValue())
+            await fs.writeFile(filePath.getValue(), fileContents.getValue())
             return new PrimitiveNull()
           } catch {
             throw new BangError('Problem writing to file')
@@ -115,7 +97,7 @@ export const file = (fs: FileSystem = mockFileSystem) =>
         name: 'file.append',
         arity: 2,
         spread: true,
-        call: (argument: Primitive[]) => {
+        call: async (argument: Primitive[]) => {
           const [filePath, fileContents] = argument
 
           if (!(filePath instanceof PrimitiveString))
@@ -124,7 +106,7 @@ export const file = (fs: FileSystem = mockFileSystem) =>
             throw new BangError('Expected file contents to be a string')
 
           try {
-            fs.appendFileSync(filePath.getValue(), fileContents.getValue())
+            await fs.appendFile(filePath.getValue(), fileContents.getValue())
             return new PrimitiveNull()
           } catch {
             throw new BangError('Problem appending to file')
@@ -135,14 +117,14 @@ export const file = (fs: FileSystem = mockFileSystem) =>
       remove: new PrimitiveFunction({
         name: 'file.remove',
         arity: 1,
-        call: (argument: Primitive[]) => {
+        call: async (argument: Primitive[]) => {
           const [path] = argument
 
           if (!(path instanceof PrimitiveString))
             throw new BangError('Expected path to be a string')
 
           try {
-            fs.rmSync(path.getValue())
+            await fs.rm(path.getValue())
             return new PrimitiveNull()
           } catch {
             throw new BangError('Problem removing file')
@@ -153,7 +135,7 @@ export const file = (fs: FileSystem = mockFileSystem) =>
       copy: new PrimitiveFunction({
         name: 'file.copy',
         arity: 2,
-        call: (argument: Primitive[]) => {
+        call: async (argument: Primitive[]) => {
           const [src, dest] = argument
 
           if (!(src instanceof PrimitiveString))
@@ -162,7 +144,7 @@ export const file = (fs: FileSystem = mockFileSystem) =>
             throw new BangError('Expected destination to be a string')
 
           try {
-            fs.copyFileSync(src.getValue(), dest.getValue())
+            await fs.copyFile(src.getValue(), dest.getValue())
             return new PrimitiveNull()
           } catch {
             throw new BangError('Problem copying file')
@@ -173,14 +155,14 @@ export const file = (fs: FileSystem = mockFileSystem) =>
       createDirectory: new PrimitiveFunction({
         name: 'file.createDirectory',
         arity: 1,
-        call: (argument: Primitive[]) => {
+        call: async (argument: Primitive[]) => {
           const [path] = argument
 
           if (!(path instanceof PrimitiveString))
             throw new BangError('Expected path to be a string')
 
           try {
-            fs.mkdirSync(path.getValue())
+            await fs.mkdir(path.getValue())
             return new PrimitiveNull()
           } catch {
             throw new BangError('Problem creating directory')
@@ -191,14 +173,14 @@ export const file = (fs: FileSystem = mockFileSystem) =>
       removeDirectory: new PrimitiveFunction({
         name: 'file.removeDirectory',
         arity: 1,
-        call: (argument: Primitive[]) => {
+        call: async (argument: Primitive[]) => {
           const [path] = argument
 
           if (!(path instanceof PrimitiveString))
             throw new BangError('Expected path to be a string')
 
           try {
-            fs.rmdirSync(path.getValue())
+            await fs.rmdir(path.getValue())
             return new PrimitiveNull()
           } catch {
             throw new BangError('Problem removing directory')
@@ -209,7 +191,7 @@ export const file = (fs: FileSystem = mockFileSystem) =>
       list: new PrimitiveFunction({
         name: 'file.list',
         arity: 1,
-        call: (argument: Primitive[]) => {
+        call: async (argument: Primitive[]) => {
           const [path] = argument
 
           if (!(path instanceof PrimitiveString))
@@ -217,9 +199,11 @@ export const file = (fs: FileSystem = mockFileSystem) =>
 
           try {
             return new PrimitiveList({
-              values: fs
-                .readdirSync(path.getValue())
-                .map((value) => new PrimitiveString(value)),
+              values: await fs
+                .readdir(path.getValue())
+                .then((paths) =>
+                  paths.map((value) => new PrimitiveString(value))
+                ),
             })
           } catch {
             throw new BangError('Problem reading contents directory')

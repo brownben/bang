@@ -4,7 +4,7 @@
   "description": "A CLI for the Bang Language",
   "license": "MIT",
   "author": "brownben",
-  "main": "./cli.js",
+  "main": "./index.js",
   "type": "module",
   "bin": {
     "bang": "index.js"
