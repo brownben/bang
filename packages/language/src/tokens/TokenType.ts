@@ -57,6 +57,7 @@ export enum TokenType {
   IMPORT = 'import',
   AS = 'as',
   FROM = 'from',
+  TRY = 'try',
 
   // Blocks
   BLOCK_START = 'BLOCK START',
@@ -81,4 +82,5 @@ export const keywordTokens = {
   import: TokenType.IMPORT,
   as: TokenType.AS,
   from: TokenType.FROM,
+  try: TokenType.TRY,
 } as { [key: string]: TokenType }

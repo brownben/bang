@@ -1,6 +1,7 @@
 import { Primitive } from './Primitive'
 import { PrimitiveBoolean } from './Boolean'
 import { PrimitiveDictionary } from './Dictionary'
+import { PrimitiveError } from './Error'
 import { PrimitiveFunction } from './Function'
 import { PrimitiveList } from './List'
 import { PrimitiveNull } from './Null'
@@ -727,6 +728,21 @@ export class BuiltInPropertyVisitor
 
   visitUnique() {
     return {
+      toBoolean: new PrimitiveFunction({
+        name: 'toBoolean',
+        arity: 0,
+        call: () => new PrimitiveBoolean(true),
+      }),
+    }
+  }
+
+  visitError(primitive: PrimitiveError) {
+    return {
+      toString: new PrimitiveFunction({
+        name: 'toString',
+        arity: 0,
+        call: () => new PrimitiveString(primitive.getValue()),
+      }),
       toBoolean: new PrimitiveFunction({
         name: 'toBoolean',
         arity: 0,

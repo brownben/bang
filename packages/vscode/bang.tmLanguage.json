@@ -49,7 +49,7 @@
 
     {
       "name": "keyword.control.bang",
-      "match": "\\b(if|else|while|return|import|as|from)\\b"
+      "match": "\\b(if|else|while|return|import|as|from|try)\\b"
     },
     {
       "name": "constant.language.bang",

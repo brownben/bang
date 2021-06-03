@@ -824,7 +824,7 @@ Variables are referenced through an identifier, an identifier starts with a lett
 The `const` keyword creates a variable which cannot be reassigned, composite structures like dictionaries and lists can be modified if they are mutable.
 The `let` keyword creates a variable which can be reassigned.
 
-Keywords that cannot be used as variable identifiers are: `and, or, if, else, while, null, true, false, let, const, return, import, as, from`
+Keywords that cannot be used as variable identifiers are: `and, or, if, else, while, null, true, false, let, const, return, import, as, from, try`
 
 The identifier `_` is a placeholder, it always has the value of null, and does not need to be defined. It cannot take any other value, and if assigned to it will just be ignored.
 
@@ -1074,6 +1074,22 @@ a += 1  // a = a + 1
 b -= 2  // b = b - 2
 c *= 4  // c = c * 4
 d /= 22 // d = d / 22
+```
+
+### try expression
+
+Catches errors to be handled, returns a list with 2 values the value of the expression, then the error. Only one of these values is returned with the other set to null.
+
+```
+try <expression>
+
+let [value, error] = try functionThatReturns()
+// value = returnValue
+// error = null
+
+let [value, error] = try functionThatErrors()
+// value = null
+// error = error that occured
 ```
 
 # Comments

@@ -32,6 +32,7 @@ import {
   ExprSet,
   ExprSlice,
   ExprSpread,
+  ExprTry,
   ExprUnary,
   ExprVariable,
 } from './expressions'
@@ -432,7 +433,15 @@ class Parser extends BaseParser {
   }
 
   expression(): Expr {
-    return this.assignment()
+    return this.try()
+  }
+
+  try(): Expr {
+    if (this.tokenMatches(TokenType.TRY)) {
+      const operator: Token = this.getPreviousToken()
+      const right: Expr = this.expression()
+      return new ExprTry(operator, right)
+    } else return this.assignment()
   }
 
   assignment(): Expr {
