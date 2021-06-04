@@ -978,24 +978,6 @@ Returns null.
 Get the type of the value passed.
 Returns a string representing the type of the value passed.
 
-## Imported
-
-The following functions/ modules can be imported for use.
-
-The syntax for importing is as follows:
-
-```
-import <module_name>
-import <module_name> as <new_identifier>
-
-
-/* example */
-import maths
-import maths as math
-
-import print as log
-```
-
 ### maths
 
 maths is a dictionary with the following functions/ values:
@@ -1154,6 +1136,33 @@ let [value, error] = try functionThatErrors()
 // value = null
 // error = error that occured
 ```
+
+## Import
+
+Values can be imported from other bang files.
+The syntax for importing is as follows:
+
+```
+import <module_name>
+import <module_name> as <new_identifier>
+
+from <module_name> import { values, of, exported, dictionary }
+from <module_name> import { can: be, renamed: to, different: things }
+from <module_name> import { default } // if export is not a dictionary
+
+/* example */
+import maths
+import maths as math
+
+import print as log
+
+import './hello.bang' // variable hello is set to value
+from './hello.bang' import hi
+```
+
+## Export
+
+To export from a bang program, just return from the top level of the program. The return statement doesn't need to be the last, as program execution will continue afterwards. Only the last return statement will be executed.
 
 # Comments
 

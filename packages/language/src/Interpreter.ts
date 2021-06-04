@@ -1,12 +1,12 @@
 import { Stmt, StmtResult } from './statements'
-import { ReturnValue } from './primitives'
+import { Primitive, ReturnValue } from './primitives'
 import { Enviroment } from './Enviroment'
 import { defineBuiltInFunctions, ExternalIO } from './library'
 import { wrapValue } from './library/wrapper'
-import BangError from './BangError'
 
 export class Interpreter {
   private enviroment: Enviroment
+  private exports: Primitive | undefined
 
   constructor(externalIO: ExternalIO, foreignValues?: Record<string, unknown>) {
     this.enviroment = defineBuiltInFunctions(externalIO)
@@ -28,13 +28,18 @@ export class Interpreter {
     try {
       return await statement.execute(this.enviroment)
     } catch (error) {
-      if (error instanceof ReturnValue)
-        throw new BangError('Cannot return outside a function')
-      else throw error
+      if (error instanceof ReturnValue) {
+        this.exports = error.value
+        return error.value
+      } else throw error
     }
   }
 
   getEnviroment(): Enviroment {
     return this.enviroment
+  }
+
+  getExports(): Primitive | undefined {
+    return this.exports
   }
 }

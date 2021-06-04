@@ -1,15 +1,20 @@
 import { Token } from '../tokens'
 import { Stmt } from './Stmt'
-import { PrimitiveDictionary, PrimitiveNull } from '../primitives'
+import { Primitive, PrimitiveDictionary, PrimitiveNull } from '../primitives'
 import { Enviroment } from '../Enviroment'
 import { getBuiltInFunction } from '../library'
+import { execute, Interpreter } from '..'
 import BangError from '../BangError'
+
+const getNameFromPath = (path: string): string | undefined =>
+  path.match(/(.*)\/([_a-zA-Z][_a-zA-Z0-9]*)\.(.*)/)?.[2]
 
 export class StmtImport extends Stmt {
   name: string
   as: string
   destructured?: { actual: string; renamed: string }[]
   token: Token
+
   constructor(
     moduleName: string,
     {
@@ -24,29 +29,36 @@ export class StmtImport extends Stmt {
   ) {
     super()
     this.name = moduleName
-    this.as = as ?? moduleName
+    this.as = as ?? getNameFromPath(this.name) ?? moduleName
     this.destructured = destructured
     this.token = token
   }
 
   async execute(enviroment: Enviroment) {
-    const importedModule = getBuiltInFunction(
+    const externalIO = enviroment.getExternalIO()
+    let importedModule: Primitive | undefined = getBuiltInFunction(
       this.name,
       enviroment.getExternalIO()
     )
 
-    if (!importedModule)
-      throw new BangError(
-        `Unknown library ${this.name}, only builtin libraries can be imported currently`,
-        this.token.line
-      )
+    if (!importedModule) {
+      if (!externalIO.importer)
+        throw new BangError(
+          `No external modules can be imported, as no importer is defined`,
+          this.token.line
+        )
+      const file = await externalIO.importer(this.name)
+      const interpeter = new Interpreter(externalIO)
+      await execute(file, interpeter)
+      importedModule = interpeter.getExports() ?? new PrimitiveNull()
+    }
 
     if (!this.destructured) enviroment.define(this.as, true, importedModule)
     else {
       const rawDictionary =
         importedModule instanceof PrimitiveDictionary
           ? importedModule.dictionary
-          : {}
+          : { default: importedModule }
 
       this.destructured.forEach((value) =>
         enviroment.define(

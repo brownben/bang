@@ -381,8 +381,8 @@ class Parser extends BaseParser {
 
   fromImportStatement(): Stmt {
     const moduleName = this.assertTokenIs(
-      TokenType.IDENTIFIER,
-      'Expect import name'
+      [TokenType.IDENTIFIER, TokenType.STRING],
+      'Expect import name/ path'
     )
 
     this.assertTokenIs(
@@ -406,8 +406,8 @@ class Parser extends BaseParser {
 
   importStatement(): Stmt {
     const name = this.assertTokenIs(
-      TokenType.IDENTIFIER,
-      'Expect import module name'
+      [TokenType.IDENTIFIER, TokenType.STRING],
+      'Expect import name/ path'
     )
 
     let newName: Token | undefined = undefined

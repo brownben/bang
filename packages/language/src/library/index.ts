@@ -12,6 +12,7 @@ export interface ExternalIO {
   printFunction?: PrintFunction
   fs?: FileSystem
   fetch?: typeof globalThis.fetch
+  importer?: (path: string) => string | Promise<string>
 }
 
 export const getBuiltInFunction = (key: string, externalIO: ExternalIO) => {

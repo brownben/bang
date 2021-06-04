@@ -1,10 +1,4 @@
-import {
-  execute,
-  expectEnviroment,
-  expectError,
-  expectOutput,
-} from '../helpers'
-import { Enviroment } from '../../src/Enviroment'
+import { execute, expectError, expectOutput } from '../helpers'
 
 const expectOutputWithUnique = (string: string) =>
   expectOutput('import unique \n' + string)
@@ -78,45 +72,6 @@ describe('type function', () => {
 
   it('should be able to be imported', async () => {
     await execute('import type as getTypeOf')
-  })
-})
-
-describe('import builtins', () => {
-  it('should throw if an unknown is imported', async () => {
-    await expectError('import x')
-    await expectError('import x as y')
-  })
-
-  it('should destructure imports', async () => {
-    expectEnviroment('from json import {stringify}').toHaveValue(
-      'stringify',
-      '<function json.stringify>'
-    )
-
-    expectEnviroment('from json import {stringify:toString}').toHaveValue(
-      'toString',
-      '<function json.stringify>'
-    )
-
-    expectEnviroment('from json import {stringify, unknown}').toHaveValue(
-      'unknown',
-      null
-    )
-    expectEnviroment('from print import { unknown }').toHaveValue(
-      'unknown',
-      null
-    )
-  })
-
-  it('should be possible to import under a different name', async () => {
-    expectEnviroment(`
-import print as consoleLog
-consoleLog`).toHaveValue('consoleLog', '<function print>')
-  })
-
-  it('should import from block', async () => {
-    await execute('    import file')
-    expect(new Enviroment().getExternalIO()).toEqual({})
   })
 })
 
