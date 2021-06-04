@@ -2,7 +2,7 @@ import { Stmt, StmtResult } from './statements'
 import { Primitive, ReturnValue } from './primitives'
 import { Enviroment } from './Enviroment'
 import { defineBuiltInFunctions, ExternalIO } from './library'
-import { wrapValue } from './library/wrapper'
+import { deepWrap } from './library/wrapper'
 
 export class Interpreter {
   private enviroment: Enviroment
@@ -12,7 +12,7 @@ export class Interpreter {
     this.enviroment = defineBuiltInFunctions(externalIO)
 
     for (const key in foreignValues)
-      this.enviroment.define(key, true, wrapValue(foreignValues[key]))
+      this.enviroment.define(key, true, deepWrap(foreignValues[key]))
   }
 
   async run(statements: Stmt[]): Promise<StmtResult[]> {

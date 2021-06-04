@@ -22,8 +22,8 @@ export class ExprGet extends Expr {
   constructor(
     token: Token,
     object: Expr,
-    expression?: Expr,
-    optional: boolean = false
+    optional: boolean,
+    expression?: Expr
   ) {
     super()
     this.token = token

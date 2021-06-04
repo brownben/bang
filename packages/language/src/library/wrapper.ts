@@ -33,3 +33,19 @@ export const wrapValue = (value: unknown): Primitive => {
       keyValues: value as Record<string, Primitive>,
     })
 }
+
+export const deepWrap = (value: unknown): Primitive => {
+  if (value === null) return wrapValue(value)
+  else if (Array.isArray(value))
+    return new PrimitiveList({ values: value.map(deepWrap) })
+  else if (typeof value === 'object')
+    return wrapValue(
+      Object.fromEntries(
+        Object.entries(value as Record<string, unknown>).map(([key, value]) => [
+          key,
+          deepWrap(value),
+        ])
+      )
+    )
+  else return wrapValue(value)
+}

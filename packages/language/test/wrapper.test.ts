@@ -1,6 +1,7 @@
-import { wrapValue } from '../src/library/wrapper'
+import { deepWrap as wrapValue } from '../src/library/wrapper'
 import {
   PrimitiveBoolean,
+  PrimitiveDictionary,
   PrimitiveFunction,
   PrimitiveList,
   PrimitiveNull,
@@ -61,4 +62,22 @@ it('should wrap functions', () => {
       }) as PrimitiveFunction
     ).name
   ).toEqual('test')
+})
+
+it('should wrap deep dictionaries', () => {
+  expect(wrapValue({ a: 1, b: { c: 3, d: [4, 5] } })).toEqual(
+    new PrimitiveDictionary({
+      keyValues: {
+        a: new PrimitiveNumber(1),
+        b: new PrimitiveDictionary({
+          keyValues: {
+            c: new PrimitiveNumber(3),
+            d: new PrimitiveList({
+              values: [new PrimitiveNumber(4), new PrimitiveNumber(5)],
+            }),
+          },
+        }),
+      },
+    })
+  )
 })

@@ -617,7 +617,7 @@ class Parser extends BaseParser {
       TokenType.IDENTIFIER,
       'Expect property name after "."'
     )
-    return new ExprGet(name, expr, undefined, optional)
+    return new ExprGet(name, expr, optional)
   }
 
   getPropertyExpression(expr: Expr, optional: boolean): ExprGet {
@@ -639,7 +639,7 @@ class Parser extends BaseParser {
       TokenType.RIGHT_SQUARE,
       'Expected "]" after identifier expression'
     )
-    return new ExprGet(this.getToken(), expr, identifier, optional)
+    return new ExprGet(this.getToken(), expr, optional, identifier)
   }
 
   finishCall(callee: Expr) {
