@@ -47,7 +47,14 @@ export class StmtImport extends Stmt {
           `No external modules can be imported, as no importer is defined`,
           this.token.line
         )
-      const file = await externalIO.importer(this.name)
+
+      let file
+      try {
+        file = await externalIO.importer(this.name)
+      } catch {
+        throw new BangError(`Problem loading file "${this.name}"`)
+      }
+
       const interpeter = new Interpreter(externalIO)
       await execute(file, interpeter)
       importedModule = interpeter.getExports() ?? new PrimitiveNull()

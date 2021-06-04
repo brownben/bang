@@ -19,8 +19,7 @@ const external: ExternalIO = {
   fs,
   printFunction: console.log,
   fetch: mockFetch('"test"'),
-  importer: async (path: string) =>
-    await fs.readFile(path, { encoding: 'utf-8' }),
+  importer: async (path: string) => fs.readFile(path, { encoding: 'utf-8' }),
 }
 
 export const interpretFinalEnviroment = async (

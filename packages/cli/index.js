@@ -47,7 +47,17 @@ const evaluate = async (cmd, _context, _filename, callback) => {
   }
 }
 
-const interpreter = new Interpreter({ fs, printFunction: console.log, fetch })
+const importer = async (path) => {
+  if (path.includes('https://')) return (await fetch(path)).text()
+  else return fs.readFile(path, { encoding: 'utf8' })
+}
+
+const interpreter = new Interpreter({
+  fs,
+  fetch,
+  importer,
+  printFunction: console.log,
+})
 const packageJSON = await readJSON('./package.json')
 const cli = cac('bang').version(`v${packageJSON.version}`).help()
 

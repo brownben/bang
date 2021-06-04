@@ -28,7 +28,6 @@
   },
   "scripts": {
     "start": "tsdx watch",
-    "format": "prettier --write ./**/*",
     "lint": "tsdx lint src test",
     "test": "tsdx test",
     "type-check": "tsc --noEmit",
