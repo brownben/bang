@@ -12,6 +12,7 @@ There are 6 primitive types in Bang:
 - Dictionary
 - List
 - Unique (Imported, See Global Built-in Functions/ Modules)
+- Error
 
 ## Strings
 
@@ -372,6 +373,36 @@ null != 0
 - Converts the value to a string
 - Takes 0 parameters
 - Returns `'null'`
+
+## Error
+
+Representing an error.
+
+### Operators
+
+**equality (==, !=)**
+
+Compares if it is the same error, has to be the exact same error to be equal
+
+```
+null == null
+null != 'null'
+null != 0
+```
+
+### Built-in Methods + Properties
+
+**toBoolean()**
+
+- Converts the value to boolean
+- Takes 0 parameters
+- Returns `true`
+
+**toString()**
+
+- Converts the value to a string
+- Takes 0 parameters
+- Returns the error message
 
 ## Function
 
@@ -1027,6 +1058,38 @@ functions for interacting with the file system
 - **createDirectory(path)** - create directory at path
 - **removeDirectory(path)** - remove directory at path
 - **list(path)** - returns list of files in directory
+
+### fetch
+
+functions for making network requests
+
+There are 5 functions relating to each of the HTTP verbs:
+
+- **get**
+- **put**
+- **post**
+- **patch**
+- **delete**
+
+All the functions return a response dictionary, and take 2 arguments, the path and an optional options dictionary. The body can be any type and is converted to a string
+
+```ts
+// Options
+{
+  headers: Record<string, string>,
+  body: any
+}
+
+// Response
+{
+  headers: Record<string, string>, // the headers of the response
+  ok: boolean,                     // boolean if it is a 200 response
+  status: number,                  // the http status code
+  redirected: boolean,             // boolean, was the response redirected
+  text: string,                    // the body of the response as a string
+  json: object | null,             // the body parsed as a JSON object, or null if the parsing fails
+}
+```
 
 # Operators
 
