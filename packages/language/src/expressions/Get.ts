@@ -17,11 +17,18 @@ export class ExprGet extends Expr {
   token: Token
   lookup: string | Expr
   object: Expr
+  optional: boolean
 
-  constructor(token: Token, object: Expr, expression?: Expr) {
+  constructor(
+    token: Token,
+    object: Expr,
+    expression?: Expr,
+    optional: boolean = false
+  ) {
     super()
     this.token = token
     this.object = object
+    this.optional = optional
     if (expression) this.lookup = expression
     else this.lookup = token.value
   }
@@ -115,9 +122,11 @@ export class ExprGet extends Expr {
 
     if (value) return value
 
-    throw new BangError(
-      `Property ${this.lookup} doesn't exists on type "${instance.type}"`,
-      this.token.line
-    )
+    if (this.optional) return new PrimitiveNull()
+    else
+      throw new BangError(
+        `Property ${this.lookup} doesn't exists on type "${instance.type}"`,
+        this.token.line
+      )
   }
 }

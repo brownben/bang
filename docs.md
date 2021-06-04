@@ -493,6 +493,7 @@ A map from strings to other values, similar to dictionaries in Python or HashMap
 Strings/ identifier can be used as the identifying keys in dictionaries.
 If a variable is used as a key and a value is not specified, the identifier will be used as the key and the variable value will be used as a value.
 It is mutable by default.
+An error is thrown if the property doesn't exist, except when using the `?.` accessor
 
 ```
 // defining dictionaries
@@ -540,6 +541,17 @@ let pears = 55
 
 let fruit = { apple, bannanas, pears }
 // { apple: 7, bannanas: 2, pears: 55 }
+
+
+fruit.apple // 7
+fruit?.apple // 7
+fruit.pear // error
+fruit?.pear // null
+
+fruit['app' + 'le'] // 7
+fruit?.['app' + 'le'] // 7
+fruit.['pe' + 'ar'] // error
+fruit?.['pe' + 'ar'] // null
 ```
 
 ### Operators
@@ -1085,6 +1097,8 @@ The `and` or `&&` returns the first falsy value or the 2nd value if they are bot
 
 The `or` or `||` returns the first truthy value or the 2nd value if they are both falsy.
 
+The `??` operator returns the first value if truthy else the 2nd value
+
 ```
 true and 2       // 2
 2 && true        // true
@@ -1108,6 +1122,9 @@ false or false   // false
 false or true    // true
 false or 77      // 77
 null or "hello"  // 'hello'
+77 ?? null       // 77
+false ?? 77      // false
+null ?? "hello"  // 'hello'
 ```
 
 ## Assignment Operators

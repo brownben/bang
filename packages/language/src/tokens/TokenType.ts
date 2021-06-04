@@ -8,6 +8,7 @@ export enum TokenType {
   RIGHT_SQUARE = ']',
   COMMA = ',',
   DOT = '.',
+  QUESTION_DOT = '?.',
   COLON = ':',
   SEMICOLON = ';',
   FAT_ARROW = '=>',

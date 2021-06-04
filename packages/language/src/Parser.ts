@@ -597,27 +597,30 @@ class Parser extends BaseParser {
     let expr: Expr = this.functionExpression()
 
     while (true) {
+      const optional = this.tokenMatches(TokenType.QUESTION_DOT)
+
       if (this.tokenMatches(TokenType.DOT))
-        expr = this.getPropertyIdentifier(expr)
+        expr = this.getPropertyIdentifier(expr, false)
       else if (this.tokenMatches(TokenType.LEFT_SQUARE))
-        expr = this.getPropertyExpression(expr)
+        expr = this.getPropertyExpression(expr, optional)
       else if (!this.functionAhead() && this.tokenMatches(TokenType.LEFT_PAREN))
         expr = this.finishCall(expr)
+      else if (optional) expr = this.getPropertyIdentifier(expr, true)
       else break
     }
 
     return expr
   }
 
-  getPropertyIdentifier(expr: Expr): ExprGet {
+  getPropertyIdentifier(expr: Expr, optional: boolean): ExprGet {
     const name = this.assertTokenIs(
       TokenType.IDENTIFIER,
       'Expect property name after "."'
     )
-    return new ExprGet(name, expr)
+    return new ExprGet(name, expr, undefined, optional)
   }
 
-  getPropertyExpression(expr: Expr): ExprGet {
+  getPropertyExpression(expr: Expr, optional: boolean): ExprGet {
     const afterColon = (beforeColon: Expr | null) => {
       if (!this.tokenIsType(TokenType.RIGHT_SQUARE))
         return new ExprSlice(beforeColon, this.expression(), this.getToken())
@@ -636,7 +639,7 @@ class Parser extends BaseParser {
       TokenType.RIGHT_SQUARE,
       'Expected "]" after identifier expression'
     )
-    return new ExprGet(this.getToken(), expr, identifier)
+    return new ExprGet(this.getToken(), expr, identifier, optional)
   }
 
   finishCall(callee: Expr) {

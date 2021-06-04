@@ -59,6 +59,7 @@ export const twoCharacterTokens: { [key: string]: TokenType } = {
   '||': TokenType.OR,
   '=>': TokenType.FAT_ARROW,
   '??': TokenType.QUESTION_QUESTION,
+  '?.': TokenType.QUESTION_DOT,
 }
 
 export const threeCharacterTokens: { [key: string]: TokenType } = {

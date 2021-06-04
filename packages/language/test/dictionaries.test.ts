@@ -184,3 +184,15 @@ it('should support expressions in keys', async () => {
 it('should unwrap variables', async () => {
   await expectOutput('let a = 2\n {a}').toEqual({ a: 2 })
 })
+
+it('should not throw error with optional chaining', async () => {
+  await expectOutput('{}?.a').toBe(null)
+  await expectOutput('{}.toString?.hello').toBe(null)
+  await expectOutput('{}?.toString').toBe('<function toString>')
+  await expectError('{}?.a.b')
+})
+
+it('should not throw an error with optional chaining and dynamic property access', async () => {
+  await expectOutput('{}?.["hello"]').toBe(null)
+  await expectOutput('{}?.["toString"]').toBe('<function toString>')
+})
