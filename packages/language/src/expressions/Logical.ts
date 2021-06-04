@@ -25,6 +25,9 @@ export class ExprLogical extends Expr {
       case TokenType.AND:
         if (left.isTruthy()) return right
         else return left
+      case TokenType.QUESTION_QUESTION:
+        if (left.getValue() !== null) return left
+        else return right
     }
   }
 }

@@ -22,6 +22,7 @@ export enum TokenType {
   BANG = '!',
   EQUAL = '=',
   STAR_STAR = '**',
+  QUESTION_QUESTION = '??',
 
   // Assignment Operators
   PLUS_EQUAL = '+=',

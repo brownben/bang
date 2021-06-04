@@ -19,7 +19,10 @@ export type BinaryOperator =
   | TokenType.LESS_EQUAL
   | TokenType.GREATER_EQUAL
   | TokenType.PERCENT
-export type LogicalOperator = TokenType.AND | TokenType.OR
+export type LogicalOperator =
+  | TokenType.AND
+  | TokenType.OR
+  | TokenType.QUESTION_QUESTION
 export type UnaryOperator = TokenType.MINUS | TokenType.BANG
 
 export const oneCharacterTokens: { [key: string]: TokenType } = {
@@ -55,6 +58,7 @@ export const twoCharacterTokens: { [key: string]: TokenType } = {
   '&&': TokenType.AND,
   '||': TokenType.OR,
   '=>': TokenType.FAT_ARROW,
+  '??': TokenType.QUESTION_QUESTION,
 }
 
 export const threeCharacterTokens: { [key: string]: TokenType } = {

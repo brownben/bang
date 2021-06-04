@@ -383,4 +383,17 @@ describe('logical operators can be used', () => {
     await expectOutput('false || 77').toBe(77)
     await expectOutput('null || "hello"').toBe('hello')
   })
+
+  it('should return first value of a ?? statement if not null', async () => {
+    await expectOutput('true ?? false').toBe(true)
+    await expectOutput('false ?? true').toBe(false)
+    await expectOutput('"" ?? 77').toBe('')
+    await expectOutput('0 ?? 77').toBe(0)
+  })
+
+  it('should return second value of a ?? statement if null', async () => {
+    await expectOutput('null ?? false').toBe(false)
+    await expectOutput('null ?? true').toBe(true)
+    await expectOutput('null ?? 77').toBe(77)
+  })
 })

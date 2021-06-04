@@ -496,9 +496,21 @@ class Parser extends BaseParser {
   }
 
   and(): Expr {
-    let expr = this.equality()
+    let expr = this.nullishCoalescing()
 
     while (this.tokenMatches(TokenType.AND)) {
+      const operator = this.getPreviousToken() as Token<LogicalOperator>
+      const right = this.and()
+      expr = new ExprLogical(expr, operator, right)
+    }
+
+    return expr
+  }
+
+  nullishCoalescing(): Expr {
+    let expr = this.equality()
+
+    while (this.tokenMatches(TokenType.QUESTION_QUESTION)) {
       const operator = this.getPreviousToken() as Token<LogicalOperator>
       const right = this.and()
       expr = new ExprLogical(expr, operator, right)
