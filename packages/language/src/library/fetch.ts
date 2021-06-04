@@ -59,9 +59,7 @@ const callFetch = async ({
 
 const fetchFunction =
   (method: HTTPMethod, fetch?: typeof globalThis.fetch) =>
-  async (argument: Primitive[]) => {
-    const [path, options] = argument
-
+  async ([path, options]: Primitive[]) => {
     if (!(path instanceof PrimitiveString))
       throw new BangError('Expected path to be a string')
     if (options && !(options instanceof PrimitiveDictionary))

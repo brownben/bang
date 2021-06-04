@@ -56,9 +56,7 @@ export const file = (fs: FileSystem = mockFileSystem) =>
       read: new PrimitiveFunction({
         name: 'file.read',
         arity: 1,
-        call: async (argument: Primitive[]) => {
-          const [filePath] = argument
-
+        call: async ([filePath]: Primitive[]) => {
           if (!(filePath instanceof PrimitiveString))
             throw new BangError('Expected path to be a string')
 
@@ -77,9 +75,7 @@ export const file = (fs: FileSystem = mockFileSystem) =>
         name: 'file.write',
         arity: 2,
         spread: true,
-        call: async (argument: Primitive[]) => {
-          const [filePath, fileContents] = argument
-
+        call: async ([filePath, fileContents]: Primitive[]) => {
           if (!(filePath instanceof PrimitiveString))
             throw new BangError('Expected path to be a string')
           if (!(fileContents instanceof PrimitiveString))
@@ -99,9 +95,7 @@ export const file = (fs: FileSystem = mockFileSystem) =>
         name: 'file.append',
         arity: 2,
         spread: true,
-        call: async (argument: Primitive[]) => {
-          const [filePath, fileContents] = argument
-
+        call: async ([filePath, fileContents]: Primitive[]) => {
           if (!(filePath instanceof PrimitiveString))
             throw new BangError('Expected path to be a string')
           if (!(fileContents instanceof PrimitiveString))
@@ -120,9 +114,7 @@ export const file = (fs: FileSystem = mockFileSystem) =>
       remove: new PrimitiveFunction({
         name: 'file.remove',
         arity: 1,
-        call: async (argument: Primitive[]) => {
-          const [path] = argument
-
+        call: async ([path]: Primitive[]) => {
           if (!(path instanceof PrimitiveString))
             throw new BangError('Expected path to be a string')
 
@@ -139,9 +131,7 @@ export const file = (fs: FileSystem = mockFileSystem) =>
       copy: new PrimitiveFunction({
         name: 'file.copy',
         arity: 2,
-        call: async (argument: Primitive[]) => {
-          const [src, dest] = argument
-
+        call: async ([src, dest]: Primitive[]) => {
           if (!(src instanceof PrimitiveString))
             throw new BangError('Expected source to be a string')
           if (!(dest instanceof PrimitiveString))
@@ -160,9 +150,7 @@ export const file = (fs: FileSystem = mockFileSystem) =>
       createDirectory: new PrimitiveFunction({
         name: 'file.createDirectory',
         arity: 1,
-        call: async (argument: Primitive[]) => {
-          const [path] = argument
-
+        call: async ([path]: Primitive[]) => {
           if (!(path instanceof PrimitiveString))
             throw new BangError('Expected path to be a string')
 
@@ -179,9 +167,7 @@ export const file = (fs: FileSystem = mockFileSystem) =>
       removeDirectory: new PrimitiveFunction({
         name: 'file.removeDirectory',
         arity: 1,
-        call: async (argument: Primitive[]) => {
-          const [path] = argument
-
+        call: async ([path]: Primitive[]) => {
           if (!(path instanceof PrimitiveString))
             throw new BangError('Expected path to be a string')
 
@@ -198,9 +184,7 @@ export const file = (fs: FileSystem = mockFileSystem) =>
       list: new PrimitiveFunction({
         name: 'file.list',
         arity: 1,
-        call: async (argument: Primitive[]) => {
-          const [path] = argument
-
+        call: async ([path]: Primitive[]) => {
           if (!(path instanceof PrimitiveString))
             throw new BangError('Expected path to be a string')
 

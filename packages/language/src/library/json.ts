@@ -17,8 +17,7 @@ export const json = new PrimitiveDictionary({
     parse: new PrimitiveFunction({
       name: 'json.parse',
       arity: 1,
-      call: (argument: Primitive[]) => {
-        const [arg] = argument
+      call: ([arg]: Primitive[]) => {
         if (!(arg instanceof PrimitiveString))
           throw new BangError('Expected input to be a string')
 
@@ -34,9 +33,7 @@ export const json = new PrimitiveDictionary({
       name: 'json.stringify',
       arity: 1,
       spread: true,
-      call: (argument: Primitive[]) => {
-        const [arg, whitespace] = argument
-
+      call: ([arg, whitespace]: Primitive[]) => {
         let amount: number =
           (whitespace instanceof PrimitiveNumber && whitespace.getValue()) || 0
 
