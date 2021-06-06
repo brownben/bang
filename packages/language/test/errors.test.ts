@@ -1,5 +1,5 @@
 import { Interpreter, execute } from '../src'
-import { expectEnviroment, expectOutput } from './helpers'
+import { expectEnviroment, expectError, expectOutput } from './helpers'
 
 describe('try statements', () => {
   it('should get value if no error', async () => {
@@ -60,6 +60,32 @@ describe('error type', () => {
   it('should be truthy', async () => {
     expectOutput(`let [value, error] = try 1 + ''\n error || 0`).toBe(
       'Error: No Operation "+" on type "number" and type "string"'
+    )
+  })
+})
+
+describe('throw', () => {
+  it('should throw', async () => {
+    await expectError('throw("error")')
+  })
+
+  it('should throw strings', async () => {
+    await expectEnviroment('let [_, error] = try throw("hello")').toHaveValue(
+      'error',
+      'Error: hello'
+    )
+  })
+  it('should throw other values', async () => {
+    await expectEnviroment('let [_, error] = try throw(7)').toHaveValue(
+      'error',
+      'Error: 7'
+    )
+    await expectEnviroment(
+      'let [_, error] = try throw(() => null)'
+    ).toHaveValue('error', 'Error: <function>')
+    await expectEnviroment('let [_, error] = try throw(null)').toHaveValue(
+      'error',
+      'Error: null'
     )
   })
 })

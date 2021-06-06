@@ -990,6 +990,14 @@ Returns null.
 Get the type of the value passed.
 Returns a string representing the type of the value passed.
 
+### throw(errorMessage)
+
+Throws an error, with the message passed
+
+## Imported
+
+The following can be imported to be used, see import section below.
+
 ### maths
 
 maths is a dictionary with the following functions/ values:

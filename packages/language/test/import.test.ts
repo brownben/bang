@@ -32,6 +32,11 @@ describe('import builtins', () => {
     expectEnviroment(`
 import print as consoleLog
 consoleLog`).toHaveValue('consoleLog', '<function print>')
+
+    expectEnviroment(`import throw as panic`).toHaveValue(
+      'panic',
+      '<function throw>'
+    )
   })
 
   it('should import from block', async () => {

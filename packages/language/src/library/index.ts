@@ -7,6 +7,7 @@ import { regex } from './regex'
 import { json } from './json'
 import { file, FileSystem } from './file'
 import { fetch } from './fetch'
+import { throwFunc } from './throw'
 
 export interface ExternalIO {
   printFunction?: PrintFunction
@@ -24,6 +25,7 @@ export const getBuiltInFunction = (key: string, externalIO: ExternalIO) => {
   else if (key === 'json') return json
   else if (key === 'file') return file(externalIO?.fs)
   else if (key === 'fetch') return fetch(externalIO?.fetch)
+  else if (key === 'throw') return throwFunc
   return undefined
 }
 
@@ -31,5 +33,6 @@ export const defineBuiltInFunctions = (externalIO: ExternalIO): Enviroment => {
   const enviroment: Enviroment = new Enviroment(undefined, externalIO)
   enviroment.define('print', true, print(externalIO.printFunction))
   enviroment.define('type', true, type)
+  enviroment.define('throw', true, throwFunc)
   return enviroment
 }
