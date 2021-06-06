@@ -53,12 +53,12 @@ export class ExprCall extends Expr {
 
     if (!callee.spread && argument.length !== callee.arity)
       throw new BangError(
-        `Expected ${callee.arity} arguments for function ${callee.name} but got ${argument.length}`,
+        `Expected ${callee.arity} arguments for function "${callee.name}" but got ${argument.length}`,
         this.paren.line
       )
     else if (callee.spread && argument.length < callee.arity)
       throw new BangError(
-        `Expected at least ${callee.arity} arguments for function ${callee.name} but got ${argument.length}`,
+        `Expected at least ${callee.arity} arguments for function "${callee.name}" but got ${argument.length}`,
         this.paren.line
       )
 

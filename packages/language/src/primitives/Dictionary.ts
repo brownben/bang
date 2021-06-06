@@ -41,7 +41,7 @@ export class PrimitiveDictionary extends Primitive {
   get keys() {
     return Object.keys(this.dictionary)
   }
-  keyExists(key: string): boolean {
+  hasKey(key: string): boolean {
     return this.keys.includes(key)
   }
   set(key: string, value: Primitive) {

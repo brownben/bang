@@ -99,7 +99,7 @@ export class ExprGet extends Expr {
 
     if (instance instanceof PrimitiveDictionary) {
       const dictionaryLookup = await this.getDictionaryLookupKey(enviroment)
-      if (instance.keyExists(dictionaryLookup))
+      if (instance.hasKey(dictionaryLookup))
         return instance.dictionary[dictionaryLookup]
     }
 
