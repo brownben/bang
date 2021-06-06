@@ -67,7 +67,6 @@ export const threeCharacterTokens: { [key: string]: TokenType } = {
 }
 
 export const unacceptableLineStartCharacters = [
-  ')',
   '}',
   ']',
   '.',

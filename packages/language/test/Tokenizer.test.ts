@@ -277,8 +277,9 @@ it('should recognise block in function arguments', () => {
       { line: 2, type: TokenType.LEFT_PAREN },
       { line: 2, type: TokenType.NUMBER },
       { line: 2, type: TokenType.RIGHT_PAREN },
-      { line: 3, type: TokenType.RIGHT_PAREN },
+      { line: 2, type: TokenType.NEW_LINE },
       { line: 3, type: TokenType.BLOCK_END },
+      { line: 3, type: TokenType.RIGHT_PAREN },
     ]
   )
 })

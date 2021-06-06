@@ -20,7 +20,7 @@ add(1, 2, 3)
   ).toBe(6)
 })
 
-it('should accept paramters and arguments across multiple lines', async () => {
+it('should accept parameters and arguments across multiple lines', async () => {
   await expectOutput(
     `
 let add = (

@@ -653,6 +653,8 @@ class Parser extends BaseParser {
       },
     })
 
+    while (this.tokenMatches(TokenType.NEW_LINE, TokenType.BLOCK_END)) {}
+
     const paren = this.assertTokenIs(
       TokenType.RIGHT_PAREN,
       'Expect ")" after arguments'
@@ -702,6 +704,8 @@ class Parser extends BaseParser {
           else throw this.errorHere(`Spread must be last argument of function`)
         },
       })
+
+    while (this.tokenMatches(TokenType.NEW_LINE, TokenType.BLOCK_END)) {}
 
     this.assertTokenIs(TokenType.RIGHT_PAREN, "Expect ')' after parameters")
     this.assertTokenIs(TokenType.FAT_ARROW, "Expect '=>' after parameters")
