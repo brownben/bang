@@ -109,7 +109,7 @@ export class Tokenizer extends BaseTokeniser {
     if (this.isEnd() || this.getCurrentCharacter() === '\n')
       throw this.constructError('Unterminated String')
 
-    this.addToken(TokenType.STRING, stringContents)
+    this.addToken(TokenType.STRING, stringContents.replace(/(?<!\\)\\n/, '\n'))
     this.currentLine += stringContents.split('\n').length - 1
   }
   getNumber() {
