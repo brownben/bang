@@ -1,10 +1,23 @@
 import { Token } from '../tokens'
 import { Stmt } from './Stmt'
-import { Primitive, PrimitiveDictionary, PrimitiveNull } from '../primitives'
+import { PrimitiveDictionary, PrimitiveNull } from '../primitives'
 import { Enviroment } from '../Enviroment'
-import { getBuiltInFunction } from '../library'
-import { execute, Interpreter } from '..'
+import { ExternalIO, getBuiltInFunction } from '../library'
+import { Interpreter } from '../Interpreter'
+import { getTokens } from '../tokens'
+import { getAbstractSyntaxTree } from '../Parser'
 import BangError from '../BangError'
+
+const execute = async (source: string, externalIO: ExternalIO) => {
+  const interpreter = new Interpreter(externalIO)
+
+  const tokens = getTokens(source)
+  const abstractSyntaxTree = getAbstractSyntaxTree(tokens, source)
+
+  await interpreter.run(abstractSyntaxTree)
+
+  return interpreter.getExports()
+}
 
 const getNameFromPath = (path: string): string | undefined =>
   path.match(/(.*)\/([_a-zA-Z][_a-zA-Z0-9]*)\.(.*)/)?.[2]
@@ -36,10 +49,7 @@ export class StmtImport extends Stmt {
 
   async execute(enviroment: Enviroment) {
     const externalIO = enviroment.getExternalIO()
-    let importedModule: Primitive | undefined = getBuiltInFunction(
-      this.name,
-      enviroment.getExternalIO()
-    )
+    let importedModule = getBuiltInFunction(this.name, enviroment)
 
     if (!importedModule) {
       if (!externalIO.importer)
@@ -55,9 +65,7 @@ export class StmtImport extends Stmt {
         throw new BangError(`Problem loading file "${this.name}"`)
       }
 
-      const interpeter = new Interpreter(externalIO)
-      await execute(file, interpeter)
-      importedModule = interpeter.getExports() ?? new PrimitiveNull()
+      importedModule = (await execute(file, externalIO)) ?? new PrimitiveNull()
     }
 
     if (!this.destructured) enviroment.define(this.as, true, importedModule)

@@ -24,15 +24,20 @@ const external: ExternalIO = {
 
 export const interpretFinalEnviroment = async (
   statements: Stmt[],
-  externalIO: ExternalIO = external
+  externalIO: ExternalIO = external,
+  foreignValues?: Record<string, unknown>
 ): Promise<Enviroment> => {
-  const interpreter = new Interpreter(externalIO)
+  const interpreter = new Interpreter(externalIO, foreignValues)
   await interpreter.run(statements)
   return interpreter.getEnviroment()
 }
 
-const expectOutput = (source: string, externalIO: ExternalIO = external) => {
-  const interpreter = new Interpreter(externalIO)
+const expectOutput = (
+  source: string,
+  externalIO: ExternalIO = external,
+  foreignValues?: Record<string, unknown>
+) => {
+  const interpreter = new Interpreter(externalIO, foreignValues)
 
   return expect(
     execute(source, interpreter).then(
@@ -43,11 +48,16 @@ const expectOutput = (source: string, externalIO: ExternalIO = external) => {
 
 const expectEnviroment = (
   source: string,
-  externalIO: ExternalIO = external
+  externalIO: ExternalIO = external,
+  foreignValues?: Record<string, unknown>
 ) => {
   const tokens = getTokens(source)
   const abstractSyntaxTree = getAbstractSyntaxTree(tokens, source)
-  const enviroment = interpretFinalEnviroment(abstractSyntaxTree, externalIO)
+  const enviroment = interpretFinalEnviroment(
+    abstractSyntaxTree,
+    externalIO,
+    foreignValues
+  )
 
   return {
     toHaveValue: (name: string, value: any) =>
@@ -66,15 +76,20 @@ const expectEnviroment = (
 
 const executeWithInterpreter = (
   source: string,
-  externalIO: ExternalIO = external
+  externalIO: ExternalIO = external,
+  foreignValues?: Record<string, unknown>
 ) => {
-  const interpreter = new Interpreter(externalIO)
+  const interpreter = new Interpreter(externalIO, foreignValues)
   return execute(source, interpreter)
 }
 
-const expectError = (source: string, externalIO: ExternalIO = external) =>
+const expectError = (
+  source: string,
+  externalIO: ExternalIO = external,
+  foreignValues?: Record<string, unknown>
+) =>
   expect(
-    async () => await executeWithInterpreter(source, externalIO)
+    async () => await executeWithInterpreter(source, externalIO, foreignValues)
   ).rejects.toThrow()
 
 export {

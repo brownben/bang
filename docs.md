@@ -1093,6 +1093,20 @@ All the functions return a response dictionary, and take 2 arguments, the path a
 }
 ```
 
+### testing
+
+```bang
+
+from testing import { it, expect }
+
+let add = (a, b) => a + b
+
+it('should add 2 numbers', () =>
+  expect(a(3,7)).toEqual(10)
+  expect(a(4, '')).toThrow()
+)
+```
+
 # Operators
 
 ## Equality

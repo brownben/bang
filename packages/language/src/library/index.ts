@@ -1,4 +1,5 @@
 import { Enviroment } from '../Enviroment'
+import { Primitive } from '../primitives'
 import { print, PrintFunction } from './print'
 import { type } from './type'
 import { maths } from './maths'
@@ -8,6 +9,7 @@ import { json } from './json'
 import { file, FileSystem } from './file'
 import { fetch } from './fetch'
 import { throwFunc } from './throw'
+import { testing } from './testing'
 
 export interface ExternalIO {
   printFunction?: PrintFunction
@@ -16,7 +18,12 @@ export interface ExternalIO {
   importer?: (path: string) => string | Promise<string>
 }
 
-export const getBuiltInFunction = (key: string, externalIO: ExternalIO) => {
+export const getBuiltInFunction = (
+  key: string,
+  enviroment: Enviroment
+): Primitive | undefined => {
+  const externalIO = enviroment.getExternalIO()
+
   if (key === 'print') return print(externalIO?.printFunction)
   else if (key === 'type') return type
   else if (key === 'maths') return maths
@@ -26,6 +33,7 @@ export const getBuiltInFunction = (key: string, externalIO: ExternalIO) => {
   else if (key === 'file') return file(externalIO?.fs)
   else if (key === 'fetch') return fetch(externalIO?.fetch)
   else if (key === 'throw') return throwFunc
+  else if (key === 'testing') return testing(enviroment)
   return undefined
 }
 
