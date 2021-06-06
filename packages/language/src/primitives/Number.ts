@@ -26,12 +26,12 @@ export class PrimitiveNumber extends Primitive {
 
   equals(value: Primitive): PrimitiveBoolean {
     return new PrimitiveBoolean(
-      this.value === value.value && this.type === value.type
+      this.getValue() === value.getValue() && this.type === value.type
     )
   }
   notEquals(value: Primitive): PrimitiveBoolean {
     return new PrimitiveBoolean(
-      this.value !== value.value || this.type !== value.type
+      this.getValue() !== value.getValue() || this.type !== value.type
     )
   }
 
