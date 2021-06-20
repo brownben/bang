@@ -4,11 +4,16 @@
   "description": "A CLI for the Bang Language",
   "license": "MIT",
   "author": "brownben",
-  "main": "./index.js",
+  "main": "./src/index.ts",
   "type": "module",
   "bin": {
-    "bang": "index.js"
+    "bang": "./bin/index.js"
   },
+  "files": [
+    "src",
+    "dist",
+    "bin"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/brownben/bang.git",
@@ -29,13 +34,17 @@
     "@bang!/language": "0.3.0",
     "cac": "^6.7.3",
     "chalk": "^4.1.1",
-    "node-fetch": "^2.6.1"
+    "glob": "^7.1.7",
+    "node-fetch": "^3.0.0-beta.9"
   },
   "scripts": {
-    "start": "",
-    "lint": "",
+    "start": "tsdx watch",
+    "lint": "tsdx lint src",
     "test": "",
-    "type-check": "",
-    "build": ""
+    "type-check": "tsc --noEmit",
+    "build": "tsdx build --target node --format esm --name cli"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.1.3"
   }
 }
