@@ -13,13 +13,13 @@
     "packages/*"
   ],
   "devDependencies": {
-    "@types/node": "^15.6.2",
-    "@typescript-eslint/eslint-plugin": "^4.25.0",
-    "@typescript-eslint/parser": "^4.25.0",
-    "prettier": "^2.3.0",
+    "@types/node": "^15.12.4",
+    "@typescript-eslint/eslint-plugin": "^4.27.0",
+    "@typescript-eslint/parser": "^4.27.0",
+    "prettier": "^2.3.1",
     "tsdx": "^0.14.1",
-    "tslib": "^2.2.0",
-    "typescript": "^4.2.4"
+    "tslib": "^2.3.0",
+    "typescript": "^4.3.4"
   },
   "resolutions": {
     "**/typescript": "^4.2.4",

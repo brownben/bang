@@ -47,7 +47,7 @@ export const createInterpreter = () =>
   new Interpreter({
     fs,
     fetch: fetch as unknown as typeof globalThis.fetch,
-    importer: async (path) => {
+    importer: async (path: string) => {
       if (path.includes('https://')) return (await fetch(path)).text()
       else return fs.readFile(path, { encoding: 'utf8' })
     },
