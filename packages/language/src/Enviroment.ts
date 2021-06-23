@@ -91,4 +91,8 @@ export class Enviroment {
   resetChanged() {
     this.changed = false
   }
+
+  getNamesOfLocalVariables() {
+    return Object.keys(this.values)
+  }
 }
