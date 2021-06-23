@@ -30,3 +30,7 @@ jobs:
       - run: npm run lint --workspace=packages/cli
       - run: npm run type-check --workspace=packages/cli
       - run: npm run build --workspace=packages/cli
+
+      - run: npm run lint --workspace=packages/prism
+      - run: npm run type-check --workspace=packages/prism
+      - run: npm run build --workspace=packages/prism

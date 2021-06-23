@@ -4,10 +4,10 @@
   "repository": "github:brownben/bang",
   "scripts": {
     "format": "prettier --write ./**/*",
-    "lint": "npm run lint --workspace=packages/language --workspace=packages/cli",
-    "test": "npm run test --workspace=packages/language --workspace=packages/cli",
-    "type-check": "npm run type-check --workspace=packages/language --workspace=packages/cli",
-    "build": "npm run build --workspace=packages/language --workspace=packages/cli"
+    "lint": "npm run lint --workspace=packages/language --workspace=packages/cli --workspace=packages/prism",
+    "test": "npm run test --workspace=packages/language --workspace=packages/cli --workspace=packages/prism",
+    "type-check": "npm run type-check --workspace=packages/language --workspace=packages/cli --workspace=packages/prism",
+    "build": "npm run build --workspace=packages/language --workspace=packages/cli --workspace=packages/prism"
   },
   "workspaces": [
     "packages/*"

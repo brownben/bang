@@ -1,10 +1,15 @@
 {
   "name": "@bang!/prism",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "Prism plugin for the Bang language",
   "license": "MIT",
   "author": "brownben",
-  "main": "./index.js",
+  "main": "dist/prism.esm.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
   "type": "module",
   "repository": {
     "type": "git",
@@ -23,10 +28,13 @@
     "access": "public"
   },
   "scripts": {
-    "start": "",
-    "lint": "",
+    "start": "tsdx watch",
+    "lint": "tsdx lint src",
     "test": "",
-    "type-check": "",
-    "build": ""
+    "type-check": "tsc --noEmit",
+    "build": "tsdx build --format esm --name prism"
+  },
+  "devDependencies": {
+    "@types/prismjs": "^1.16.5"
   }
 }
