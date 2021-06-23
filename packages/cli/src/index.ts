@@ -6,7 +6,7 @@ import { displayTokens } from './tokens'
 import { executeFile } from './run'
 import { runTests } from './test'
 
-const version = '0.3.0'
+const version = '0.3.1'
 
 const cli = cac('bang').version(`v${version}`).help()
 

@@ -1,7 +1,6 @@
-import fs from 'fs/promises'
+import fs, { readFile as fsReadFile } from 'fs/promises'
 import fetch from 'node-fetch'
 import chalk from 'chalk'
-import { readFile as fsReadFile } from 'fs/promises'
 import { Interpreter, BangError } from '@bang!/language'
 
 const toFixedWidth = (number: number, size: number) =>

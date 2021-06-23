@@ -1,11 +1,10 @@
 import repl from 'repl'
+import type { Context } from 'vm'
 import { execute, BangError, Interpreter } from '@bang!/language'
 import { createInterpreter, getErrorMessage } from './helpers'
-import { Context } from 'vm'
 
-const evaluate =
-  (interpreter: Interpreter) =>
-  async (
+const evaluate = (interpreter: Interpreter) => {
+  return async (
     cmd: string,
     _context: Context,
     _filename: string,
@@ -24,11 +23,68 @@ const evaluate =
       } else throw error
     }
   }
+}
+
+const helpCommand = (replServer: repl.REPLServer) => {
+  console.log(
+    `
+.break    Sometimes you get stuck, this gets you out
+.clear    Break, and also clear the local context
+.editor   Enter editor mode
+.exit     Exit the REPL
+.help     Print this help message
+.load     Load a .bang file into the REPL session
+.save     Save all evaluated commands in this REPL session to a file
+
+Press Ctrl+C to abort current expression, Ctrl+D to exit the REPL`
+  )
+  replServer.displayPrompt()
+}
 
 export const createREPL = (version: string) => async () => {
   const interpreter = createInterpreter()
 
+  const completer = (line: string) => {
+    const enviroment = interpreter.getEnviroment()
+    const variableNames = enviroment.getNamesOfLocalVariables()
+
+    const editorCommands = [
+      '.break',
+      '.clear ',
+      '.editor ',
+      '.exit ',
+      '.help ',
+      '.load ',
+      '.save',
+    ]
+    const keywords = [
+      'if',
+      'else',
+      'while',
+      'let',
+      'const',
+      'return',
+      'import',
+      'as',
+      'from',
+      'try',
+    ]
+    const completions = [...editorCommands, ...keywords, ...variableNames]
+
+    const hits = completions.filter((c) => c.startsWith(line))
+
+    return [hits || [], line]
+  }
+
   console.log(`Bang (v${version})`)
   console.log('For more information type ".help"\n')
-  repl.start({ prompt: '> ', eval: evaluate(interpreter) })
+
+  const replServer = repl.start({
+    prompt: '> ',
+    eval: evaluate(interpreter),
+    completer,
+  })
+
+  // redefine the help command, replacing reference to JS
+  replServer.defineCommand('help', () => helpCommand(replServer))
 }
