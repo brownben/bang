@@ -1,0 +1,19 @@
+{
+  "name": "@bang!/docs",
+  "version": "0.0.1",
+  "scripts": {
+    "start": "astro dev",
+    "build": "astro build"
+  },
+  "devDependencies": {
+    "@types/prismjs": "^1.16.5",
+    "astro": "^0.20.4",
+    "tailwindcss": "^2.2.2"
+  },
+  "dependencies": {
+    "@bang!/language": "0.3.1",
+    "@bang!/prism": "1.2.0",
+    "prismjs": "^1.23.0",
+    "vue": "^3.2.8"
+  }
+}

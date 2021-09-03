@@ -2,9 +2,13 @@
 
 # Bang
 
-My Attempt at Creating My Own Interpreted Programming Language in TypeScript.
+Bang is my attempt at creating a programming language, based on the
+parts I like of languages I have used. It is mostly inspired by
+JavaScript and Python and is created using TypeScript.
 
-Based on and Inspired by [Crafting Interpreters](https://craftinginterpreters.com/)
+Based on and inspired by the awesome [Crafting Interpreters](https://craftinginterpreters.com/) by Robert Nystrom.
+
+Have a play with the language [directly in your browser](https://bang.benbrown.dev)
 
 ## Usage
 

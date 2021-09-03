@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.group:focus-within .group-focus-within\:opacity-100 {
+  opacity: 1;
+}
+
+.token.boolean {
+  color: #f78c6c;
+}
+
+.token.comment {
+  @apply text-gray-500;
+}
+
+.token.function {
+  color: #82aaff;
+}
+
+.token.keyword {
+  @apply text-orange-300;
+}
+
+.token.number {
+  color: #f78c6c;
+}
+
+.token.operator {
+  color: #c792ea;
+}
+
+.token.punctuation {
+  color: #89ddff;
+}
+
+.token.string {
+  color: #c3e88d;
+}

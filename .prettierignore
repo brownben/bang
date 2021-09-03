@@ -3,6 +3,8 @@
 LICENSE
 package-lock.json
 **/*.svg
+**/*.png
+**/*.astro
 **/dist/**
 **/coverage/**
 **/node_modules/**

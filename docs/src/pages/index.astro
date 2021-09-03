@@ -1,0 +1,103 @@
+---
+import AppHeader from '../components/AppHeader.vue'
+import CodeEditor from '../components/CodeEditor.vue'
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bang - My Language</title>
+    <link rel="stylesheet" href={Astro.resolve("../index.css")}/>
+
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="shortcut icon" href="/favicon.png" />
+
+    <meta name="title" content="Bang - My Language" />
+    <meta
+      name="description"
+      content="Bang is my attempt at creating a programming language, based on the parts I like of languages I have used. It is mostly inspired by JavaScript and Python and is created using TypeScript."
+    />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://bang.brownben.dev" />
+    <meta property="og:title" content="Bang - My Language" />
+    <meta
+      property="og:description"
+      content="Bang is my attempt at creating a programming language, based on the parts I like of languages I have used. It is mostly inspired by JavaScript and Python and is created using TypeScript."
+    />
+    <meta property="og:image" content="/SocialCard.png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://bang.benbrown.dev" />
+    <meta property="twitter:title" content="Bang - My Language" />
+    <meta
+      property="twitter:description"
+      content="Bang is my attempt at creating a programming language, based on the parts I like of languages I have used. It is mostly inspired by JavaScript and Python and is created using TypeScript."
+    />
+    <meta property="twitter:image" content="/SocialCard.png" />
+  </head>
+  <body>
+    <AppHeader client:idle />
+    <main
+      class="flex flex-col max-w-screen-sm gap-8 px-6 py-10 pb-12 sm:mx-auto"
+    >
+      <div>
+        <p class="my-4 text-gray-600">
+          Bang is my attempt at creating a programming language, based on the
+          parts I like of languages I have used. It is mostly inspired by
+          JavaScript and Python and is created using TypeScript.
+        </p>
+        <p class="my-4 text-gray-600">
+          I created it following Crafting Intepreters by Robert Nystrom, it is
+          an awesome book on programming languages, go
+          <a
+            href="http://craftinginterpreters.com/"
+            class="underline text-orange-600"
+          >
+            check it out.
+          </a>
+        </p>
+        <p class="my-4 text-gray-600">
+          An overview of the language and its features/ api is
+          <a
+            href="https://github.com/brownben/bang/blob/master/docs.md"
+            class="underline text-orange-600"
+          >
+            available here
+          </a>
+        </p>
+      </div>
+
+      <div>
+        <h2 class="text-5xl font-black tracking-tight text-gray-800">
+          Try it out
+        </h2>
+        <p class="mt-6 mb-8 text-gray-600">
+          Have a play with bang right here in your browser. As it is run on
+          JavaScript you nothing leaves your browser and you have results
+          instantly.
+        </p>
+        <CodeEditor client:visible />
+      </div>
+    </main>
+
+    <footer class="max-w-screen-sm px-6 text-lg text-gray-600 sm:mx-auto">
+      <p class="py-6 border-t">
+        Created by
+        <a href="https://benbrown.dev" class="font-extrabold text-orange-600">
+          Ben Brown
+        </a>
+      </p>
+    </footer>
+  </body>
+</html>
