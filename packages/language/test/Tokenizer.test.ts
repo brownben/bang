@@ -17,7 +17,7 @@ const tokeniserResultError = (code: string, message: string) => {
   try {
     expect(getTokens(code)).toThrow(expect.anything())
     getTokens(code)
-  } catch (error) {
+  } catch (error: any) {
     expect(error).toBeInstanceOf(BangError)
     expect(error.message).toBe(message)
   }

@@ -2,7 +2,7 @@
 
 # Types
 
-There are 6 primitive types in Bang:
+There are 9 primitive types in Bang:
 
 - String
 - Number
@@ -1095,7 +1095,7 @@ All the functions return a response dictionary, and take 2 arguments, the path a
 
 ### testing
 
-```bang
+```
 
 from testing import { it, expect }
 
