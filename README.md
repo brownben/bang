@@ -1,3 +1,9 @@
+> **Note**
+>
+> I am no longer working on this version of Bang. I have been working on a bytecode interpreter written in Rust
+> 
+> Check it out: https://github.com/brownben/bang2
+
 <img src="./Logo.svg" height="175px">
 
 # Bang
@@ -7,8 +13,6 @@ parts I like of languages I have used. It is mostly inspired by
 JavaScript and Python and is created using TypeScript.
 
 Based on and inspired by the awesome [Crafting Interpreters](https://craftinginterpreters.com/) by Robert Nystrom.
-
-Have a play with the language [directly in your browser](https://bang.benbrown.dev)
 
 ## Usage
 
